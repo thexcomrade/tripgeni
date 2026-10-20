@@ -1,13 +1,14 @@
 /* ============================================================
-   Floating 3D Mascot Chatbot — TripGenius Styling
+   PADAYAPPA — ROG Omni-Style 3D Virtual Travel Companion
+   Clean 3D Look • Zero Unwanted Glow • Natural Depth & Lighting
    ============================================================ */
 
 .mascot-widget {
   position: fixed;
-  right: 24px;
-  bottom: 20px;
-  width: 130px;
-  height: 190px;
+  right: 28px;
+  bottom: 24px;
+  width: 140px;
+  height: 220px;
   z-index: 9998;
   display: flex;
   flex-direction: column;
@@ -17,40 +18,44 @@
   user-select: none;
 }
 
+/* 3D CHARACTER TRIGGER CONTAINER */
 .mascot-trigger {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 140px;
+  height: 210px;
   padding: 0;
   border: none;
   outline: none;
   background: transparent;
   cursor: pointer;
   pointer-events: auto;
-  animation: mascot-float 3.4s ease-in-out infinite;
-  transform-origin: center bottom;
-  -webkit-tap-highlight-color: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
-  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 14px rgba(14, 165, 233, 0.3));
+  transform-origin: center bottom;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
+  /* Natural physical shadow: NO neon glow, purely photorealistic depth */
+  filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.65));
+  animation: padayappa-idle-float 4.2s ease-in-out infinite;
 }
 
 .mascot-trigger:hover {
-  animation: mascot-bounce 0.6s ease-in-out;
-  filter: drop-shadow(0 18px 32px rgba(14, 165, 233, 0.6)) drop-shadow(0 0 20px rgba(56, 189, 248, 0.5));
+  transform: translateY(-6px) scale(1.04);
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.75));
 }
 
 .mascot-trigger:active {
-  transform: scale(0.94);
+  transform: translateY(2px) scale(0.96);
+  transition-duration: 0.1s;
 }
 
+/* 3D IMAGE FRAME (Strict 2:3 aspect ratio matching model.png) */
 .mascot-image-wrapper {
   position: relative;
-  width: 120px;
-  height: 175px;
+  width: 136px;
+  height: 204px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,82 +66,85 @@
   height: 100%;
   object-fit: contain;
   pointer-events: none;
+  /* Clean render edges */
+  image-rendering: -webkit-optimize-contrast;
 }
 
-/* GROUND CONTACT SHADOW PULSE */
-.mascot-shadow {
-  width: 75px;
-  height: 12px;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6) 0%, rgba(14, 165, 233, 0.25) 45%, transparent 75%);
+/* PHOTOREALISTIC GROUND CONTACT SHADOW */
+.mascot-ground-shadow {
+  width: 90px;
+  height: 14px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 75%);
   border-radius: 50%;
-  margin-top: -8px;
-  animation: mascot-shadow-pulse 3.4s ease-in-out infinite;
+  margin-top: -6px;
+  pointer-events: none;
+  animation: padayappa-shadow-pulse 4.2s ease-in-out infinite;
 }
 
-/* NEED HELP TOOLTIP */
-.mascot-tooltip {
+/* OMNI-STYLE SPEECH BADGE (Clean dark pill above character) */
+.mascot-speech-badge {
   position: absolute;
-  top: 4px;
-  left: -20px;
-  z-index: 2;
-  padding: 7px 13px;
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
-  backdrop-filter: blur(12px);
-  color: #F8FAFC;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 12px rgba(14, 165, 233, 0.25);
-  pointer-events: none;
-  animation: tooltip-appear 0.35s ease-out;
+  top: -12px;
+  right: -4px;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #F8FAFC;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  animation: badge-appear 0.3s ease-out;
 }
 
-.mascot-tooltip-dot {
+.mascot-speech-badge:hover {
+  background: rgba(30, 41, 59, 0.96);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.03);
+}
+
+.mascot-live-indicator {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: #22C55E;
-  box-shadow: 0 0 8px #22C55E;
+  box-shadow: 0 0 6px #22C55E;
+  flex-shrink: 0;
 }
 
-/* ONLINE STATUS BADGE ON CHARACTER */
-.mascot-online-badge {
-  position: absolute;
-  bottom: 12px;
-  right: 14px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #22C55E;
-  border: 2.5px solid #0F172A;
-  box-shadow: 0 0 10px #22C55E;
-  z-index: 3;
-}
-
-/* CHATBOT ASSISTANT POPUP PANEL */
+/* ============================================================
+   PADAYAPPA ASSISTANT DIALOG PANEL (ROG Omni Console Style)
+   ============================================================ */
 .assistant-panel {
   position: fixed;
-  right: 24px;
-  bottom: 215px;
+  right: 28px;
+  bottom: 245px;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  width: min(380px, calc(100vw - 32px));
-  max-height: min(540px, calc(100vh - 240px));
-  min-height: 380px;
+  width: min(390px, calc(100vw - 36px));
+  max-height: min(560px, calc(100vh - 260px));
+  min-height: 400px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  background: rgba(15, 23, 42, 0.96);
-  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  background: rgba(11, 17, 32, 0.96);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
   color: #F8FAFC;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), 0 0 20px rgba(14, 165, 233, 0.15);
-  animation: panel-enter 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+  animation: panel-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .assistant-header {
@@ -145,7 +153,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 18px;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+  background: rgba(18, 26, 47, 0.95);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -155,27 +163,19 @@
   gap: 10px;
 }
 
-.assistant-heading strong {
+.assistant-heading-text strong {
   display: block;
   font-size: 14px;
   font-weight: 700;
   color: #F8FAFC;
+  letter-spacing: -0.01em;
 }
 
-.assistant-heading small {
+.assistant-heading-text small {
   display: block;
-  margin-top: 2px;
+  margin-top: 1px;
   color: #94A3B8;
   font-size: 11px;
-}
-
-.assistant-status {
-  width: 9px;
-  height: 9px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: #22C55E;
-  box-shadow: 0 0 9px #22C55E80;
 }
 
 .assistant-header-actions {
@@ -184,47 +184,49 @@
   gap: 8px;
 }
 
-.assistant-expand-btn {
-  padding: 5px 9px;
-  border: 1px solid rgba(56, 189, 248, 0.35);
+.assistant-fullchat-btn {
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
-  background: rgba(14, 165, 233, 0.12);
-  color: #38BDF8;
+  background: rgba(255, 255, 255, 0.06);
+  color: #E2E8F0;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   transition: all 0.2s ease;
 }
 
-.assistant-expand-btn:hover {
-  background: rgba(14, 165, 233, 0.25);
-  border-color: #38BDF8;
+.assistant-fullchat-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.assistant-close {
+.assistant-close-btn {
   width: 28px;
   height: 28px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
+  background: transparent;
   color: #94A3B8;
-  font-size: 18px;
+  font-size: 19px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 
-.assistant-close:hover {
+.assistant-close-btn:hover {
   background: rgba(239, 68, 68, 0.2);
-  color: #F87171;
+  color: #FCA5A5;
   border-color: rgba(239, 68, 68, 0.4);
 }
 
+/* CHAT CONTENT */
 .assistant-content {
   flex: 1;
   padding: 16px;
@@ -234,36 +236,36 @@
   gap: 12px;
 }
 
-.assistant-intro {
+.assistant-intro-box {
   text-align: center;
-  padding: 12px 0 6px;
+  padding: 10px 4px 6px;
 }
 
-.assistant-avatar {
-  position: relative;
-  width: 58px;
-  height: 58px;
+.assistant-mini-avatar {
+  width: 62px;
+  height: 62px;
   margin: 0 auto 10px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(20, 184, 166, 0.2));
-  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
-.assistant-intro h3 {
+.assistant-intro-box h3 {
   margin: 0 0 4px;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
-  color: #F8FAFC;
+  color: #FFFFFF;
 }
 
-.assistant-intro p {
+.assistant-intro-box p {
   margin: 0;
   color: #94A3B8;
-  font-size: 12px;
+  font-size: 12.5px;
   line-height: 1.5;
 }
 
@@ -273,27 +275,27 @@
   gap: 10px;
 }
 
-.assistant-msg {
+.assistant-bubble {
   padding: 10px 14px;
   border-radius: 14px;
   font-size: 12.5px;
-  line-height: 1.5;
-  max-width: 86%;
+  line-height: 1.55;
+  max-width: 88%;
   word-break: break-word;
 }
 
-.assistant-msg.user {
+.assistant-bubble.user {
   align-self: flex-end;
-  background: linear-gradient(135deg, #0284C7 0%, #0D9488 100%);
+  background: #0284C7;
   color: #FFFFFF;
   border-bottom-right-radius: 4px;
 }
 
-.assistant-msg.ai {
+.assistant-bubble.padayappa {
   align-self: flex-start;
   background: rgba(30, 41, 59, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #E2E8F0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #F1F5F9;
   border-bottom-left-radius: 4px;
 }
 
@@ -301,25 +303,26 @@
   display: flex;
   flex-direction: column;
   gap: 7px;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .assistant-suggestions button {
-  padding: 9px 12px;
+  padding: 10px 14px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  background: rgba(30, 41, 59, 0.6);
-  color: #CBD5E1;
-  font-size: 11.5px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #E2E8F0;
+  font-size: 12px;
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 
 .assistant-suggestions button:hover {
-  border-color: rgba(56, 189, 248, 0.45);
-  background: rgba(14, 165, 233, 0.12);
-  color: #F8FAFC;
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  transform: translateX(2px);
 }
 
 .assistant-form {
@@ -327,46 +330,45 @@
   gap: 8px;
   padding: 12px 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(15, 23, 42, 0.9);
 }
 
 .assistant-form input {
   flex: 1;
   min-width: 0;
-  padding: 10px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
   outline: none;
-  background: rgba(30, 41, 59, 0.6);
+  background: rgba(30, 41, 59, 0.5);
   color: #F8FAFC;
   font: inherit;
-  font-size: 12.5px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  font-size: 13px;
+  transition: border-color 0.2s;
 }
 
 .assistant-form input:focus {
-  border-color: #38BDF8;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .assistant-form button {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   flex-shrink: 0;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #0EA5E9 0%, #14B8A6 100%);
+  background: #0284C7;
   color: white;
-  font-size: 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s ease, opacity 0.2s;
+  transition: transform 0.15s ease;
 }
 
 .assistant-form button:hover:not(:disabled) {
   transform: scale(1.05);
+  background: #0369A1;
 }
 
 .assistant-form button:disabled {
@@ -374,40 +376,33 @@
   cursor: not-allowed;
 }
 
-/* KEYFRAME ANIMATIONS */
-@keyframes mascot-float {
+/* ============================================================
+   SUBTLE NATURAL KEYFRAME ANIMATIONS (Zero Unwanted Glow)
+   ============================================================ */
+@keyframes padayappa-idle-float {
   0%, 100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-7px);
   }
 }
 
-@keyframes mascot-bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-
-@keyframes mascot-shadow-pulse {
+@keyframes padayappa-shadow-pulse {
   0%, 100% {
     transform: scale(1);
-    opacity: 0.6;
+    opacity: 0.75;
   }
   50% {
-    transform: scale(0.8);
-    opacity: 0.35;
+    transform: scale(0.85);
+    opacity: 0.45;
   }
 }
 
-@keyframes tooltip-appear {
+@keyframes badge-appear {
   from {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -415,10 +410,10 @@
   }
 }
 
-@keyframes panel-enter {
+@keyframes panel-slide-in {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.96);
+    transform: translateY(14px) scale(0.97);
   }
   to {
     opacity: 1;
@@ -426,37 +421,52 @@
   }
 }
 
-/* RESPONSIVE */
+/* ============================================================
+   MOBILE RESPONSIVE COMPACT LAYOUT
+   ============================================================ */
 @media (max-width: 640px) {
   .mascot-widget {
-    right: 12px;
-    bottom: 12px;
-    width: 105px;
-    height: 155px;
+    right: 14px;
+    bottom: 16px;
+    width: 100px;
+    height: 160px;
+  }
+
+  .mascot-trigger {
+    width: 100px;
+    height: 150px;
   }
 
   .mascot-image-wrapper {
     width: 95px;
-    height: 140px;
+    height: 142px;
   }
 
-  .mascot-tooltip {
-    left: -28px;
-    font-size: 11px;
-    padding: 5px 9px;
+  .mascot-ground-shadow {
+    width: 65px;
+    height: 10px;
+    margin-top: -4px;
+  }
+
+  .mascot-speech-badge {
+    top: -10px;
+    right: -2px;
+    padding: 4px 9px;
+    font-size: 10.5px;
   }
 
   .assistant-panel {
-    right: 12px;
+    right: 10px;
     bottom: 175px;
-    width: calc(100vw - 24px);
+    width: calc(100vw - 20px);
     max-height: calc(100dvh - 190px);
+    border-radius: 20px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mascot-trigger,
-  .mascot-shadow {
+  .mascot-ground-shadow {
     animation: none;
   }
 }

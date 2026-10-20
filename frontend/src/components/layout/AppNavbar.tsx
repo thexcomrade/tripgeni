@@ -379,7 +379,7 @@ export default function AppNavbar() {
 
           {/* USER PROFILE OR LOGIN */}
           {isLoggedIn ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="desktop-auth-pill" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Link
                 href="/profile"
                 className={`liquid-glass ${isHome ? "animate-blur-fade-up" : ""}`}
@@ -429,7 +429,7 @@ export default function AppNavbar() {
               </button>
             </div>
           ) : (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="desktop-auth-pill" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Link
                 href="/login"
                 className={isHome ? "animate-blur-fade-up" : ""}
@@ -615,6 +615,11 @@ export default function AppNavbar() {
 
       {/* RESPONSIVE MEDIA STYLES */}
       <style jsx>{`
+        @media (max-width: 768px) {
+          .desktop-auth-pill {
+            display: none !important;
+          }
+        }
         @media (min-width: 1024px) {
           .desktop-nav-container {
             display: flex !important;

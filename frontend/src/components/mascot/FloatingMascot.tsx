@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useRouter, usePathname } from "next/navigation";
-import { Sparkles, ExternalLink, Send } from "lucide-react";
+import { ExternalLink, Send } from "lucide-react";
 import { getApiBaseUrl } from "../../utils/apiConfig";
 import "./FloatingMascot.css";
 
@@ -14,9 +14,16 @@ const Mascot3DCanvas = dynamic(() => import("./Mascot3DCanvas"), {
 
 interface ChatMessage {
   id: string;
-  sender: "user" | "ai";
+  sender: "user" | "padayappa";
   text: string;
 }
+
+const PADAYAPPA_PROMPTS = [
+  "Padayappa AI ✨",
+  "Namaskaram! 🙏",
+  "Need a plan, macha? 🌴",
+  "Ask Padayappa ✈️",
+];
 
 export default function FloatingMascot() {
   const router = useRouter();
@@ -26,14 +33,24 @@ export default function FloatingMascot() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [speechIndex, setSpeechIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Rotate speech prompt like ROG Omni every 7 seconds
+  useEffect(() => {
+    if (isOpen) return;
+    const interval = setInterval(() => {
+      setSpeechIndex((prev) => (prev + 1) % PADAYAPPA_PROMPTS.length);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, [isOpen]);
 
   // Auto-scroll chat to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  // Don't show the floating widget on the full chat page itself
+  // Do not show the floating widget on the full chat page itself
   if (pathname === "/ai-chat") {
     return null;
   }
@@ -78,20 +95,20 @@ export default function FloatingMascot() {
       const aiReply =
         data.reply ||
         data.response ||
-        "Namaskaram! I am your Trip Geni Travel Companion. How can I assist your journey?";
+        "Namaskaram! PADAYAPPA here. Where would you like to travel, or what would you like me to plan for you?";
 
-      const aiMsg: ChatMessage = {
+      const padayappaMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        sender: "ai",
+        sender: "padayappa",
         text: aiReply,
       };
 
-      setMessages((prev) => [...prev, aiMsg]);
+      setMessages((prev) => [...prev, padayappaMsg]);
     } catch {
       const fallbackMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        sender: "ai",
-        text: "Namaskaram! For full travel planning, detailed itineraries, and live intelligence, open my full chat room!",
+        sender: "padayappa",
+        text: "Namaskaram! For complete day-by-day itineraries with timings, food spots, and costs in ₹, jump right into my full chat room!",
       };
       setMessages((prev) => [...prev, fallbackMsg]);
     } finally {
@@ -106,30 +123,35 @@ export default function FloatingMascot() {
 
   return (
     <>
-      {/* FLOATING 3D MASCOT WIDGET */}
+      {/* ============================================================
+          FLOATING 3D MASCOT WIDGET (PADAYAPPA - OMNI COMPANION)
+          ============================================================ */}
       <div className="mascot-widget">
+        {/* OMNI SPEECH BADGE (No artificial glow, clean dark glass pill) */}
         {!isOpen && (
-          <span className="mascot-tooltip">
-            <span className="mascot-tooltip-dot" />
-            <span>Need help? Ask AI</span>
-          </span>
+          <div
+            className="mascot-speech-badge"
+            onClick={() => setIsOpen(true)}
+          >
+            <span className="mascot-live-indicator" />
+            <span>{PADAYAPPA_PROMPTS[speechIndex]}</span>
+          </div>
         )}
 
         <button
           type="button"
           className="mascot-trigger"
           onClick={() => setIsOpen((prev) => !prev)}
-          aria-label={isOpen ? "Close chatbot" : "Open chatbot"}
+          aria-label={isOpen ? "Close Padayappa" : "Open Padayappa Assistant"}
           aria-expanded={isOpen}
-          title="Click to talk with Trip Geni AI Companion"
         >
-          {/* 3D CHARACTER AVATAR (Interactive WebGL Canvas or 3D High-Res Fallback) */}
+          {/* 3D CHARACTER (Strict 2:3 aspect ratio, zero fuzzy glow) */}
           <Mascot3DCanvas
             fallback={
               <div className="mascot-image-wrapper">
                 <Image
                   src="/images/model.png"
-                  alt="Trip Geni 3D Mascot"
+                  alt="Padayappa 3D Companion"
                   fill
                   sizes="140px"
                   priority
@@ -139,23 +161,22 @@ export default function FloatingMascot() {
             }
           />
 
-          {/* PULSING GROUND CONTACT SHADOW */}
-          <div className="mascot-shadow" />
-
-          {/* ONLINE STATUS BADGE */}
-          <div className="mascot-online-badge" />
+          {/* NATURAL PHYSICAL GROUND CONTACT SHADOW */}
+          <div className="mascot-ground-shadow" />
         </button>
       </div>
 
-      {/* CHATBOT ASSISTANT POPUP PANEL */}
+      {/* ============================================================
+          PADAYAPPA ASSISTANT CONSOLE (ROG Omni Screen Console)
+          ============================================================ */}
       {isOpen && (
-        <section className="assistant-panel" aria-label="Trip Geni Virtual Assistant">
+        <section className="assistant-panel" aria-label="Padayappa Virtual Assistant">
           {/* HEADER */}
           <header className="assistant-header">
             <div className="assistant-heading">
-              <span className="assistant-status" />
-              <div>
-                <strong>Trip Geni Assistant</strong>
+              <span className="mascot-live-indicator" />
+              <div className="assistant-heading-text">
+                <strong>PADAYAPPA</strong>
                 <small>AI Travel Companion</small>
               </div>
             </div>
@@ -163,9 +184,8 @@ export default function FloatingMascot() {
             <div className="assistant-header-actions">
               <button
                 type="button"
-                className="assistant-expand-btn"
+                className="assistant-fullchat-btn"
                 onClick={handleOpenFullChat}
-                title="Open in dedicated full chat page"
               >
                 <span>Full Chat</span>
                 <ExternalLink size={12} />
@@ -173,7 +193,7 @@ export default function FloatingMascot() {
 
               <button
                 type="button"
-                className="assistant-close"
+                className="assistant-close-btn"
                 onClick={() => setIsOpen(false)}
                 aria-label="Close assistant"
               >
@@ -182,16 +202,16 @@ export default function FloatingMascot() {
             </div>
           </header>
 
-          {/* CONVERSATION & SUGGESTIONS */}
+          {/* CHAT MESSAGES & SUGGESTIONS */}
           <div className="assistant-content">
             {messages.length === 0 ? (
-              <div className="assistant-intro">
-                <div className="assistant-avatar">
+              <div className="assistant-intro-box">
+                <div className="assistant-mini-avatar">
                   <Image
                     src="/images/model.png"
-                    alt="Mascot Avatar"
-                    width={48}
-                    height={48}
+                    alt="Padayappa Avatar"
+                    width={50}
+                    height={75}
                     style={{ objectFit: "contain" }}
                   />
                 </div>
@@ -199,8 +219,8 @@ export default function FloatingMascot() {
                 <h3>Namaskaram! 🙏</h3>
 
                 <p>
-                  I'm your <strong>Trip Geni AI</strong> guide. Ask me about
-                  destinations, itineraries, packing, or travel costs!
+                  I'm <strong>PADAYAPPA</strong>, your personal AI travel companion.
+                  Ask me about destinations, budgets, stays, or hidden spots!
                 </p>
 
                 <div className="assistant-suggestions">
@@ -216,33 +236,33 @@ export default function FloatingMascot() {
                   <button
                     type="button"
                     onClick={() =>
-                      handleSendMessage("Plan a 3-day budget itinerary")
+                      handleSendMessage("Plan a 3-day budget trip for me")
                     }
                   >
-                    🎒 Plan a 3-day budget itinerary
+                    🎒 Plan a 3-day budget trip
                   </button>
 
                   <button
                     type="button"
                     onClick={() =>
-                      handleSendMessage("What can you help me with?")
+                      handleSendMessage("What can you do for me, Padayappa?")
                     }
                   >
-                    ✨ What can you help me with?
+                    ✨ What can you do for me, Padayappa?
                   </button>
                 </div>
               </div>
             ) : (
               <div className="assistant-messages">
                 {messages.map((m) => (
-                  <div key={m.id} className={`assistant-msg ${m.sender}`}>
+                  <div key={m.id} className={`assistant-bubble ${m.sender}`}>
                     {m.text}
                   </div>
                 ))}
 
                 {isLoading && (
-                  <div className="assistant-msg ai" style={{ opacity: 0.7 }}>
-                    <em>Thinking... ✈️</em>
+                  <div className="assistant-bubble padayappa" style={{ opacity: 0.75 }}>
+                    <em>Padayappa is thinking... ✈️</em>
                   </div>
                 )}
                 <div ref={messagesEndRef} />
@@ -256,14 +276,14 @@ export default function FloatingMascot() {
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Ask anything about your trip..."
-              aria-label="Type your message"
+              placeholder="Ask Padayappa anything..."
+              aria-label="Ask Padayappa anything"
               disabled={isLoading}
             />
 
             <button
               type="submit"
-              aria-label="Send message"
+              aria-label="Send"
               disabled={!message.trim() || isLoading}
             >
               <Send size={15} />

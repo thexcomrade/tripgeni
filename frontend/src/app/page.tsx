@@ -396,7 +396,7 @@ export default function HomePage() {
           {/* HERO QUICK LAUNCH BAR */}
           <form
             onSubmit={handleQuickLaunch}
-            className="animate-blur-fade-up liquid-glass"
+            className="animate-blur-fade-up liquid-glass hero-quick-form"
             style={{
               animationDelay: "600ms",
               maxWidth: "680px",
