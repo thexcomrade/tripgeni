@@ -198,47 +198,26 @@ export default function FloatingMascot() {
             }
           }}
         >
-          {/* 3D GLB CHARACTER WITH REAL-TIME CONTACT SHADOW & PROCEDURAL LIFE */}
-<<<<<<< HEAD
+         {/* 3D GLB CHARACTER WITH REAL-TIME CONTACT SHADOW & PROCEDURAL LIFE */}
 
           <div className="mascot-image-wrapper">
             <Mascot3DCanvas
               onModelClick={() => setIsOpen((prev) => !prev)}
-
               fallback={
                 <Image
                   src="/images/model.png"
-
                   alt="Padayappa 3D Companion"
-
                   fill
-
                   sizes="140px"
-
                   priority
-
                   style={{ objectFit: "contain", cursor: "pointer" }}
-
                   onClick={() => setIsOpen((prev) => !prev)}
-=======
-          <div className="mascot-image-wrapper">
-            <Mascot3DCanvas
-              fallback={
-                <Image
-                  src="/images/model.png"
-                  alt="Padayappa 3D Companion"
-                  fill
-                  sizes="140px"
-                  priority
-                  style={{ objectFit: "contain" }}
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
                 />
               }
             />
           </div>
 
           {/* 360° ROTATION INTERACTION HINT */}
-
           <div
             className="mascot-rotate-pill"
             title="Drag character to rotate 360°"
@@ -247,10 +226,10 @@ export default function FloatingMascot() {
           </div>
 
           {/* NATURAL PHYSICAL GROUND CONTACT SHADOW */}
-
           <div className="mascot-ground-shadow" />
         </div>
       </div>
+
 
       {/* SCREEN TOUCH / CLICK BACKDROP (FADES OFF CHAT WHEN TOUCHED OUTSIDE) */}
       {isOpen && (
