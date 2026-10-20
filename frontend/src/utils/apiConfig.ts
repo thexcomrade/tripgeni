@@ -1,26 +1,22 @@
 /**
  * Global API base URL resolver.
- * Priority:
- * 1. Explicit NEXT_PUBLIC_API_URL environment variable (production, staging, etc.)
- * 2. Current window origin with port 8000 when running on localhost / local LAN IP
- * 3. Default fallback to http://127.0.0.1:8000
+ * Handles both desktop localhost and mobile phone / LAN testing seamlessly:
+ * 1. If on mobile / LAN (hostname != localhost), returns "" so requests are proxied via Next.js rewrite (bypassing Windows Firewall port 8000 block)
+ * 2. If explicit production remote URL (Render / Railway), uses that URL
+ * 3. Default fallback to http://127.0.0.1:8000 for local desktop development
  */
 export const getApiBaseUrl = (): string => {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
-  }
-
   if (typeof window !== "undefined") {
     const host = window.location.hostname;
-    const protocol = window.location.protocol;
-    if (
-      host === "localhost" ||
-      host === "127.0.0.1" ||
-      host.startsWith("192.168.") ||
-      host.startsWith("10.")
-    ) {
-      return `${protocol}//${host}:8000`;
+    // When accessing from mobile phone or LAN IP (192.168.x.x, 10.x.x.x, etc.)
+    if (host !== "localhost" && host !== "127.0.0.1") {
+      return "";
     }
+  }
+
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl && !envUrl.includes("localhost") && !envUrl.includes("127.0.0.1")) {
+    return envUrl.replace(/\/+$/, "");
   }
 
   return "http://127.0.0.1:8000";

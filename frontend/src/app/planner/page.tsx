@@ -58,77 +58,101 @@ const POPULAR_DESTINATIONS = [
 const TRAVEL_STYLES = [
   {
     id: "Leisure",
-    label: "Leisure & Relax",
-    desc: "Laid-back sightseeing & scenic views",
+    label: "Leisure & Scenic",
+    tag: "MOST POPULAR",
+    tagColor: "#38BDF8",
+    desc: "Slow-paced exploration, panoramic viewpoints & relaxed cafe stops",
     icon: "🌴",
   },
   {
     id: "Adventure",
-    label: "Adventure & Trek",
-    desc: "Highlands, hikes & thrilling activities",
-    icon: "🧗‍♂️",
+    label: "Adventure & Trails",
+    tag: "ACTIVE & THRILL",
+    tagColor: "#F59E0B",
+    desc: "Highlands, trekking trails, safaris & thrilling outdoor activities",
+    icon: "🧗",
   },
   {
     id: "Eco-Friendly",
-    label: "Eco & Nature",
-    desc: "Green trails, flora, fauna & low impact",
+    label: "Eco & Wildlife",
+    tag: "SUSTAINABLE",
+    tagColor: "#34D399",
+    desc: "Green canopy walks, spice trails, tea gardens & low carbon footprints",
     icon: "🌱",
   },
   {
     id: "Cultural",
-    label: "Heritage & Culture",
-    desc: "Historic temples, royal sites & local arts",
+    label: "Heritage & Living Culture",
+    tag: "AUTHENTIC",
+    tagColor: "#A78BFA",
+    desc: "Historic temples, royal architecture, artisan markets & local traditions",
     icon: "🏛️",
   },
   {
     id: "Romantic",
-    label: "Romantic Getaway",
-    desc: "Intimate views, cozy stays & sunsets",
+    label: "Romantic Retreat",
+    tag: "COUPLES",
+    tagColor: "#FB7185",
+    desc: "Scenic sunset views, cozy stays, misty valleys & candlelight dining",
     icon: "✨",
   },
   {
     id: "Family",
-    label: "Family Vacation",
-    desc: "Comfortable pacing & all-ages attractions",
+    label: "Family & Group Holiday",
+    tag: "ALL AGES",
+    tagColor: "#60A5FA",
+    desc: "Relaxed pacing, comfortable stays, scenic gardens & group-friendly activities",
     icon: "👨‍👩‍👧‍👦",
   },
 ];
 
 const TRANSPORT_MODES = [
   {
-    id: "Car",
-    label: "Private Car / Taxi",
-    desc: "Maximum flexibility on scenic roads",
-    icon: "🚗",
-  },
-  {
-    id: "Bike",
-    label: "Bike / Scooter",
-    desc: "Two-wheeler rental across local spots",
-    icon: "🏍️",
-  },
-  {
     id: "Train",
-    label: "Scenic Train",
-    desc: "Eco-conscious & scenic regional transit",
+    label: "Scenic Rail (IRCTC)",
+    tag: "ECO & COMFORT",
+    tagColor: "#34D399",
+    desc: "Scenic tracks, overnight sleeper / 3AC berths & zero highway fatigue",
     icon: "🚆",
   },
   {
-    id: "Bus",
-    label: "Express Bus",
-    desc: "Budget-friendly intercity transit",
-    icon: "🚌",
-  },
-  {
     id: "Flight",
-    label: "Flight + Transit",
-    desc: "Fast travel for long distances",
+    label: "Flight + Airport Transit",
+    tag: "FASTEST ROUTE",
+    tagColor: "#38BDF8",
+    desc: "Rapid domestic air travel with coordinated airport cab connections",
     icon: "✈️",
   },
   {
+    id: "Car",
+    label: "Private Car / Taxi",
+    tag: "TOTAL FLEXIBILITY",
+    tagColor: "#F59E0B",
+    desc: "On-demand sightseeing stops, hill road mastery & luggage-friendly door-to-door transit",
+    icon: "🚗",
+  },
+  {
+    id: "Bus",
+    label: "Express Intercity Bus",
+    tag: "BUDGET CHOICE",
+    tagColor: "#A78BFA",
+    desc: "Economical AC sleeper & express coaches connecting regional depots",
+    icon: "🚌",
+  },
+  {
+    id: "Bike",
+    label: "Motorcycle / Scooter",
+    tag: "LOCAL FREEDOM",
+    tagColor: "#FB7185",
+    desc: "Two-wheeler rental for winding mountain roads & offbeat countryside",
+    icon: "🏍️",
+  },
+  {
     id: "Cycling",
-    label: "Bicycle / Walking",
-    desc: "Zero carbon footprint slow travel",
+    label: "Bicycle & Walking",
+    tag: "ZERO EMISSION",
+    tagColor: "#2DD4BF",
+    desc: "Slow travel through heritage quarters, pedestrian lanes & green ways",
     icon: "🚲",
   },
 ];
@@ -1840,43 +1864,91 @@ function PlannerContent() {
 
           {/* STEP 3: STYLE & TRANSIT */}
           {currentStep === 3 && (
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "28px" }}
-            >
-              <div>
-                <h3
+            <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+              {/* HEADER BANNER */}
+              <div
+                style={{
+                  background: "linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(30, 41, 59, 0.40) 100%)",
+                  border: "1px solid rgba(56, 189, 248, 0.20)",
+                  borderRadius: "16px",
+                  padding: "20px 24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: "14px",
+                }}
+              >
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                    <span
+                      style={{
+                        fontSize: "0.70rem",
+                        fontWeight: 800,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        color: "#38BDF8",
+                        background: "rgba(56, 189, 248, 0.12)",
+                        border: "1px solid rgba(56, 189, 248, 0.30)",
+                        borderRadius: "6px",
+                        padding: "3px 8px",
+                      }}
+                    >
+                      STEP 3 OF 3 • JOURNEY PERSONA & LOGISTICS
+                    </span>
+                  </div>
+                  <h3
+                    style={{
+                      fontSize: "1.35rem",
+                      fontWeight: 800,
+                      color: "#FFFFFF",
+                      margin: 0,
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    Define Your Travel Persona & Primary Transit
+                  </h3>
+                  <p style={{ color: "#94A3B8", fontSize: "0.85rem", margin: "4px 0 0 0" }}>
+                    TripGenius customizes activity pacing, transport class, and departure logistics based on your choice.
+                  </p>
+                </div>
+                <div
                   style={{
-                    fontSize: "1.4rem",
-                    fontWeight: 800,
-                    color: "#FFFFFF",
-                    marginBottom: "6px",
+                    background: "rgba(15, 23, 42, 0.60)",
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    borderRadius: "12px",
+                    padding: "8px 14px",
+                    textAlign: "right",
                   }}
                 >
-                  Travel Style & Primary Transit
-                </h3>
-                <p style={{ color: "#94A3B8", fontSize: "0.92rem" }}>
-                  The AI adjusts pace and routes based on your preferred
-                  mobility.
-                </p>
+                  <div style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", letterSpacing: "0.05em" }}>Route Distance</div>
+                  <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#34D399" }}>
+                    ~{transitPricing.distanceKm.toLocaleString("en-IN")} km
+                  </div>
+                </div>
               </div>
 
+              {/* 1. TRAVEL STYLE PERSONA (BALANCED 3x2 GRID) */}
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.88rem",
-                    fontWeight: 600,
-                    color: "#CBD5E1",
-                    marginBottom: "12px",
-                  }}
-                >
-                  Travel Style
-                </label>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
+                  <div>
+                    <h4 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#F1F5F9", margin: 0 }}>
+                      1. Choose Your Journey Persona
+                    </h4>
+                    <p style={{ fontSize: "0.78rem", color: "#64748B", margin: "2px 0 0 0" }}>
+                      Select the rhythm that matches how you want to experience {destination || "your destination"}.
+                    </p>
+                  </div>
+                  <span style={{ fontSize: "0.74rem", color: "#38BDF8", fontWeight: 600 }}>
+                    1 Persona Selected
+                  </span>
+                </div>
+
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                    gap: "12px",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: "14px",
                   }}
                 >
                   {TRAVEL_STYLES.map((style) => {
@@ -1885,217 +1957,388 @@ function PlannerContent() {
                       <div
                         key={style.id}
                         onClick={() => setTravelStyle(style.id)}
+                        role="button"
+                        tabIndex={0}
                         style={{
-                          padding: "16px",
-                          borderRadius: "14px",
+                          padding: "18px 20px",
+                          borderRadius: "16px",
                           background: isSelected
-                            ? "rgba(14, 165, 233, 0.15)"
-                            : "rgba(255, 255, 255, 0.04)",
+                            ? "linear-gradient(135deg, rgba(14, 165, 233, 0.16) 0%, rgba(15, 23, 42, 0.85) 100%)"
+                            : "linear-gradient(180deg, rgba(30, 41, 59, 0.40) 0%, rgba(15, 23, 42, 0.65) 100%)",
                           border: isSelected
-                            ? "1px solid #38BDF8"
+                            ? "2px solid #38BDF8"
                             : "1px solid rgba(255, 255, 255, 0.08)",
+                          boxShadow: isSelected
+                            ? "0 0 24px rgba(56, 189, 248, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.12)"
+                            : "none",
                           cursor: "pointer",
-                          transition: "all 0.2s ease",
-                        }}
-                      >
-                        <div
-                          style={{ fontSize: "1.5rem", marginBottom: "6px" }}
-                        >
-                          {style.icon}
-                        </div>
-                        <h4
-                          style={{
-                            fontSize: "0.95rem",
-                            fontWeight: 700,
-                            color: isSelected ? "#38BDF8" : "#FFFFFF",
-                          }}
-                        >
-                          {style.label}
-                        </h4>
-                        <p
-                          style={{
-                            fontSize: "0.78rem",
-                            color: "#94A3B8",
-                            marginTop: "3px",
-                          }}
-                        >
-                          {style.desc}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.88rem",
-                    fontWeight: 600,
-                    color: "#CBD5E1",
-                    marginBottom: "12px",
-                  }}
-                >
-                  Transportation Mode
-                </label>
-                <div
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-                    gap: "12px",
-                  }}
-                >
-                  {TRANSPORT_MODES.map((t) => {
-                    const isSelected = transportationMode === t.id;
-                    return (
-                      <div
-                        key={t.id}
-                        onClick={() => setTransportationMode(t.id)}
-                        style={{
-                          padding: "14px 16px",
-                          borderRadius: "12px",
-                          background: isSelected
-                            ? "rgba(20, 184, 166, 0.15)"
-                            : "rgba(255, 255, 255, 0.04)",
-                          border: isSelected
-                            ? "1px solid #2DD4BF"
-                            : "1px solid rgba(255, 255, 255, 0.08)",
-                          cursor: "pointer",
+                          transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                           display: "flex",
-                          alignItems: "center",
-                          gap: "12px",
-                          transition: "all 0.2s ease",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          position: "relative",
+                          overflow: "hidden",
                         }}
                       >
-                        <div
-                          style={{
-                            width: "40px",
-                            height: "40px",
-                            borderRadius: "10px",
-                            background: isSelected
-                              ? "rgba(45, 212, 191, 0.20)"
-                              : "rgba(255, 255, 255, 0.06)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "1.35rem",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {t.icon}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <h5
+                        {/* TOP ROW: ICON + TAG + BADGE */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+                          <div
                             style={{
-                              fontSize: "0.90rem",
-                              fontWeight: 700,
-                              color: isSelected ? "#2DD4BF" : "#FFFFFF",
-                              marginBottom: "2px",
+                              width: "44px",
+                              height: "44px",
+                              borderRadius: "12px",
+                              background: isSelected
+                                ? "rgba(56, 189, 248, 0.20)"
+                                : "rgba(255, 255, 255, 0.06)",
+                              border: isSelected
+                                ? "1px solid rgba(56, 189, 248, 0.40)"
+                                : "1px solid rgba(255, 255, 255, 0.08)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "1.5rem",
+                              flexShrink: 0,
                             }}
                           >
-                            {t.label}
-                          </h5>
-                          <p style={{ fontSize: "0.74rem", color: "#94A3B8", margin: 0, lineHeight: 1.3 }}>
-                            {t.desc}
+                            {style.icon}
+                          </div>
+
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span
+                              style={{
+                                fontSize: "0.68rem",
+                                fontWeight: 800,
+                                letterSpacing: "0.06em",
+                                color: style.tagColor,
+                                background: `rgba(255, 255, 255, 0.04)`,
+                                border: `1px solid ${style.tagColor}40`,
+                                borderRadius: "6px",
+                                padding: "2px 7px",
+                              }}
+                            >
+                              {style.tag}
+                            </span>
+                            {isSelected && (
+                              <span
+                                style={{
+                                  fontSize: "0.72rem",
+                                  fontWeight: 800,
+                                  color: "#38BDF8",
+                                  background: "rgba(56, 189, 248, 0.20)",
+                                  borderRadius: "6px",
+                                  padding: "2px 6px",
+                                }}
+                              >
+                                ✓
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* MIDDLE: TITLE & DESC */}
+                        <div>
+                          <h4
+                            style={{
+                              fontSize: "1.02rem",
+                              fontWeight: 800,
+                              color: isSelected ? "#38BDF8" : "#F8FAFC",
+                              margin: "0 0 4px 0",
+                            }}
+                          >
+                            {style.label}
+                          </h4>
+                          <p
+                            style={{
+                              fontSize: "0.78rem",
+                              color: isSelected ? "#CBD5E1" : "#94A3B8",
+                              lineHeight: 1.4,
+                              margin: 0,
+                            }}
+                          >
+                            {style.desc}
                           </p>
                         </div>
                       </div>
                     );
                   })}
                 </div>
+              </div>
 
-                {/* LIVE FARE INSIGHT FOR SELECTED TRANSPORT MODE */}
+              {/* 2. PRIMARY TRANSPORTATION MODE (BALANCED 3x2 GRID WITH LIVE FARES) */}
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
+                  <div>
+                    <h4 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#F1F5F9", margin: 0 }}>
+                      2. Primary Transportation Mode
+                    </h4>
+                    <p style={{ fontSize: "0.78rem", color: "#64748B", margin: "2px 0 0 0" }}>
+                      How will you and your travel group reach and navigate {destination || "the destination"}?
+                    </p>
+                  </div>
+                  <span style={{ fontSize: "0.74rem", color: "#34D399", fontWeight: 600 }}>
+                    Synchronized with Step 1
+                  </span>
+                </div>
+
                 <div
                   style={{
-                    marginTop: "16px",
-                    padding: "14px 18px",
-                    borderRadius: "12px",
-                    background: "rgba(14, 165, 233, 0.08)",
-                    border: "1px solid rgba(14, 165, 233, 0.25)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    gap: "10px",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: "14px",
                   }}
                 >
+                  {TRANSPORT_MODES.map((t) => {
+                    const isSelected = transportationMode === t.id;
+
+                    // Resolve live fare insight for this transport mode
+                    let fareTag = "";
+                    if (t.id === "Train") {
+                      fareTag = transitPricing.train.available
+                        ? `Sleeper ₹${transitPricing.train.sleeperMinFare.toLocaleString("en-IN")} • 3AC ₹${transitPricing.train.threeTierAcMin.toLocaleString("en-IN")}`
+                        : "No direct rail line";
+                    } else if (t.id === "Flight") {
+                      fareTag = `From ~₹${transitPricing.flight.economyMinFare.toLocaleString("en-IN")}/person`;
+                    } else if (t.id === "Car") {
+                      fareTag = `Est. Fuel & Tolls: ~₹${transitPricing.car.fuelAndTollsApprox.toLocaleString("en-IN")}`;
+                    } else if (t.id === "Bus") {
+                      fareTag = transitPricing.bus.available
+                        ? `From ₹${transitPricing.bus.nonAcMinFare.toLocaleString("en-IN")}`
+                        : "Long distance route";
+                    } else if (t.id === "Bike") {
+                      fareTag = `~₹700/day local rental`;
+                    } else if (t.id === "Cycling") {
+                      fareTag = `Eco Score: 100/100`;
+                    }
+
+                    return (
+                      <div
+                        key={t.id}
+                        onClick={() => setTransportationMode(t.id)}
+                        role="button"
+                        tabIndex={0}
+                        style={{
+                          padding: "18px 20px",
+                          borderRadius: "16px",
+                          background: isSelected
+                            ? "linear-gradient(135deg, rgba(52, 211, 153, 0.16) 0%, rgba(15, 23, 42, 0.85) 100%)"
+                            : "linear-gradient(180deg, rgba(30, 41, 59, 0.40) 0%, rgba(15, 23, 42, 0.65) 100%)",
+                          border: isSelected
+                            ? "2px solid #34D399"
+                            : "1px solid rgba(255, 255, 255, 0.08)",
+                          boxShadow: isSelected
+                            ? "0 0 24px rgba(52, 211, 153, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12)"
+                            : "none",
+                          cursor: "pointer",
+                          transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          position: "relative",
+                        }}
+                      >
+                        {/* TOP ROW: ICON + TAG + BADGE */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+                          <div
+                            style={{
+                              width: "44px",
+                              height: "44px",
+                              borderRadius: "12px",
+                              background: isSelected
+                                ? "rgba(52, 211, 153, 0.20)"
+                                : "rgba(255, 255, 255, 0.06)",
+                              border: isSelected
+                                ? "1px solid rgba(52, 211, 153, 0.40)"
+                                : "1px solid rgba(255, 255, 255, 0.08)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "1.5rem",
+                              flexShrink: 0,
+                            }}
+                          >
+                            {t.icon}
+                          </div>
+
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span
+                              style={{
+                                fontSize: "0.68rem",
+                                fontWeight: 800,
+                                letterSpacing: "0.06em",
+                                color: t.tagColor,
+                                background: `rgba(255, 255, 255, 0.04)`,
+                                border: `1px solid ${t.tagColor}40`,
+                                borderRadius: "6px",
+                                padding: "2px 7px",
+                              }}
+                            >
+                              {t.tag}
+                            </span>
+                            {isSelected && (
+                              <span
+                                style={{
+                                  fontSize: "0.72rem",
+                                  fontWeight: 800,
+                                  color: "#34D399",
+                                  background: "rgba(52, 211, 153, 0.20)",
+                                  borderRadius: "6px",
+                                  padding: "2px 6px",
+                                }}
+                              >
+                                ✓ Selected
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* MIDDLE: TITLE & DESC */}
+                        <div>
+                          <h4
+                            style={{
+                              fontSize: "1.02rem",
+                              fontWeight: 800,
+                              color: isSelected ? "#34D399" : "#F8FAFC",
+                              margin: "0 0 4px 0",
+                            }}
+                          >
+                            {t.label}
+                          </h4>
+                          <p
+                            style={{
+                              fontSize: "0.78rem",
+                              color: isSelected ? "#CBD5E1" : "#94A3B8",
+                              lineHeight: 1.4,
+                              margin: "0 0 10px 0",
+                            }}
+                          >
+                            {t.desc}
+                          </p>
+                        </div>
+
+                        {/* BOTTOM: LIVE TICKET PRICING CHIP */}
+                        <div
+                          style={{
+                            padding: "6px 10px",
+                            borderRadius: "8px",
+                            background: isSelected
+                              ? "rgba(52, 211, 153, 0.12)"
+                              : "rgba(255, 255, 255, 0.03)",
+                            border: isSelected
+                              ? "1px solid rgba(52, 211, 153, 0.25)"
+                              : "1px solid rgba(255, 255, 255, 0.06)",
+                            fontSize: "0.74rem",
+                            fontWeight: 600,
+                            color: isSelected ? "#34D399" : "#94A3B8",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <span>{fareTag}</span>
+                          <span style={{ fontSize: "0.70rem", opacity: 0.8 }}>⚡ Real-time</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 3. BESPOKE LOGISTICS BOARDING PASS / TICKET BANNER */}
+              <div
+                style={{
+                  background: "linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.80) 100%)",
+                  border: "1px solid rgba(56, 189, 248, 0.25)",
+                  borderRadius: "18px",
+                  padding: "20px 24px",
+                  boxShadow: "0 12px 36px rgba(0, 0, 0, 0.35)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "14px",
+                }}
+              >
+                {/* TICKET TOP HEADER */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px dashed rgba(255, 255, 255, 0.12)", paddingBottom: "12px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ fontSize: "1.1rem" }}>
-                      {transportationMode === "Train"
-                        ? "🚆"
-                        : transportationMode === "Flight"
-                          ? "✈️"
-                          : transportationMode === "Bus"
-                            ? "🚌"
-                            : "🚗"}
+                    <span style={{ fontSize: "1.2rem" }}>
+                      {transportationMode === "Train" ? "🚆" : transportationMode === "Flight" ? "✈️" : transportationMode === "Bus" ? "🚌" : transportationMode === "Bike" ? "🏍️" : "🚗"}
                     </span>
-                    <span
-                      style={{
-                        fontSize: "0.86rem",
-                        color: "#E0F2FE",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Selected Transit:{" "}
-                      <b style={{ color: "#38BDF8" }}>{transportationMode}</b>{" "}
-                      from <b>{origin || "Starting Point"}</b> to{" "}
-                      <b>{destination || "Destination"}</b> (~
-                      {transitPricing.distanceKm.toLocaleString("en-IN")} km)
+                    <span style={{ fontSize: "0.80rem", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", color: "#38BDF8" }}>
+                      TRANSIT LOGISTICS BOARDING PASS
                     </span>
                   </div>
-                  <div
-                    style={{
-                      fontSize: "0.82rem",
-                      color: "#34D399",
-                      fontWeight: 700,
-                    }}
-                  >
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#34D399", display: "inline-block" }}></span>
+                    <span style={{ fontSize: "0.72rem", color: "#34D399", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      BUDGET & ROUTE INTEGRATED
+                    </span>
+                  </div>
+                </div>
+
+                {/* VISUAL JOURNEY ROUTE */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+                  {/* ORIGIN */}
+                  <div style={{ minWidth: "140px" }}>
+                    <div style={{ fontSize: "0.70rem", color: "#64748B", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>
+                      DEPARTURE POINT
+                    </div>
+                    <div style={{ fontSize: "1.15rem", fontWeight: 800, color: "#FFFFFF" }}>
+                      {origin || "Starting City"}
+                    </div>
+                  </div>
+
+                  {/* ROUTE LINE WITH ANIMATED ICON */}
+                  <div style={{ flex: 1, minWidth: "180px", display: "flex", flexDirection: "column", alignItems: "center", padding: "0 10px" }}>
+                    <div style={{ fontSize: "0.74rem", color: "#38BDF8", fontWeight: 700, marginBottom: "4px" }}>
+                      ~{transitPricing.distanceKm.toLocaleString("en-IN")} km ({transportationMode})
+                    </div>
+                    <div style={{ width: "100%", height: "2px", background: "linear-gradient(90deg, #38BDF8 0%, #34D399 50%, #38BDF8 100%)", position: "relative" }}>
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "-8px",
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          background: "#0F172A",
+                          borderRadius: "50%",
+                          padding: "0 6px",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        {transportationMode === "Train" ? "🚆" : transportationMode === "Flight" ? "✈️" : transportationMode === "Bus" ? "🚌" : transportationMode === "Bike" ? "🏍️" : "🚗"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* DESTINATION */}
+                  <div style={{ minWidth: "140px", textAlign: "right" }}>
+                    <div style={{ fontSize: "0.70rem", color: "#64748B", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>
+                      ARRIVAL DESTINATION
+                    </div>
+                    <div style={{ fontSize: "1.15rem", fontWeight: 800, color: "#34D399" }}>
+                      {destination || "Destination"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* BOTTOM FARE CHIPS */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", background: "rgba(0, 0, 0, 0.25)", borderRadius: "10px", padding: "10px 14px" }}>
+                  <div style={{ fontSize: "0.80rem", color: "#CBD5E1" }}>
                     {transportationMode === "Train" && (
-                      <span>
-                        IRCTC Sleeper from ₹
-                        {transitPricing.train.sleeperMinFare.toLocaleString(
-                          "en-IN"
-                        )}{" "}
-                        · 3AC from ₹
-                        {transitPricing.train.threeTierAcMin.toLocaleString(
-                          "en-IN"
-                        )}
-                      </span>
+                      <span>IRCTC Sleeper: <b style={{ color: "#34D399" }}>₹{transitPricing.train.sleeperMinFare.toLocaleString("en-IN")}</b> · 3AC: <b style={{ color: "#38BDF8" }}>₹{transitPricing.train.threeTierAcMin.toLocaleString("en-IN")}</b> · Est. ~{transitPricing.train.approxDurationHours} hrs</span>
                     )}
                     {transportationMode === "Flight" && (
-                      <span>
-                        Economy from ~₹
-                        {transitPricing.flight.economyMinFare.toLocaleString(
-                          "en-IN"
-                        )}{" "}
-                        / passenger
-                      </span>
+                      <span>Economy Air: <b style={{ color: "#38BDF8" }}>₹{transitPricing.flight.economyMinFare.toLocaleString("en-IN")}</b> / passenger · Est. ~{transitPricing.flight.approxDurationHours} hrs</span>
                     )}
                     {transportationMode === "Bus" && (
-                      <span>
-                        Express Bus from ₹
-                        {transitPricing.bus.nonAcMinFare.toLocaleString(
-                          "en-IN"
-                        )}{" "}
-                        · AC Sleeper ₹
-                        {transitPricing.bus.acSleeperMinFare.toLocaleString(
-                          "en-IN"
-                        )}
-                      </span>
+                      <span>Express Coach: <b style={{ color: "#A78BFA" }}>₹{transitPricing.bus.nonAcMinFare.toLocaleString("en-IN")}</b> · AC Sleeper: <b style={{ color: "#A78BFA" }}>₹{transitPricing.bus.acSleeperMinFare.toLocaleString("en-IN")}</b></span>
                     )}
-                    {(transportationMode === "Car" ||
-                      transportationMode === "Bike" ||
-                      transportationMode === "Cycling") && (
-                      <span>
-                        Est. Fuel &amp; Highway Tolls: ~₹
-                        {transitPricing.car.fuelAndTollsApprox.toLocaleString(
-                          "en-IN"
-                        )}{" "}
-                        ({transitPricing.car.drivingHours} hrs driving)
-                      </span>
+                    {(transportationMode === "Car" || transportationMode === "Bike" || transportationMode === "Cycling") && (
+                      <span>Highway Transit: <b style={{ color: "#F59E0B" }}>~₹{transitPricing.car.fuelAndTollsApprox.toLocaleString("en-IN")}</b> fuel/tolls · {transitPricing.car.drivingHours} hrs driving</span>
                     )}
+                  </div>
+
+                  <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "#34D399" }}>
+                    ✓ Auto-factored into Day 1 arrival schedule
                   </div>
                 </div>
               </div>
