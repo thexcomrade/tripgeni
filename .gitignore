@@ -1,6 +1,10 @@
 # Operating System
 .DS_Store
 Thumbs.db
+Desktop.ini
+.AppleDouble
+.LSOverride
+*~
 
 # Python
 __pycache__/
@@ -10,6 +14,7 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 .venv/
 venv/
 env/
@@ -22,6 +27,7 @@ env/
 .env.local
 .env.development
 .env.production
+*.key
 
 # Database
 *.db
@@ -52,33 +58,14 @@ coverage/
 # Temporary Files
 tmp/
 temp/
+scratch/
+*.bak
+test_*.pdf
 
-# Assets
-docs/screenshots/*
-assets/demo/*
-
-# Cache
+# Cache & Logs
 .cache/
 .parcel-cache/
-
-# Logs
 logs/
-*.log
-
-# Mac
-.AppleDouble
-.LSOverride
-
-# Windows
-Desktop.ini
-
-# Linux
-*~
-
-# Generated Files
-*.zip
-*.tar
-*.gz
 
 # Testing
 coverage.xml

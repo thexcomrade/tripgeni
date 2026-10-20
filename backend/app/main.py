@@ -1,15 +1,17 @@
 from contextlib import asynccontextmanager
+from typing import List, Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from app.core.config import settings
-
 from app.database.db import create_database
-
 from app.api.auth import router as auth_router
-
 from app.api.trip import router as trip_router
+from app.services.ai_service import get_ai_service
+from app.services.weather_service import WeatherService
+from app.services.focus_points_service import get_focus_points_service
 
 
 @asynccontextmanager
@@ -33,7 +35,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.APP_NAME,
-    description=("AI Powered Sustainable Travel Planning Platform"),
+    description="AI Powered Sustainable Travel Planning Platform",
     version="1.0.0",
     lifespan=lifespan,
     docs_url="/docs",
@@ -41,27 +43,20 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+cors_origins = settings.cors_origins_list
+is_wildcard = "*" in cors_origins or settings.CORS_ORIGINS.strip() == "*"
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$",
+    allow_origins=[] if is_wildcard else cors_origins,
+    allow_origin_regex=r".*" if is_wildcard else r"^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
 app.include_router(auth_router)
-
 app.include_router(trip_router)
-
-from pydantic import BaseModel
-from app.services.ai_service import get_ai_service
-from app.services.weather_service import WeatherService
-
-
-from typing import List, Optional
 
 
 class ChatHistoryItem(BaseModel):
@@ -94,7 +89,6 @@ async def get_weather(city: str = "Thiruvananthapuram") -> dict:
         data = weather_svc.get_current_weather(city)
         return data
     except Exception:
-        # Fallback to realistic weather for regional locations
         city_clean = city.title()
         temp_map = {
             "Thiruvananthapuram": {"temp": 29.0, "cond": "Humid & Partly Sunny", "desc": "Gentle coastal breeze along Shankhumukham and Kovalam", "humidity": 76, "wind": 14.0},
@@ -119,9 +113,6 @@ async def get_weather(city: str = "Thiruvananthapuram") -> dict:
         }
 
 
-from app.services.focus_points_service import get_focus_points_service
-
-
 @app.get("/api/destinations/focus-points")
 async def get_destination_focus_points(destination: str = "") -> dict:
     svc = get_focus_points_service()
@@ -130,7 +121,6 @@ async def get_destination_focus_points(destination: str = "") -> dict:
 
 @app.get("/")
 async def root() -> dict:
-
     return {
         "application": settings.APP_NAME,
         "status": "running",
@@ -143,7 +133,6 @@ async def root() -> dict:
 
 @app.get("/version")
 async def version() -> dict:
-
     return {
         "application": settings.APP_NAME,
         "version": "1.0.0",
@@ -153,7 +142,6 @@ async def version() -> dict:
 
 @app.get("/status")
 async def status() -> dict:
-
     return {
         "healthy": True,
         "database": True,

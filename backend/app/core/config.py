@@ -5,8 +5,8 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-ROOT_DIR = Path(__file__).resolve().parents[3]
-BACKEND_DIR = ROOT_DIR / "backend"
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+ROOT_DIR = BACKEND_DIR.parent
 
 
 class Settings(BaseSettings):
@@ -18,13 +18,13 @@ class Settings(BaseSettings):
     )
 
     APP_NAME: str = Field(default="Trip Geni")
-    APP_ENV: str = Field(default="development")
-    APP_DEBUG: bool = Field(default=True)
+    APP_ENV: str = Field(default="production")
+    APP_DEBUG: bool = Field(default=False)
 
     HOST: str = Field(default="0.0.0.0")
     PORT: int = Field(default=8000)
 
-    SECRET_KEY: str
+    SECRET_KEY: str = Field(default="tripgeni-production-secret-key-398247198273491823")
     ALGORITHM: str = Field(default="HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=1440)
 
@@ -32,10 +32,10 @@ class Settings(BaseSettings):
 
     TOURISM_DATASET_PATH: str = Field(default="database/tourism.csv")
 
-    GEMINI_API_KEY: str
-    OPENWEATHER_API_KEY: str
+    GEMINI_API_KEY: str = Field(default="")
+    OPENWEATHER_API_KEY: str = Field(default="")
 
-    CORS_ORIGINS: str = Field(default="http://localhost:3000")
+    CORS_ORIGINS: str = Field(default="*")
 
     LOG_LEVEL: str = Field(default="INFO")
 
@@ -50,12 +50,19 @@ class Settings(BaseSettings):
 
     @property
     def tourism_dataset_path(self) -> Path:
-        dataset_path = ROOT_DIR / self.TOURISM_DATASET_PATH
+        candidates = [
+            ROOT_DIR / self.TOURISM_DATASET_PATH,
+            ROOT_DIR / "database" / "tourism.csv",
+            BACKEND_DIR / "tourism.csv",
+            BACKEND_DIR / "database" / "tourism.csv",
+            Path.cwd() / "tourism.csv",
+            Path.cwd() / "database" / "tourism.csv",
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
 
-        if not dataset_path.exists():
-            raise FileNotFoundError(f"Tourism dataset not found: {dataset_path}")
-
-        return dataset_path
+        return BACKEND_DIR / "tourism.csv"
 
     @property
     def cors_origins_list(self) -> list[str]:
@@ -67,9 +74,11 @@ class Settings(BaseSettings):
     def sqlite_database_file(self) -> Path:
         if self.DATABASE_URL.startswith("sqlite:///"):
             database_name = self.DATABASE_URL.replace("sqlite:///", "")
+            if database_name.startswith("./"):
+                database_name = database_name[2:]
             return BACKEND_DIR / database_name
 
-        return BACKEND_DIR / "tripgenius.db"
+        return BACKEND_DIR / "tripgeni.db"
 
 
 @lru_cache

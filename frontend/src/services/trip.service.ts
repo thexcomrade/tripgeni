@@ -1,13 +1,5 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
-
-const getApiBaseUrl = (): string => {
-  if (typeof window !== "undefined") {
-    const host = window.location.hostname;
-    const protocol = window.location.protocol;
-    return `${protocol}//${host}:8000`;
-  }
-  return process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
-};
+import { getApiBaseUrl } from "../utils/apiConfig";
 
 export interface AITripRequest {
   destination: string;

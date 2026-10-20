@@ -27,6 +27,7 @@ import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
 import { GlassCard } from "../../components/ui/Card";
 import tripService from "../../services/trip.service";
+import { getApiBaseUrl } from "../../utils/apiConfig";
 
 interface ChatMessage {
   id: string;
