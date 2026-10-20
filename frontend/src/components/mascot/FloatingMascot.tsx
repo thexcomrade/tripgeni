@@ -218,28 +218,28 @@ export default function FloatingMascot() {
                   <button
                     type="button"
                     onClick={() =>
-                      handleSendMessage("What are the best places to visit in Kerala?")
+                      handleSendMessage("Plan a 4-day scenic trip to Munnar for a couple")
                     }
                   >
-                    🌴 Best places to visit in Kerala?
+                    🌴 Plan a 4-day trip to Munnar
                   </button>
 
                   <button
                     type="button"
                     onClick={() =>
-                      handleSendMessage("Plan a 3-day budget trip for me")
+                      handleSendMessage("What budget do I need for a 3-day trip in Kerala?")
                     }
                   >
-                    🎒 Plan a 3-day budget trip
+                    💰 What budget do I need for 3 days?
                   </button>
 
                   <button
                     type="button"
                     onClick={() =>
-                      handleSendMessage("What can you do for me, Padayappa?")
+                      handleSendMessage("Help me choose between Varkala and Goa")
                     }
                   >
-                    ✨ What can you do for me, Padayappa?
+                    ✨ Help me choose a destination
                   </button>
                 </div>
               </div>

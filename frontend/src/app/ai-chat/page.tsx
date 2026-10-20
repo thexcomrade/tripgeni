@@ -38,12 +38,12 @@ interface ChatMessage {
 }
 
 const PROMPT_SUGGESTIONS = [
-  "Plan a 3-day scenic trip to Thenkasi & Courtallam under ₹12,000",
-  "Plan a 4-day scenic trip to Munnar under ₹18,000",
-  "Best offbeat waterfalls and viewpoints near Wayanad",
-  "Eco-friendly homestays and coffee trails in Coorg",
-  "Relaxing 3-day beach escape to Varkala with seafood spots",
-  "Romantic 5-day cultural holiday in Paris with top cafes",
+  "Plan a 4-day scenic trip to Munnar for a couple",
+  "Help me choose between Varkala and Goa for a 3-day beach escape",
+  "Plan a 3-day spiritual & food journey in Varanasi with friends",
+  "What is a realistic budget for a 5-day holiday in Kerala?",
+  "3-day eco-homestay and waterfalls retreat in Thenkasi under ₹12,000",
+  "Best offbeat coffee plantation stays and trails in Coorg",
 ];
 
 // Safe UUID generator that works across all browser environments and non-HTTPS contexts
@@ -175,11 +175,11 @@ export default function AIChatPage() {
       id: "welcome-msg",
       role: "assistant",
       content:
-        `Namaskaram ${name}! 🙏 PADAYAPPA here, your AI travel companion.\n\n` +
+        `Namaskaram ${name}! 🙏 PADAYAPPA here, your personal AI travel companion and trip architect.\n\n` +
         `How may I help you today?\n\n` +
-        `Tell me your dream destination, budget, or travel style, and I'll analyze your requirements to craft the perfect plan with verified stays and costs in ₹.\n\n` +
+        `Tell me your dream destination, budget, or the travel vibe you have in mind. I'll understand your goals, analyze your requirements, and craft a bespoke day-by-day plan with verified stays and realistic costs in ₹.\n\n` +
         `🎙️ **Voice Command Enabled**: You can speak with me using the microphone button below, or type your message. Trip Geni automatically sends your message after you finish speaking.\n\n` +
-        `❓ Where would you like to travel, or what would you like me to plan for you?`,
+        `❓ Where would you like to travel, or what travel experience would you like to plan?`,
       timestamp: new Date().toISOString(),
     };
     setMessages([welcome]);
@@ -743,12 +743,7 @@ export default function AIChatPage() {
     const dest = extractDestination(textToSend);
 
     try {
-      const host =
-        typeof window !== "undefined" ? window.location.hostname : "127.0.0.1";
-      const apiBase =
-        typeof window !== "undefined"
-          ? `${window.location.protocol}//${host}:8000`
-          : process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+      const apiBase = getApiBaseUrl();
 
       const historyPayload = messages.slice(-8).map((m) => ({
         role: m.role,
@@ -848,22 +843,22 @@ export default function AIChatPage() {
           aiReply =
             `Oh, Varanasi!! 🌟\n\n` +
             `The eternal spiritual heart of India on the banks of the sacred Ganges, where ancient river ghats and mesmerizing evening aartis come alive. A truly captivating journey into living heritage awaits you.\n\n` +
-            `How many people will be traveling with you on this trip? (Solo, couple, family, or friends?)`;
+            `To help me craft the ideal route and pace for you: how many days are you planning to spend, and will you be traveling solo, as a couple, or with family/friends?`;
         } else if (activeDest.toLowerCase().includes("thenkasi") || activeDest.toLowerCase().includes("courtallam")) {
           aiReply =
             `Oh, Thenkasi & Courtallam!! 🌟\n\n` +
             `The refreshing spa of South India nestled at the foot of the Western Ghats, blessed with herbal waterfalls and legendary border cuisine. A revitalizing escape into nature awaits you.\n\n` +
-            `How many people will be traveling with you on this trip? (Solo, couple, family, or friends?)`;
+            `To help me craft the ideal route and pace for you: how many days are you planning to spend, and will you be traveling solo, as a couple, or with family/friends?`;
         } else if (activeDest.toLowerCase().includes("munnar")) {
           aiReply =
             `Oh, Munnar!! 🌟\n\n` +
             `The emerald tea paradise of the Western Ghats, wrapped in mist-kissed hills, cool mountain breeze, and sprawling tea estates. A scenic retreat into nature awaits you.\n\n` +
-            `How many people will be traveling with you on this trip? (Solo, couple, family, or friends?)`;
+            `To help me craft the ideal route and pace for you: how many days are you planning to spend, and will you be traveling solo, as a couple, or with family/friends?`;
         } else {
           aiReply =
             `Oh, ${activeDest}!! 🌟\n\n` +
             `An extraordinary destination known for stunning landscapes, rich culture, and unforgettable local experiences. An incredible journey awaits you.\n\n` +
-            `How many people will be traveling with you on this trip? (Solo, couple, family, or friends?)`;
+            `To help me craft the ideal route and pace for you: how many days are you planning to spend, and will you be traveling solo, as a couple, or with family/friends?`;
         }
       } else if (activeDest && hasTravelers && !numDays) {
         // STEP 2: Travelers given -> Ask duration
@@ -894,7 +889,7 @@ export default function AIChatPage() {
             `• ~₹1,800 – ₹3,000 per person per day (stays, meals, and local transit)\n\n` +
             `### 💡 Local Insider Secret\n` +
             `Visit Five Falls early at 6:30 AM to beat the crowds and enjoy the pure forest mineral water at its best.\n\n` +
-            `Would you like me to refine this with specific hotel booking options or transit details?`;
+            `Does this pace and budget match what you had in mind, or should we adjust the accommodation style (budget vs luxury) or duration? I can also generate your complete downloadable PDF itinerary!`;
         } else if (activeDest.toLowerCase().includes("varanasi") || activeDest.toLowerCase().includes("kashi") || activeDest.toLowerCase().includes("banaras")) {
           aiReply =
             `Here is your bespoke **${days}-Day Varanasi (Kashi) Spiritual & Cultural Immersion Plan**:\n\n` +
@@ -916,7 +911,7 @@ export default function AIChatPage() {
             `• Daily Average: ~₹1,800 – ₹3,200 per person/day (stays, meals, hand-rowed boats, and transit)\n\n` +
             `### 💡 Padayappa's Local Insider Secret\n` +
             `Always hire a hand-rowed wooden boat (₹400–₹600) rather than a motorboat at dawn. The silence on the misty river at 5:45 AM is unforgettable.\n\n` +
-            `Would you like hotel recommendations or help with temple darshan timings?`;
+            `Does this pace and budget match what you had in mind, or should we adjust the accommodation style (budget vs luxury) or duration? I can also generate your complete downloadable PDF itinerary!`;
         } else {
           aiReply =
             `Here is your tailored **${days}-Day ${activeDest} Travel Blueprint**:\n\n` +

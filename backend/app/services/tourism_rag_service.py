@@ -1166,7 +1166,7 @@ class TourismRAGService:
         self, user_message: str, history: Optional[list] = None, user_name: Optional[str] = None
     ) -> dict[str, str]:
         """
-        Synthesizes a warm, conversational, 0-lag response in DASAPPAN's authentic voice.
+        Synthesizes a warm, conversational, 0-lag response in PADAYAPPA's authentic voice.
         Follows progressive multi-turn consultative discovery:
         1. Never repeats formal greetings if already greeted in history.
         2. Reacts with authentic delight: 'Oh, {Destination}!! 🌟' followed by a 2-line vivid description.
@@ -1220,7 +1220,7 @@ class TourismRAGService:
                 }
             return {
                 "reply": (
-                    f"Namaskaram {display_name}! 🙏 Trip Geni AI here, your AI travel companion.\n\n"
+                    f"Namaskaram {display_name}! 🙏 PADAYAPPA here, your personal AI travel companion and trip architect.\n\n"
                     "How may I help you today?\n\n"
                     "Tell me your dream destination, budget, or the travel vibe you have in mind, and I'll analyze it to craft the ideal plan with verified stays and costs in ₹.\n\n"
                     "❓ Where would you like to travel, or what would you like me to plan for you?"
@@ -1335,7 +1335,7 @@ class TourismRAGService:
             # Check for budget
             has_budget = any(w in full_context for w in ["budget", "comfort", "luxury", "₹", "rs", "rupee", "cheap", "cost", "10000", "15000", "12000", "20000", "25000", "under"])
 
-            # STEP A: Destination just mentioned -> Warm reaction + 2-line description + Ask travelers
+            # STEP A: Destination just mentioned -> Warm reaction + 2-line description + Ask duration & group dynamic in 1 targeted question
             dest_in_current_msg = (active_dest_name.lower() in msg_lower)
             if dest_in_current_msg and not has_travelers and not has_days:
                 tagline = active_dest_data["tagline"] if active_dest_data else f"A breathtaking travel haven"
@@ -1345,7 +1345,7 @@ class TourismRAGService:
                     "reply": (
                         f"Oh, {active_dest_name}!! 🌟\n\n"
                         f"{tagline}. {vibe}.\n\n"
-                        f"How many people will be traveling with you on this trip? (Solo, couple, family, or friends?)"
+                        f"To help me craft the ideal route and pace for you: how many days are you planning to spend, and will you be traveling solo, as a couple, or with family/friends?"
                     ),
                     "source": "rag_consultative_engine",
                 }
@@ -1406,22 +1406,30 @@ class TourismRAGService:
             transit_str = active_dest_data.get("transit", f"Direct road, train, and flight connections available to {active_dest_name}.") if active_dest_data else f"Easily accessible by rail, flight, and scenic road networks."
             tip_str = active_dest_data.get("insider_tip", "Explore prime sights early in the morning around 6:30 AM to beat the crowds and enjoy the best light.") if active_dest_data else "Book popular heritage stays early and visit major viewpoints during golden hour."
 
+            group_phrase = (
+                "Couple's Journey" if has_couple
+                else "Solo Adventure" if has_solo
+                else "Family Holiday" if has_family
+                else "Trip with Friends" if has_friends
+                else "Comfortable Paced Journey"
+            )
             plan_title = f"{chosen_days}-Day Bespoke {active_dest_name} Travel Plan"
 
             reply = (
                 f"Here is your personalized **{plan_title}**:\n\n"
-                f"### 🗓️ Day-by-Day Journey\n"
+                f"🎯 **Requirement Profile**: {chosen_days} Days • {group_phrase} • Heritage & Scenic Discovery\n\n"
+                f"### 🗓️ Curated Day-by-Day Journey\n"
                 f"{itinerary_str}\n\n"
-                f"### 🏨 Recommended Stays\n"
+                f"### 🏨 Handpicked Verified Stays\n"
                 f"{stays_str}\n\n"
-                f"### 🍲 Iconic Food & Dining\n"
+                f"### 🍲 Authentic Dining & Regional Specialities\n"
                 f"{foods_str}\n\n"
-                f"### 💰 Estimated Budget Guidelines\n"
+                f"### 💰 Estimated Budget Guidelines (in ₹)\n"
                 f"• **Daily Average**: {budget_str}\n"
                 f"• **Transit Details**: {transit_str}\n\n"
-                f"### 💡 Local Insider Secret\n"
+                f"### 💡 Padayappa's Local Insider Secret\n"
                 f"{tip_str}\n\n"
-                f"Would you like recommendations on specific hotel bookings or flight/train transit details?"
+                f"Does this pace and budget match what you had in mind, or should we adjust the accommodation style (budget vs luxury) or duration? I can also generate your complete downloadable PDF itinerary!"
             )
             return {"reply": reply, "source": "rag_knowledge_engine"}
 
