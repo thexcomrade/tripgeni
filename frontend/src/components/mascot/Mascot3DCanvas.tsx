@@ -69,7 +69,7 @@ export default function Mascot3DCanvas({
       });
   }, []);
 
-  if (hasModel === false) {
+  if (hasModel !== true) {
     return <>{fallback}</>;
   }
 

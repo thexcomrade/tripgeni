@@ -2,15 +2,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import { useRouter, usePathname } from "next/navigation";
 import { ExternalLink, Send } from "lucide-react";
 import { getApiBaseUrl } from "../../utils/apiConfig";
 import "./FloatingMascot.css";
-
-const Mascot3DCanvas = dynamic(() => import("./Mascot3DCanvas"), {
-  ssr: false,
-});
 
 interface ChatMessage {
   id: string;
@@ -146,20 +141,16 @@ export default function FloatingMascot() {
           aria-expanded={isOpen}
         >
           {/* 3D CHARACTER (Strict 2:3 aspect ratio, zero fuzzy glow) */}
-          <Mascot3DCanvas
-            fallback={
-              <div className="mascot-image-wrapper">
-                <Image
-                  src="/images/model.png"
-                  alt="Padayappa 3D Companion"
-                  fill
-                  sizes="140px"
-                  priority
-                  style={{ objectFit: "contain" }}
-                />
-              </div>
-            }
-          />
+          <div className="mascot-image-wrapper">
+            <Image
+              src="/images/model.png"
+              alt="Padayappa 3D Companion"
+              fill
+              sizes="140px"
+              priority
+              style={{ objectFit: "contain" }}
+            />
+          </div>
 
           {/* NATURAL PHYSICAL GROUND CONTACT SHADOW */}
           <div className="mascot-ground-shadow" />
