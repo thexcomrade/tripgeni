@@ -302,7 +302,8 @@ export default function HomePage() {
           />
         </video>
 
-        {/* BOTTOM BLUR OVERLAY */}
+        {/* SEAMLESS VIGNETTE & BLUR OVERLAY (Dissolves wallpaper edge into continuous theme) */}
+        <div className="cinematic-vignette-overlay" />
         <div className="cinematic-blur-overlay" />
 
         {/* HERO SECTION */}

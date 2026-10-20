@@ -594,11 +594,14 @@ h6 {
   opacity: 0;
 }
 
-/* CINEMATIC VIDEO & BLUR (Contained to Hero Viewport, zero document scroll freeze) */
+/* CINEMATIC VIDEO & SEAMLESS ATMOSPHERIC BLEND (Zero hard line or wallpaper separation) */
 .hero-viewport-container {
   position: relative;
   width: 100%;
   overflow: hidden;
+  /* Feather the bottom 45% smoothly into the page deep dark background */
+  mask-image: linear-gradient(to bottom, #000 0%, #000 45%, rgba(0, 0, 0, 0.7) 65%, rgba(0, 0, 0, 0.2) 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, rgba(0, 0, 0, 0.7) 65%, rgba(0, 0, 0, 0.2) 85%, transparent 100%);
 }
 
 .cinematic-bg-video {
@@ -612,15 +615,32 @@ h6 {
   z-index: 0;
 }
 
+/* Multi-stop atmospheric vignette: smoothly dissolves bright video highlights into deep #030712 theme */
+.cinematic-vignette-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(3, 7, 18, 0.10) 0%,
+    rgba(3, 7, 18, 0.20) 25%,
+    rgba(3, 7, 18, 0.55) 50%,
+    rgba(3, 7, 18, 0.88) 72%,
+    rgba(3, 7, 18, 0.98) 88%,
+    #030712 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
 .cinematic-blur-overlay {
   position: absolute;
   inset: 0;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  mask-image: linear-gradient(to top, rgba(3, 7, 18, 1) 0%, rgba(3, 7, 18, 0.75) 25%, transparent 60%);
-  -webkit-mask-image: linear-gradient(to top, rgba(3, 7, 18, 1) 0%, rgba(3, 7, 18, 0.75) 25%, transparent 60%);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  mask-image: linear-gradient(to bottom, transparent 30%, rgba(0, 0, 0, 0.6) 60%, black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 30%, rgba(0, 0, 0, 0.6) 60%, black 100%);
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
 .hero-scroll-cue {

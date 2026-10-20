@@ -1,8 +1,8 @@
 "use client";
 
-import React, { Suspense, useRef, useEffect, useState } from "react";
+import React, { Suspense, useRef, useEffect, useState, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, ContactShadows } from "@react-three/drei";
+import { useGLTF, ContactShadows, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 
 interface MascotGLBModelProps {
@@ -13,7 +13,7 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
   const group = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/images/model.glb");
 
-  // Enhance materials & enable shadows on all meshes
+  // Enhance materials: DoubleSide rendering for 360 rotation & realistic PBR studio lighting
   useEffect(() => {
     if (scene) {
       scene.traverse((child) => {
@@ -23,6 +23,8 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
           mesh.receiveShadow = true;
           if (mesh.material) {
             const mat = mesh.material as THREE.MeshStandardMaterial;
+            // Enable double-sided rendering so 360 rotation never clips or culls backfaces
+            mat.side = THREE.DoubleSide;
             mat.roughness = THREE.MathUtils.clamp(mat.roughness ?? 0.5, 0.3, 0.85);
             mat.metalness = THREE.MathUtils.clamp(mat.metalness ?? 0.1, 0.0, 0.35);
             mat.needsUpdate = true;
@@ -33,53 +35,25 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
     }
   }, [scene, onLoadSuccess]);
 
-  // Procedural Life Animation: Natural breathing, floating sway & smooth pointer tracking
+  // Procedural Life Animation: Organic breathing cycle, floating sway & weight shifts
   useFrame((state) => {
     if (!group.current) return;
     const t = state.clock.getElapsedTime();
 
-    // 1. Natural Breathing Cycle (subtle chest / shoulder expansion)
+    // 1. Natural Breathing Cycle (chest & shoulder expansion)
     const breath = Math.sin(t * 2.2);
     const baseScale = 0.92;
-    group.current.scale.y = baseScale * (1 + breath * 0.014);
-    group.current.scale.x = baseScale * (1 - breath * 0.007);
-    group.current.scale.z = baseScale * (1 + breath * 0.01);
+    group.current.scale.y = baseScale * (1 + breath * 0.015);
+    group.current.scale.x = baseScale * (1 - breath * 0.008);
+    group.current.scale.z = baseScale * (1 + breath * 0.012);
 
-    // 2. Organic Floating Sway & Weight Shift
+    // 2. Organic Floating Sway & Micro Weight Shift
     const baseY = -0.06;
     group.current.position.y = baseY + Math.sin(t * 1.8) * 0.028;
-    group.current.position.x = Math.sin(t * 0.9) * 0.015;
+    group.current.position.x = Math.sin(t * 0.9) * 0.014;
 
-    // 3. Subtle Torso Roll / Posture Tilt
-    group.current.rotation.z = THREE.MathUtils.lerp(
-      group.current.rotation.z,
-      Math.sin(t * 0.9) * 0.015,
-      0.08
-    );
-
-    // 4. Interactive Eye / Head Mouse Pointer Tracking (ROG Omni companion behavior)
-    // Smoothly rotates toward user's cursor / touch point
-    const targetRotY = THREE.MathUtils.clamp(
-      (state.pointer.x * Math.PI) / 6,
-      -Math.PI / 5,
-      Math.PI / 5
-    );
-    const targetRotX = THREE.MathUtils.clamp(
-      -(state.pointer.y * Math.PI) / 8,
-      -Math.PI / 10,
-      Math.PI / 10
-    );
-
-    group.current.rotation.y = THREE.MathUtils.lerp(
-      group.current.rotation.y,
-      targetRotY,
-      0.07
-    );
-    group.current.rotation.x = THREE.MathUtils.lerp(
-      group.current.rotation.x,
-      targetRotX,
-      0.07
-    );
+    // 3. Subtle Torso Posture Roll
+    group.current.rotation.z = Math.sin(t * 0.9) * 0.012;
   });
 
   return (
@@ -91,10 +65,14 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
 
 export default function Mascot3DCanvas({
   fallback,
+  onModelClick,
 }: {
   fallback?: React.ReactNode;
+  onModelClick?: () => void;
 }) {
   const [modelAvailable, setModelAvailable] = useState<boolean | null>(null);
+  const [isRotating, setIsRotating] = useState(false);
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // Check availability of /images/model.glb
   useEffect(() => {
@@ -115,14 +93,38 @@ export default function Mascot3DCanvas({
     return <>{fallback}</>;
   }
 
+  // Pointer tracking to distinguish between a drag-rotation and a click-to-open-chat
+  const handlePointerDown = (e: React.PointerEvent) => {
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+    setIsRotating(true);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    setIsRotating(false);
+    if (dragStartRef.current) {
+      const dx = Math.abs(e.clientX - dragStartRef.current.x);
+      const dy = Math.abs(e.clientY - dragStartRef.current.y);
+      // If movement is under 6px, it is a deliberate click/tap
+      if (dx < 6 && dy < 6) {
+        onModelClick?.();
+      }
+    }
+    dragStartRef.current = null;
+  };
+
   return (
     <div
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
       style={{
         position: "relative",
         width: "100%",
         height: "100%",
-        pointerEvents: "none",
+        cursor: isRotating ? "grabbing" : "grab",
+        userSelect: "none",
+        touchAction: "none",
       }}
+      title="Drag to rotate 3D character • Click to chat"
     >
       <Suspense fallback={fallback}>
         <Canvas
@@ -137,10 +139,10 @@ export default function Mascot3DCanvas({
             powerPreference: "high-performance",
           }}
           dpr={[1, 1.5]}
-          style={{ width: "100%", height: "100%", pointerEvents: "none" }}
+          style={{ width: "100%", height: "100%" }}
         >
           {/* STUDIO PHYSICAL LIGHTING (No harsh neon glow, photorealistic depth) */}
-          <ambientLight intensity={1.3} />
+          <ambientLight intensity={1.35} />
 
           {/* Key Light: Warm natural studio key */}
           <directionalLight
@@ -181,6 +183,17 @@ export default function Mascot3DCanvas({
             far={1.6}
             resolution={256}
             color="#000000"
+          />
+
+          {/* 360-DEGREE ROTATION CONTROLS (Smooth inertia damping, locked pan/zoom) */}
+          <OrbitControls
+            enableZoom={false}
+            enablePan={false}
+            enableDamping={true}
+            dampingFactor={0.07}
+            rotateSpeed={0.85}
+            minPolarAngle={Math.PI / 2 - 0.28}
+            maxPolarAngle={Math.PI / 2 + 0.22}
           />
         </Canvas>
       </Suspense>
