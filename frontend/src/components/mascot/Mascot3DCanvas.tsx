@@ -1,12 +1,10 @@
+
 "use client";
 
-import React, { Suspense, useRef, useEffect, useState, useMemo } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
+import type { ReactNode, PointerEvent as ReactPointerEvent } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-<<<<<<< HEAD
 import { useGLTF, ContactShadows, OrbitControls } from "@react-three/drei";
-=======
-import { useGLTF, ContactShadows } from "@react-three/drei";
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
 import * as THREE from "three";
 
 interface MascotGLBModelProps {
@@ -17,81 +15,57 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
   const group = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/images/model.glb");
 
-<<<<<<< HEAD
-  // Enhance materials: DoubleSide rendering for 360 rotation & realistic PBR studio lighting
-=======
-  // Enhance materials & enable shadows on all meshes
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
+  // Improve material rendering and enable shadows.
   useEffect(() => {
-    if (scene) {
-      scene.traverse((child) => {
-        if ((child as THREE.Mesh).isMesh) {
-          const mesh = child as THREE.Mesh;
-          mesh.castShadow = true;
-          mesh.receiveShadow = true;
-          if (mesh.material) {
-            const mat = mesh.material as THREE.MeshStandardMaterial;
-<<<<<<< HEAD
-            // Enable double-sided rendering so 360 rotation never clips or culls backfaces
-            mat.side = THREE.DoubleSide;
-=======
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
-            mat.roughness = THREE.MathUtils.clamp(mat.roughness ?? 0.5, 0.3, 0.85);
-            mat.metalness = THREE.MathUtils.clamp(mat.metalness ?? 0.1, 0.0, 0.35);
-            mat.needsUpdate = true;
-          }
+    scene.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) return;
+
+      child.castShadow = true;
+      child.receiveShadow = true;
+
+      const materials = Array.isArray(child.material)
+        ? child.material
+        : [child.material];
+
+      materials.forEach((material) => {
+        if (material instanceof THREE.MeshStandardMaterial) {
+          material.side = THREE.DoubleSide;
+          material.roughness = THREE.MathUtils.clamp(
+            material.roughness ?? 0.5,
+            0.3,
+            0.85
+          );
+          material.metalness = THREE.MathUtils.clamp(
+            material.metalness ?? 0.1,
+            0,
+            0.35
+          );
+          material.needsUpdate = true;
         }
       });
-      onLoadSuccess?.();
-    }
+    });
+
+    onLoadSuccess?.();
   }, [scene, onLoadSuccess]);
 
-<<<<<<< HEAD
-  // Procedural Life Animation: Organic breathing cycle, floating sway & weight shifts
-=======
-  // Procedural Life Animation: Natural breathing, floating sway & smooth pointer tracking
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
+  // Subtle breathing and natural floating animation.
   useFrame((state) => {
-    if (!group.current) return;
+    const model = group.current;
+    if (!model) return;
+
     const t = state.clock.getElapsedTime();
-
-<<<<<<< HEAD
-    // 1. Natural Breathing Cycle (chest & shoulder expansion)
     const breath = Math.sin(t * 2.2);
     const baseScale = 0.92;
-    group.current.scale.y = baseScale * (1 + breath * 0.015);
-    group.current.scale.x = baseScale * (1 - breath * 0.008);
-    group.current.scale.z = baseScale * (1 + breath * 0.012);
 
-    // 2. Organic Floating Sway & Micro Weight Shift
-    const baseY = -0.06;
-    group.current.position.y = baseY + Math.sin(t * 1.8) * 0.028;
-    group.current.position.x = Math.sin(t * 0.9) * 0.014;
+    model.scale.y = baseScale * (1 + breath * 0.014);
+    model.scale.x = baseScale * (1 - breath * 0.007);
+    model.scale.z = baseScale * (1 + breath * 0.01);
 
-    // 3. Subtle Torso Posture Roll
-    group.current.rotation.z = Math.sin(t * 0.9) * 0.012;
-=======
-    // 1. Natural Breathing Cycle (subtle chest / shoulder expansion)
-    const breath = Math.sin(t * 2.2);
-    const baseScale = 0.92;
-    group.current.scale.y = baseScale * (1 + breath * 0.014);
-    group.current.scale.x = baseScale * (1 - breath * 0.007);
-    group.current.scale.z = baseScale * (1 + breath * 0.01);
+    model.position.y = -0.06 + Math.sin(t * 1.8) * 0.028;
+    model.position.x = Math.sin(t * 0.9) * 0.015;
 
-    // 2. Organic Floating Sway & Weight Shift
-    const baseY = -0.06;
-    group.current.position.y = baseY + Math.sin(t * 1.8) * 0.028;
-    group.current.position.x = Math.sin(t * 0.9) * 0.015;
-
-    // 3. Subtle Torso Roll / Posture Tilt
-    group.current.rotation.z = THREE.MathUtils.lerp(
-      group.current.rotation.z,
-      Math.sin(t * 0.9) * 0.015,
-      0.08
-    );
-
-    // 4. Interactive Eye / Head Mouse Pointer Tracking (ROG Omni companion behavior)
-    // Smoothly rotates toward user's cursor / touch point
+    // Subtle posture movement and pointer tracking.
+    const targetRoll = Math.sin(t * 0.9) * 0.012;
     const targetRotY = THREE.MathUtils.clamp(
       (state.pointer.x * Math.PI) / 6,
       -Math.PI / 5,
@@ -103,17 +77,21 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
       Math.PI / 10
     );
 
-    group.current.rotation.y = THREE.MathUtils.lerp(
-      group.current.rotation.y,
+    model.rotation.z = THREE.MathUtils.lerp(
+      model.rotation.z,
+      targetRoll,
+      0.08
+    );
+    model.rotation.y = THREE.MathUtils.lerp(
+      model.rotation.y,
       targetRotY,
       0.07
     );
-    group.current.rotation.x = THREE.MathUtils.lerp(
-      group.current.rotation.x,
+    model.rotation.x = THREE.MathUtils.lerp(
+      model.rotation.x,
       targetRotX,
       0.07
     );
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
   });
 
   return (
@@ -123,131 +101,126 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
   );
 }
 
+interface Mascot3DCanvasProps {
+  fallback?: ReactNode;
+  onModelClick?: () => void;
+}
+
 export default function Mascot3DCanvas({
   fallback,
   onModelClick,
-}: {
-  fallback?: React.ReactNode;
-  onModelClick?: () => void;
-}) {
+}: Mascot3DCanvasProps) {
   const [modelAvailable, setModelAvailable] = useState<boolean | null>(null);
-<<<<<<< HEAD
   const [isRotating, setIsRotating] = useState(false);
+
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const hasMovedRef = useRef(false);
 
-  // Check availability of /images/model.glb & setup window release listener
-=======
-
-  // Check availability of /images/model.glb
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
+  // Check whether the 3D model is available.
   useEffect(() => {
+    let mounted = true;
+
     fetch("/images/model.glb", { method: "HEAD" })
-      .then((res) => {
-        if (res.ok) {
-          setModelAvailable(true);
-        } else {
-          setModelAvailable(false);
-        }
+      .then((response) => {
+        if (mounted) setModelAvailable(response.ok);
       })
       .catch(() => {
-        setModelAvailable(false);
+        if (mounted) setModelAvailable(false);
       });
 
     const handleWindowPointerUp = () => {
       setIsRotating(false);
       dragStartRef.current = null;
     };
+
     window.addEventListener("pointerup", handleWindowPointerUp);
-    return () => window.removeEventListener("pointerup", handleWindowPointerUp);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener("pointerup", handleWindowPointerUp);
+    };
   }, []);
 
+  // Preserve the fallback image if the GLB is unavailable.
   if (modelAvailable === false) {
     return <>{fallback}</>;
   }
 
-  // Pointer tracking: cleanly differentiate drag rotation (360°) vs click (open chat)
-  const handlePointerDown = (e: React.PointerEvent) => {
-    dragStartRef.current = { x: e.clientX, y: e.clientY };
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    dragStartRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+    };
     hasMovedRef.current = false;
     setIsRotating(true);
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (dragStartRef.current) {
-      const dx = Math.abs(e.clientX - dragStartRef.current.x);
-      const dy = Math.abs(e.clientY - dragStartRef.current.y);
-      if (dx > 5 || dy > 5) {
-        hasMovedRef.current = true;
-      }
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = dragStartRef.current;
+    if (!start) return;
+
+    const dx = Math.abs(event.clientX - start.x);
+    const dy = Math.abs(event.clientY - start.y);
+
+    if (dx > 5 || dy > 5) {
+      hasMovedRef.current = true;
     }
   };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
+  const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = dragStartRef.current;
+
     setIsRotating(false);
-    if (dragStartRef.current && !hasMovedRef.current) {
-      const dx = Math.abs(e.clientX - dragStartRef.current.x);
-      const dy = Math.abs(e.clientY - dragStartRef.current.y);
-      // If movement is under 6px, it is a deliberate click/tap
+
+    if (start && !hasMovedRef.current) {
+      const dx = Math.abs(event.clientX - start.x);
+      const dy = Math.abs(event.clientY - start.y);
+
       if (dx <= 6 && dy <= 6) {
         onModelClick?.();
       }
     }
+
     dragStartRef.current = null;
     hasMovedRef.current = false;
   };
 
   return (
     <div
-<<<<<<< HEAD
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-=======
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
+      onPointerCancel={() => {
+        setIsRotating(false);
+        dragStartRef.current = null;
+        hasMovedRef.current = false;
+      }}
       style={{
         position: "relative",
         width: "100%",
         height: "100%",
-<<<<<<< HEAD
         cursor: isRotating ? "grabbing" : "grab",
         userSelect: "none",
-        touchAction: "none",
+        touchAction: "pan-y",
       }}
       title="Drag to rotate Padayappa 360° • Click to chat"
-=======
-        pointerEvents: "none",
-      }}
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
     >
       <Suspense fallback={fallback}>
         <Canvas
           shadows
-          camera={{
-            position: [0, 0, 4.3],
-            fov: 34,
-          }}
+          camera={{ position: [0, 0, 4.3], fov: 34 }}
           gl={{
             alpha: true,
             antialias: true,
             powerPreference: "high-performance",
           }}
           dpr={[1, 1.5]}
-<<<<<<< HEAD
           style={{ width: "100%", height: "100%" }}
         >
-          {/* STUDIO PHYSICAL LIGHTING (No harsh neon glow, photorealistic depth) */}
           <ambientLight intensity={1.35} />
-=======
-          style={{ width: "100%", height: "100%", pointerEvents: "none" }}
-        >
-          {/* STUDIO PHYSICAL LIGHTING (No harsh neon glow, photorealistic depth) */}
-          <ambientLight intensity={1.3} />
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
 
-          {/* Key Light: Warm natural studio key */}
           <directionalLight
-            position={[3.0, 4.5, 3.5]}
+            position={[3, 4.5, 3.5]}
             intensity={2.2}
             color="#FFFDF7"
             castShadow
@@ -258,24 +231,22 @@ export default function Mascot3DCanvas({
             shadow-bias={-0.0005}
           />
 
-          {/* Fill Light: Soft warm ambient reflection */}
           <directionalLight
             position={[-2.8, 1.8, 2.2]}
-            intensity={1.0}
+            intensity={1}
             color="#FDE68A"
           />
 
-          {/* Edge / Rim Light: Subtle cool separation from dark background */}
           <directionalLight
             position={[0, 3.2, -3.2]}
             intensity={1.4}
             color="#38BDF8"
           />
 
-          {/* 3D GLB Model */}
-          <MascotGLBModel onLoadSuccess={() => setModelAvailable(true)} />
+          <MascotGLBModel
+            onLoadSuccess={() => setModelAvailable(true)}
+          />
 
-          {/* Dynamic Photorealistic Ground Contact Shadow directly under feet */}
           <ContactShadows
             position={[0, -0.96, 0]}
             opacity={0.78}
@@ -285,25 +256,21 @@ export default function Mascot3DCanvas({
             resolution={256}
             color="#000000"
           />
-<<<<<<< HEAD
 
-          {/* 360-DEGREE ROTATION CONTROLS (Smooth inertia damping, locked pan/zoom) */}
           <OrbitControls
             enableZoom={false}
             enablePan={false}
-            enableDamping={true}
+            enableDamping
             dampingFactor={0.07}
             rotateSpeed={0.85}
             minPolarAngle={Math.PI / 2 - 0.28}
             maxPolarAngle={Math.PI / 2 + 0.22}
           />
-=======
->>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
         </Canvas>
       </Suspense>
     </div>
   );
 }
 
-// Pre-load the GLB model in browser cache for instant startup
+// Preload the model for faster startup.
 useGLTF.preload("/images/model.glb");

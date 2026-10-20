@@ -32,7 +32,7 @@ import Badge from "../../components/ui/Badge";
 import { GlassCard, MetricCard, SectionHeader } from "../../components/ui/Card";
 import tripService from "../../services/trip.service";
 import { parseDestinationQuery } from "../../utils/queryParser";
-
+import FloatingMascot from "../../components/mascot/FloatingMascot";
 interface SavedTripSummary {
   id?: string;
   trip_title?: string;
@@ -1497,8 +1497,10 @@ export default function DashboardPage() {
               </Button>
             </Link>
           </GlassCard>
+          
         )}
       </section>
+       <FloatingMascot />
     </div>
   );
 }
