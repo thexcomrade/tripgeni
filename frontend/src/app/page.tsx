@@ -274,41 +274,51 @@ export default function HomePage() {
 
   return (
     <>
-      {/* CINEMATIC FULL-SCREEN BACKGROUND VIDEO */}
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="cinematic-bg-video"
+      {/* CINEMATIC HERO VIEWPORT (Fluid, unconstrained, zero rigid screen lock) */}
+      <div
+        className="hero-viewport-container"
+        style={{
+          position: "relative",
+          width: "100%",
+          minHeight: "min(92vh, 860px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
+        }}
       >
-        <source
-          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260406_094145_4a271a6c-3869-4f1c-8aa7-aeb0cb227994.mp4"
-          type="video/mp4"
-        />
-      </video>
+        {/* CINEMATIC BACKGROUND VIDEO */}
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="cinematic-bg-video"
+        >
+          <source
+            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260406_094145_4a271a6c-3869-4f1c-8aa7-aeb0cb227994.mp4"
+            type="video/mp4"
+          />
+        </video>
 
-      {/* BOTTOM BLUR OVERLAY (no gradient darkening, pure backdrop-blur with CSS mask) */}
-      <div className="cinematic-blur-overlay" />
+        {/* BOTTOM BLUR OVERLAY */}
+        <div className="cinematic-blur-overlay" />
 
-      {/* FOREGROUND CONTENT WRAPPER */}
-      <div style={{ position: "relative", zIndex: 10, overflow: "hidden" }}>
         {/* HERO SECTION */}
         <section
           style={{
             position: "relative",
             zIndex: 10,
-            width: "92%",
+            width: "100%",
             maxWidth: "1360px",
-            minHeight: "100vh",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
             margin: "0 auto",
             textAlign: "center",
-            padding: "80px clamp(20px, 3.5vw, 48px) 60px clamp(20px, 3.5vw, 48px)",
+            padding: "clamp(90px, 14vh, 140px) clamp(16px, 3.5vw, 40px) clamp(36px, 6vh, 60px) clamp(16px, 3.5vw, 40px)",
           }}
         >
           {/* AMBIENT GLOW BACKDROP */}
@@ -444,10 +454,10 @@ export default function HomePage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: "30px",
+              gap: "clamp(16px, 3vw, 30px)",
               flexWrap: "wrap",
               color: "#E2E8F0",
-              fontSize: "0.92rem",
+              fontSize: "clamp(0.85rem, 1.2vw, 0.95rem)",
               textShadow: "0 2px 14px rgba(0, 0, 0, 0.85)",
             }}
           >
@@ -462,6 +472,26 @@ export default function HomePage() {
               <Leaf size={16} color="#34D399" /> 100% Eco-Scored Itineraries
             </span>
           </div>
+
+          {/* SCROLL EXPLORE CUE */}
+          <div
+            className="animate-blur-fade-up hero-scroll-cue"
+            style={{
+              animationDelay: "900ms",
+              marginTop: "clamp(24px, 4vh, 44px)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "6px",
+              color: "#94A3B8",
+              fontSize: "0.82rem",
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+            }}
+          >
+            <span>Explore Destinations & Intelligence</span>
+            <ChevronDown size={18} color="#38BDF8" />
+          </div>
         </section>
       </div>
 
@@ -470,11 +500,10 @@ export default function HomePage() {
         style={{
           position: "relative",
           zIndex: 10,
-          overflow: "hidden",
-          width: "92%",
+          width: "100%",
           maxWidth: "1360px",
           margin: "0 auto",
-          padding: "0 clamp(20px, 3.5vw, 48px)",
+          padding: "clamp(20px, 4vw, 48px) clamp(16px, 3.5vw, 40px)",
         }}
       >
 

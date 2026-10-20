@@ -481,38 +481,79 @@ export default function AppNavbar() {
         </div>
       </div>
 
-      {/* MOBILE SLIDE-OUT DRAWER */}
+
+
+      {/* RESPONSIVE MEDIA STYLES */}
+      <style jsx>{`
+        @media (max-width: 899px) {
+          .desktop-auth-pill {
+            display: none !important;
+          }
+          .desktop-nav-container {
+            display: none !important;
+          }
+          #nav-plan-trip-cta {
+            display: none !important;
+          }
+          .mobile-hamburger-btn {
+            display: flex !important;
+          }
+        }
+        @media (min-width: 900px) {
+          .desktop-nav-container {
+            display: flex !important;
+          }
+          #nav-plan-trip-cta {
+            display: inline-flex !important;
+          }
+          .mobile-hamburger-btn {
+            display: none !important;
+          }
+          .desktop-auth-pill {
+            display: flex !important;
+          }
+        }
+      `}</style>
+    </header>
+
+      {/* MOBILE FULL-SCREEN SLIDE-OUT DRAWER (Rendered outside header to guarantee viewport attachment) */}
       {mobileMenuOpen && (
         <div
+          className="mobile-slideout-drawer"
           style={{
             position: "fixed",
             top: "66px",
             left: 0,
             right: 0,
             bottom: 0,
-            background: "rgba(3, 7, 18, 0.95)",
-            backdropFilter: "blur(24px)",
-            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
-            zIndex: 99,
-            padding: "24px",
+            width: "100vw",
+            height: "calc(100dvh - 66px)",
+            background: "rgba(3, 7, 18, 0.98)",
+            backdropFilter: "blur(28px)",
+            WebkitBackdropFilter: "blur(28px)",
+            borderTop: "1px solid rgba(255, 255, 255, 0.10)",
+            zIndex: 99999,
+            padding: "20px 20px 40px 20px",
             overflowY: "auto",
+            WebkitOverflowScrolling: "touch",
             display: "flex",
             flexDirection: "column",
-            gap: "18px",
+            gap: "20px",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <span
               style={{
-                fontSize: "0.75rem",
+                fontSize: "0.72rem",
                 fontWeight: 700,
                 color: "#64748B",
                 textTransform: "uppercase",
-                letterSpacing: "1px",
+                letterSpacing: "1.2px",
                 marginBottom: "4px",
+                paddingLeft: "4px",
               }}
             >
-              Navigation
+              Main Navigation
             </span>
             {[...mainNav, ...moreNav].map((item) => {
               const active = isActive(item.href);
@@ -520,32 +561,37 @@ export default function AppNavbar() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "14px 18px",
+                    padding: "13px 16px",
                     borderRadius: "14px",
                     color: active ? "#38BDF8" : "#F1F5F9",
                     background: active
-                      ? "rgba(14, 165, 233, 0.12)"
-                      : "rgba(255, 255, 255, 0.03)",
+                      ? "rgba(14, 165, 233, 0.14)"
+                      : "rgba(255, 255, 255, 0.04)",
                     border: active
-                      ? "1px solid rgba(14, 165, 233, 0.30)"
+                      ? "1px solid rgba(14, 165, 233, 0.35)"
                       : "1px solid rgba(255, 255, 255, 0.06)",
-                    fontSize: "1.05rem",
+                    fontSize: "1rem",
                     fontWeight: active ? 700 : 500,
                     textDecoration: "none",
+                    transition: "all 0.15s ease",
                   }}
                 >
-                  <span>{item.name}</span>
+                  <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    {item.name}
+                  </span>
                   {active && (
                     <span
                       style={{
-                        width: "6px",
-                        height: "6px",
+                        width: "7px",
+                        height: "7px",
                         borderRadius: "50%",
                         background: "#38BDF8",
+                        boxShadow: "0 0 8px #38BDF8",
                       }}
                     />
                   )}
@@ -557,7 +603,7 @@ export default function AppNavbar() {
           <div
             style={{
               marginTop: "auto",
-              paddingTop: "20px",
+              paddingTop: "16px",
               display: "flex",
               flexDirection: "column",
               gap: "10px",
@@ -565,16 +611,20 @@ export default function AppNavbar() {
           >
             <Link
               href="/planner"
+              onClick={() => setMobileMenuOpen(false)}
               className="btn-primary"
-              style={{ width: "100%", padding: "14px", fontSize: "1rem" }}
+              style={{ width: "100%", padding: "13px", fontSize: "0.98rem", justifyContent: "center" }}
             >
-              <Sparkles size={18} />
+              <Sparkles size={17} />
               <span>Launch AI Planner</span>
             </Link>
 
             {isLoggedIn ? (
               <button
-                onClick={handleLogout}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
                 className="btn-secondary"
                 style={{
                   width: "100%",
@@ -583,7 +633,7 @@ export default function AppNavbar() {
                 }}
               >
                 <LogOut size={16} />
-                <span>Sign Out</span>
+                <span>Sign Out ({userName.split(" ")[0]})</span>
               </button>
             ) : (
               <div
@@ -595,15 +645,17 @@ export default function AppNavbar() {
               >
                 <Link
                   href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="btn-secondary"
-                  style={{ padding: "12px", textAlign: "center" }}
+                  style={{ padding: "12px", textAlign: "center", justifyContent: "center" }}
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/register"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="btn-primary"
-                  style={{ padding: "12px", textAlign: "center" }}
+                  style={{ padding: "12px", textAlign: "center", justifyContent: "center" }}
                 >
                   Register
                 </Link>
@@ -612,27 +664,6 @@ export default function AppNavbar() {
           </div>
         </div>
       )}
-
-      {/* RESPONSIVE MEDIA STYLES */}
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .desktop-auth-pill {
-            display: none !important;
-          }
-        }
-        @media (min-width: 1024px) {
-          .desktop-nav-container {
-            display: flex !important;
-          }
-          #nav-plan-trip-cta {
-            display: inline-flex !important;
-          }
-          .mobile-hamburger-btn {
-            display: none !important;
-          }
-        }
-      `}</style>
-    </header>
     {!isHome && <div style={{ height: "68px" }} aria-hidden="true" />}
   </>
   );
