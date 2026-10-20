@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { ExternalLink, Send } from "lucide-react";
 import { getApiBaseUrl } from "../../utils/apiConfig";
+import Mascot3DCanvas from "./Mascot3DCanvas";
 import "./FloatingMascot.css";
 
 interface ChatMessage {
@@ -171,15 +172,19 @@ export default function FloatingMascot() {
           aria-label={isOpen ? "Close Padayappa" : "Open Padayappa Assistant"}
           aria-expanded={isOpen}
         >
-          {/* 3D CHARACTER (Strict 2:3 aspect ratio, zero fuzzy glow) */}
+          {/* 3D GLB CHARACTER WITH REAL-TIME CONTACT SHADOW & PROCEDURAL LIFE */}
           <div className="mascot-image-wrapper">
-            <Image
-              src="/images/model.png"
-              alt="Padayappa 3D Companion"
-              fill
-              sizes="140px"
-              priority
-              style={{ objectFit: "contain" }}
+            <Mascot3DCanvas
+              fallback={
+                <Image
+                  src="/images/model.png"
+                  alt="Padayappa 3D Companion"
+                  fill
+                  sizes="140px"
+                  priority
+                  style={{ objectFit: "contain" }}
+                />
+              }
             />
           </div>
 
