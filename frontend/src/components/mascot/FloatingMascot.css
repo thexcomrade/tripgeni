@@ -46,9 +46,10 @@
   filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.75));
 }
 
-.mascot-trigger:active {
-  transform: translateY(2px) scale(0.96);
-  transition-duration: 0.1s;
+/* Subtle click feedback without interfering with 3D canvas drag */
+.mascot-trigger:focus-visible {
+  outline: 2px solid #38BDF8;
+  outline-offset: 4px;
 }
 
 /* 3D IMAGE FRAME (Strict 2:3 aspect ratio matching model.png) */
@@ -517,4 +518,36 @@
   .mascot-ground-shadow {
     animation: none;
   }
+}
+
+/* 360° ROTATION INTERACTIVE PILL */
+.mascot-rotate-pill {
+  position: absolute;
+  top: 6px;
+  left: 4px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #38BDF8;
+  background: rgba(15, 23, 42, 0.90);
+  border: 1px solid rgba(56, 189, 248, 0.40);
+  border-radius: 999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mascot-trigger:hover .mascot-rotate-pill {
+  color: #FFFFFF;
+  background: rgba(14, 165, 233, 0.95);
+  border-color: #38BDF8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+  transform: scale(1.08);
 }

@@ -73,8 +73,9 @@ export default function Mascot3DCanvas({
   const [modelAvailable, setModelAvailable] = useState<boolean | null>(null);
   const [isRotating, setIsRotating] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const hasMovedRef = useRef(false);
 
-  // Check availability of /images/model.glb
+  // Check availability of /images/model.glb & setup window release listener
   useEffect(() => {
     fetch("/images/model.glb", { method: "HEAD" })
       .then((res) => {
@@ -87,34 +88,54 @@ export default function Mascot3DCanvas({
       .catch(() => {
         setModelAvailable(false);
       });
+
+    const handleWindowPointerUp = () => {
+      setIsRotating(false);
+      dragStartRef.current = null;
+    };
+    window.addEventListener("pointerup", handleWindowPointerUp);
+    return () => window.removeEventListener("pointerup", handleWindowPointerUp);
   }, []);
 
   if (modelAvailable === false) {
     return <>{fallback}</>;
   }
 
-  // Pointer tracking to distinguish between a drag-rotation and a click-to-open-chat
+  // Pointer tracking: cleanly differentiate drag rotation (360°) vs click (open chat)
   const handlePointerDown = (e: React.PointerEvent) => {
     dragStartRef.current = { x: e.clientX, y: e.clientY };
+    hasMovedRef.current = false;
     setIsRotating(true);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (dragStartRef.current) {
+      const dx = Math.abs(e.clientX - dragStartRef.current.x);
+      const dy = Math.abs(e.clientY - dragStartRef.current.y);
+      if (dx > 5 || dy > 5) {
+        hasMovedRef.current = true;
+      }
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
     setIsRotating(false);
-    if (dragStartRef.current) {
+    if (dragStartRef.current && !hasMovedRef.current) {
       const dx = Math.abs(e.clientX - dragStartRef.current.x);
       const dy = Math.abs(e.clientY - dragStartRef.current.y);
       // If movement is under 6px, it is a deliberate click/tap
-      if (dx < 6 && dy < 6) {
+      if (dx <= 6 && dy <= 6) {
         onModelClick?.();
       }
     }
     dragStartRef.current = null;
+    hasMovedRef.current = false;
   };
 
   return (
     <div
       onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       style={{
         position: "relative",
@@ -124,7 +145,7 @@ export default function Mascot3DCanvas({
         userSelect: "none",
         touchAction: "none",
       }}
-      title="Drag to rotate 3D character • Click to chat"
+      title="Drag to rotate Padayappa 360° • Click to chat"
     >
       <Suspense fallback={fallback}>
         <Canvas

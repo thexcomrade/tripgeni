@@ -165,32 +165,45 @@ export default function FloatingMascot() {
           </div>
         )}
 
-        <button
-          type="button"
-          className="mascot-trigger"
-          onClick={() => setIsOpen((prev) => !prev)}
-          aria-label={isOpen ? "Close Padayappa" : "Open Padayappa Assistant"}
-          aria-expanded={isOpen}
-        >
-          {/* 3D GLB CHARACTER WITH REAL-TIME CONTACT SHADOW & PROCEDURAL LIFE */}
-          <div className="mascot-image-wrapper">
-            <Mascot3DCanvas
-              fallback={
-                <Image
-                  src="/images/model.png"
-                  alt="Padayappa 3D Companion"
-                  fill
-                  sizes="140px"
-                  priority
-                  style={{ objectFit: "contain" }}
-                />
-              }
-            />
-          </div>
-
-          {/* NATURAL PHYSICAL GROUND CONTACT SHADOW */}
-          <div className="mascot-ground-shadow" />
-        </button>
+        <div
+          role="button"
+          tabIndex={0}
+          className="mascot-trigger"
+          aria-label={isOpen ? "Close Padayappa" : "Open Padayappa Assistant"}
+          aria-expanded={isOpen}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setIsOpen((prev) => !prev);
+            }
+          }}
+        >
+          {/* 3D GLB CHARACTER WITH REAL-TIME CONTACT SHADOW & PROCEDURAL LIFE */}
+          <div className="mascot-image-wrapper">
+            <Mascot3DCanvas
+              onModelClick={() => setIsOpen((prev) => !prev)}
+              fallback={
+                <Image
+                  src="/images/model.png"
+                  alt="Padayappa 3D Companion"
+                  fill
+                  sizes="140px"
+                  priority
+                  style={{ objectFit: "contain", cursor: "pointer" }}
+                  onClick={() => setIsOpen((prev) => !prev)}
+                />
+              }
+            />
+          </div>
+
+          {/* 360° ROTATION INTERACTION HINT */}
+          <div className="mascot-rotate-pill" title="Drag character to rotate 360°">
+            <span>🔄</span> 360°
+          </div>
+
+          {/* NATURAL PHYSICAL GROUND CONTACT SHADOW */}
+          <div className="mascot-ground-shadow" />
+        </div>
       </div>
 
       {/* SCREEN TOUCH / CLICK BACKDROP (FADES OFF CHAT WHEN TOUCHED OUTSIDE) */}
