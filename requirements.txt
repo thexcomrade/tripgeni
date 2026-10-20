@@ -23,3 +23,6 @@ python-multipart==0.0.20
 email-validator==2.2.0
 
 aiofiles==24.1.0
+
+reportlab>=4.2.0
+Pillow>=10.0.0
