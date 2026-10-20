@@ -5,10 +5,10 @@
 
 .mascot-widget {
   position: fixed;
-  right: 28px;
-  bottom: 24px;
+  right: 20px;
+  bottom: 0px;
   width: 140px;
-  height: 220px;
+  height: 210px;
   z-index: 9998;
   display: flex;
   flex-direction: column;
@@ -126,15 +126,39 @@
 /* ============================================================
    PADAYAPPA ASSISTANT DIALOG PANEL (ROG Omni Console Style)
    ============================================================ */
+/* SCREEN TOUCH / CLICK BACKDROP (FADES OFF CHAT WHEN TOUCHED OUTSIDE) */
+.assistant-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9995;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 1;
+  pointer-events: auto;
+  cursor: default;
+  animation: backdrop-fade-in 0.22s ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes backdrop-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .assistant-panel {
   position: fixed;
-  right: 28px;
-  bottom: 245px;
+  right: 20px;
+  bottom: 215px;
   z-index: 9999;
   display: flex;
   flex-direction: column;
   width: min(390px, calc(100vw - 36px));
-  max-height: min(560px, calc(100vh - 260px));
+  max-height: min(560px, calc(100vh - 230px));
   min-height: 400px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -426,10 +450,10 @@
    ============================================================ */
 @media (max-width: 640px) {
   .mascot-widget {
-    right: 14px;
-    bottom: 16px;
+    right: 10px;
+    bottom: 0px;
     width: 100px;
-    height: 160px;
+    height: 150px;
   }
 
   .mascot-trigger {
@@ -455,7 +479,31 @@
     font-size: 10.5px;
   }
 
-  .assistant-panel {
+  /* SCREEN TOUCH / CLICK BACKDROP (FADES OFF CHAT WHEN TOUCHED OUTSIDE) */
+.assistant-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9995;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 1;
+  pointer-events: auto;
+  cursor: default;
+  animation: backdrop-fade-in 0.22s ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes backdrop-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.assistant-panel {
     right: 10px;
     bottom: 175px;
     width: calc(100vw - 20px);

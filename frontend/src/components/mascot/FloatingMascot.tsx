@@ -30,7 +30,29 @@ export default function FloatingMascot() {
   const [isLoading, setIsLoading] = useState(false);
   const [speechIndex, setSpeechIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
+  // Close panel with smooth fade when user clicks or touches outside
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePointerDownOutside = (event: MouseEvent | TouchEvent) => {
+      if (
+        panelRef.current &&
+        !panelRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDownOutside, true);
+    document.addEventListener("touchstart", handlePointerDownOutside, true);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDownOutside, true);
+      document.removeEventListener("touchstart", handlePointerDownOutside, true);
+    };
+  }, [isOpen]);
   // Rotate speech prompt like ROG Omni every 7 seconds
   useEffect(() => {
     if (isOpen) return;
@@ -100,10 +122,19 @@ export default function FloatingMascot() {
 
       setMessages((prev) => [...prev, padayappaMsg]);
     } catch {
+      let fallbackText = "Namaskaram! PADAYAPPA here. What destination do you have in mind?";
+      const lower = userText.toLowerCase();
+      if (lower.includes("sugano") || lower.includes("sugam") || lower.includes("sukham")) {
+        fallbackText = "Sugam thanne, macha! 🙏 (Doing great!) Padayappa here, ready for our next adventure. Where are we heading next?";
+      } else if (lower.includes("hi") || lower.includes("hello") || lower.includes("hey")) {
+        fallbackText = "Namaskaram! 🙏 Ready to plan an unforgettable journey. Tell me your destination or travel vibe!";
+      } else {
+        fallbackText = "Namaskaram! For complete day-by-day itineraries with timings, food spots, and costs in ₹, jump right into my full chat room!";
+      }
       const fallbackMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: "padayappa",
-        text: "Namaskaram! For complete day-by-day itineraries with timings, food spots, and costs in ₹, jump right into my full chat room!",
+        text: fallbackText,
       };
       setMessages((prev) => [...prev, fallbackMsg]);
     } finally {
@@ -157,11 +188,25 @@ export default function FloatingMascot() {
         </button>
       </div>
 
+      {/* SCREEN TOUCH / CLICK BACKDROP (FADES OFF CHAT WHEN TOUCHED OUTSIDE) */}
+      {isOpen && (
+        <div
+          className="assistant-backdrop"
+          onClick={() => setIsOpen(false)}
+          onTouchStart={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* ============================================================
           PADAYAPPA ASSISTANT CONSOLE (ROG Omni Screen Console)
           ============================================================ */}
       {isOpen && (
-        <section className="assistant-panel" aria-label="Padayappa Virtual Assistant">
+        <section
+          ref={panelRef}
+          className="assistant-panel"
+          aria-label="Padayappa Virtual Assistant"
+        >
           {/* HEADER */}
           <header className="assistant-header">
             <div className="assistant-heading">

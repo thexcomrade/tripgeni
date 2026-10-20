@@ -784,23 +784,40 @@ export default function AIChatPage() {
     setTimeout(() => {
       let aiReply = "";
       const lower = textToSend.toLowerCase();
-      const greetingWords = ["hi", "hai", "hello", "hey", "namaskaram", "namaste", "vanakkam"];
+      const greetingWords = [
+        "hi", "hai", "hello", "hey", "namaskaram", "namaste", "vanakkam",
+        "sugano", "sugamano", "sukhamano", "sukham", "sugam", "kollam", "yo",
+        "good morning", "good evening", "how are you", "how r u"
+      ];
+      const isMalayalamGreeting = ["sugano", "sugamano", "sukhamano", "sukham", "sugam"].some((w) => lower.includes(w));
       const daysMatch = lower.match(/\b(\d+)\s*[-–]?\s*(?:day|days|d)\b/);
       const numDays = daysMatch ? parseInt(daysMatch[1], 10) : null;
       const hasTravelers = ["solo", "couple", "family", "friends", "group", "people", "person", "pax", "adult"].some((w) => lower.includes(w));
       const hasBudget = ["budget", "comfort", "luxury", "₹", "rs", "rupee", "cheap", "10000", "12000", "15000", "20000", "under"].some((w) => lower.includes(w));
 
       const alreadyGreeted = messages.length > 0;
-      const historyAll = messages.map((m) => m.content).join(" ");
-      const activeDest = dest || extractDestination(historyAll);
+
+      // Extract destination looking BACKWARDS in history so the latest destination always wins
+      let latestDestInHistory: string | undefined = undefined;
+      for (let i = messages.length - 1; i >= 0; i--) {
+        const found = extractDestination(messages[i].content);
+        if (found) {
+          latestDestInHistory = found;
+          break;
+        }
+      }
+      const isDestInCurrentMsg = Boolean(dest);
+      const activeDest = dest || latestDestInHistory;
       const isAffirmation = ["yes", "yeah", "yep", "sure", "please", "ok", "okay", "hotels", "stays", "transit"].some((w) => lower === w || lower.startsWith(w + " "));
 
-      if (greetingWords.some((g) => lower === g || lower.startsWith(g + " "))) {
+      if (isMalayalamGreeting) {
+        aiReply = `Sugam thanne, macha! 🙏 (Doing great!) PADAYAPPA here, your personal travel companion.\n\nReady for our next adventure! Where would you like to travel, or what travel experience would you like to plan?`;
+      } else if (greetingWords.some((g) => lower === g || lower.startsWith(g + " "))) {
         if (alreadyGreeted) {
           aiReply = `Hello ${userName}! 😊 Ready for the next adventure.\n\nTell me your destination or whatever travel vibe is on your mind, and let's plan it out!`;
         } else {
           aiReply =
-            `Namaskaram ${userName}! 🙏 Trip Geni AI here, your AI travel companion.\n\n` +
+            `Namaskaram ${userName}! 🙏 PADAYAPPA here, your personal AI travel companion and trip architect.\n\n` +
             `How may I help you today?\n\n` +
             `Tell me your dream destination, budget, or the travel vibe you have in mind, and I'll analyze it to craft the ideal plan with verified stays and costs in ₹.\n\n` +
             `❓ Where would you like to travel, or what can I help you plan?`;
@@ -837,7 +854,7 @@ export default function AIChatPage() {
             `🚗 **Transit**: Connected by major rail, road, and nearby airport corridors.\n\n` +
             `Would you like me to map out a complete day-by-day itinerary or share local food gems?`;
         }
-      } else if (activeDest && !numDays && !hasTravelers && !hasBudget) {
+      } else if (activeDest && isDestInCurrentMsg && !numDays && !hasTravelers && !hasBudget) {
         // STEP 1: Destination mentioned -> "Oh, Varanasi!!" + 2-line description + Ask travelers count ONLY!
         if (activeDest.toLowerCase().includes("varanasi") || activeDest.toLowerCase().includes("kashi") || activeDest.toLowerCase().includes("banaras")) {
           aiReply =

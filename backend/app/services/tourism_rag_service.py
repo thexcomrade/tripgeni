@@ -1205,7 +1205,17 @@ class TourismRAGService:
 
         full_context = f"{history_text} {msg_lower}"
 
-        # 1. Pure greeting check (only on first contact or explicit standalone hello)
+        # 1. Greeting check
+        malayalam_greetings = ["sugano", "sugamano", "sukhamano", "sukham", "sugam", "kollam"]
+        if any(w in msg_lower for w in malayalam_greetings):
+            return {
+                "reply": (
+                    f"Sugam thanne, macha! 🙏 (Doing great!) PADAYAPPA here, ready for our next adventure.\n\n"
+                    "Where are we heading next, or what would you like me to plan for you?"
+                ),
+                "source": "rag_knowledge_engine",
+            }
+
         greeting_words = {"hai", "hi", "hello", "hey", "namaskaram", "namaste", "vanakkam", "halo", "yo"}
         words_set = set(re.findall(r"\b\w+\b", msg_lower))
 
@@ -1228,26 +1238,36 @@ class TourismRAGService:
                 "source": "rag_knowledge_engine",
             }
 
-        # 2. Resolve destination (from current message first, then conversation history)
+        # 2. Resolve destination (from current message first, then conversation history backwards)
         dest_data = self.resolve_destination(msg_lower)
-        if not dest_data:
-            dest_data = self.resolve_destination(full_context)
-
-        # Fallback to general destination name if matched in common keywords
         generic_dest_name = None
+
+        common_destinations = [
+            "varanasi", "kashi", "banaras", "thenkasi", "tenkasi", "courtallam",
+            "munnar", "vattavada", "varkala", "coorg", "ooty", "wayanad", "kodaikanal",
+            "hampi", "goa", "alleppey", "mysore", "jaipur", "agra", "manali",
+            "paris", "tokyo", "bali", "dubai", "ladakh", "delhi"
+        ]
+
         if not dest_data:
-            common_destinations = [
-                "varanasi", "kashi", "banaras", "thenkasi", "tenkasi", "courtallam",
-                "munnar", "vattavada", "varkala", "coorg", "ooty", "wayanad", "kodaikanal",
-                "hampi", "goa", "alleppey", "mysore", "jaipur", "agra", "manali",
-                "paris", "tokyo", "bali", "dubai", "ladakh", "delhi"
-            ]
             for cd in common_destinations:
                 if cd in msg_lower:
                     generic_dest_name = cd.title()
                     break
-                elif cd in full_context:
-                    generic_dest_name = cd.title()
+
+        # If not in current message, search recent history backwards turn-by-turn
+        if not dest_data and not generic_dest_name and history and isinstance(history, list):
+            for h in reversed(history):
+                c = str(h.get("content", "")).lower()
+                found = self.resolve_destination(c)
+                if found:
+                    dest_data = found
+                    break
+                for cd in common_destinations:
+                    if cd in c:
+                        generic_dest_name = cd.title()
+                        break
+                if generic_dest_name:
                     break
 
         # 3. Contextual Affirmations ("yes", "sure", "tell me hotels", "refine it")
@@ -1336,7 +1356,7 @@ class TourismRAGService:
             has_budget = any(w in full_context for w in ["budget", "comfort", "luxury", "₹", "rs", "rupee", "cheap", "cost", "10000", "15000", "12000", "20000", "25000", "under"])
 
             # STEP A: Destination just mentioned -> Warm reaction + 2-line description + Ask duration & group dynamic in 1 targeted question
-            dest_in_current_msg = (active_dest_name.lower() in msg_lower)
+            dest_in_current_msg = bool(dest_data and dest_data["canonical_name"].lower() in msg_lower) or any(cd in msg_lower for cd in common_destinations)
             if dest_in_current_msg and not has_travelers and not has_days:
                 tagline = active_dest_data["tagline"] if active_dest_data else f"A breathtaking travel haven"
                 vibe = active_dest_data["vibe"] if active_dest_data else f"Rich culture, picturesque landscapes, and memorable local experiences"
