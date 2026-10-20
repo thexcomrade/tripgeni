@@ -16,6 +16,7 @@ interface ChatMessage {
 
 const PADAYAPPA_PROMPTS = [
   "Padayappa AI ✨",
+  "Rotate me 360° 🔄",
   "Namaskaram! 🙏",
   "Need a plan, macha? 🌴",
   "Ask Padayappa ✈️",
@@ -51,7 +52,11 @@ export default function FloatingMascot() {
 
     return () => {
       document.removeEventListener("mousedown", handlePointerDownOutside, true);
-      document.removeEventListener("touchstart", handlePointerDownOutside, true);
+      document.removeEventListener(
+        "touchstart",
+        handlePointerDownOutside,
+        true,
+      );
     };
   }, [isOpen]);
   // Rotate speech prompt like ROG Omni every 7 seconds
@@ -123,14 +128,26 @@ export default function FloatingMascot() {
 
       setMessages((prev) => [...prev, padayappaMsg]);
     } catch {
-      let fallbackText = "Namaskaram! PADAYAPPA here. What destination do you have in mind?";
+      let fallbackText =
+        "Namaskaram! PADAYAPPA here. What destination do you have in mind?";
       const lower = userText.toLowerCase();
-      if (lower.includes("sugano") || lower.includes("sugam") || lower.includes("sukham")) {
-        fallbackText = "Sugam thanne, macha! 🙏 (Doing great!) Padayappa here, ready for our next adventure. Where are we heading next?";
-      } else if (lower.includes("hi") || lower.includes("hello") || lower.includes("hey")) {
-        fallbackText = "Namaskaram! 🙏 Ready to plan an unforgettable journey. Tell me your destination or travel vibe!";
+      if (
+        lower.includes("sugano") ||
+        lower.includes("sugam") ||
+        lower.includes("sukham")
+      ) {
+        fallbackText =
+          "Sugam thanne, macha! 🙏 (Doing great!) Padayappa here, ready for our next adventure. Where are we heading next?";
+      } else if (
+        lower.includes("hi") ||
+        lower.includes("hello") ||
+        lower.includes("hey")
+      ) {
+        fallbackText =
+          "Namaskaram! 🙏 Ready to plan an unforgettable journey. Tell me your destination or travel vibe!";
       } else {
-        fallbackText = "Namaskaram! For complete day-by-day itineraries with timings, food spots, and costs in ₹, jump right into my full chat room!";
+        fallbackText =
+          "Namaskaram! For complete day-by-day itineraries with timings, food spots, and costs in ₹, jump right into my full chat room!";
       }
       const fallbackMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -156,53 +173,69 @@ export default function FloatingMascot() {
       <div className="mascot-widget">
         {/* OMNI SPEECH BADGE (No artificial glow, clean dark glass pill) */}
         {!isOpen && (
-          <div
-            className="mascot-speech-badge"
-            onClick={() => setIsOpen(true)}
-          >
+          <div className="mascot-speech-badge" onClick={() => setIsOpen(true)}>
             <span className="mascot-live-indicator" />
             <span>{PADAYAPPA_PROMPTS[speechIndex]}</span>
           </div>
         )}
 
-        <div
-          role="button"
-          tabIndex={0}
-          className="mascot-trigger"
-          aria-label={isOpen ? "Close Padayappa" : "Open Padayappa Assistant"}
-          aria-expanded={isOpen}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              setIsOpen((prev) => !prev);
-            }
-          }}
-        >
-          {/* 3D GLB CHARACTER WITH REAL-TIME CONTACT SHADOW & PROCEDURAL LIFE */}
-          <div className="mascot-image-wrapper">
-            <Mascot3DCanvas
-              onModelClick={() => setIsOpen((prev) => !prev)}
-              fallback={
-                <Image
-                  src="/images/model.png"
-                  alt="Padayappa 3D Companion"
-                  fill
-                  sizes="140px"
-                  priority
-                  style={{ objectFit: "contain", cursor: "pointer" }}
-                  onClick={() => setIsOpen((prev) => !prev)}
-                />
-              }
-            />
-          </div>
-
-          {/* 360° ROTATION INTERACTION HINT */}
-          <div className="mascot-rotate-pill" title="Drag character to rotate 360°">
-            <span>🔄</span> 360°
-          </div>
-
-          {/* NATURAL PHYSICAL GROUND CONTACT SHADOW */}
-          <div className="mascot-ground-shadow" />
+        <div
+          role="button"
+
+          tabIndex={0}
+
+          className="mascot-trigger"
+
+          aria-label={isOpen ? "Close Padayappa" : "Open Padayappa Assistant"}
+
+          aria-expanded={isOpen}
+
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+
+              setIsOpen((prev) => !prev);
+            }
+          }}
+        >
+          {/* 3D GLB CHARACTER WITH REAL-TIME CONTACT SHADOW & PROCEDURAL LIFE */}
+
+          <div className="mascot-image-wrapper">
+            <Mascot3DCanvas
+              onModelClick={() => setIsOpen((prev) => !prev)}
+
+              fallback={
+                <Image
+                  src="/images/model.png"
+
+                  alt="Padayappa 3D Companion"
+
+                  fill
+
+                  sizes="140px"
+
+                  priority
+
+                  style={{ objectFit: "contain", cursor: "pointer" }}
+
+                  onClick={() => setIsOpen((prev) => !prev)}
+                />
+              }
+            />
+          </div>
+
+          {/* 360° ROTATION INTERACTION HINT */}
+
+          <div
+            className="mascot-rotate-pill"
+            title="Drag character to rotate 360°"
+          >
+            <span>🔄</span> 360°
+          </div>
+
+          {/* NATURAL PHYSICAL GROUND CONTACT SHADOW */}
+
+          <div className="mascot-ground-shadow" />
         </div>
       </div>
 
@@ -228,7 +261,19 @@ export default function FloatingMascot() {
           {/* HEADER */}
           <header className="assistant-header">
             <div className="assistant-heading">
-              <span className="mascot-live-indicator" />
+              <div className="assistant-avatar-badge">
+                <Image
+                  src="/images/das.png"
+                  alt="Padayappa"
+                  width={34}
+                  height={34}
+                  style={{ objectFit: "cover", borderRadius: "50%" }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/images/model.ico";
+                  }}
+                />
+                <span className="mascot-live-indicator" />
+              </div>
               <div className="assistant-heading-text">
                 <strong>PADAYAPPA</strong>
                 <small>AI Travel Companion</small>
@@ -262,26 +307,32 @@ export default function FloatingMascot() {
               <div className="assistant-intro-box">
                 <div className="assistant-mini-avatar">
                   <Image
-                    src="/images/model.png"
-                    alt="Padayappa Avatar"
-                    width={50}
-                    height={75}
-                    style={{ objectFit: "contain" }}
+                    src="/images/das.png"
+                    alt="Padayappa AI Companion"
+                    width={58}
+                    height={58}
+                    style={{ objectFit: "cover", borderRadius: "50%" }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/images/model.ico";
+                    }}
                   />
                 </div>
 
                 <h3>Namaskaram! 🙏</h3>
 
                 <p>
-                  I'm <strong>PADAYAPPA</strong>, your personal AI travel companion.
-                  Ask me about destinations, budgets, stays, or hidden spots!
+                  I'm <strong>PADAYAPPA</strong>, your personal AI travel
+                  companion. Ask me about destinations, budgets, stays, or
+                  hidden spots!
                 </p>
 
                 <div className="assistant-suggestions">
                   <button
                     type="button"
                     onClick={() =>
-                      handleSendMessage("Plan a 4-day scenic trip to Munnar for a couple")
+                      handleSendMessage(
+                        "Plan a 4-day scenic trip to Munnar for a couple",
+                      )
                     }
                   >
                     🌴 Plan a 4-day trip to Munnar
@@ -290,7 +341,9 @@ export default function FloatingMascot() {
                   <button
                     type="button"
                     onClick={() =>
-                      handleSendMessage("What budget do I need for a 3-day trip in Kerala?")
+                      handleSendMessage(
+                        "What budget do I need for a 3-day trip in Kerala?",
+                      )
                     }
                   >
                     💰 What budget do I need for 3 days?
@@ -299,7 +352,9 @@ export default function FloatingMascot() {
                   <button
                     type="button"
                     onClick={() =>
-                      handleSendMessage("Help me choose between Varkala and Goa")
+                      handleSendMessage(
+                        "Help me choose between Varkala and Goa",
+                      )
                     }
                   >
                     ✨ Help me choose a destination
@@ -309,14 +364,49 @@ export default function FloatingMascot() {
             ) : (
               <div className="assistant-messages">
                 {messages.map((m) => (
-                  <div key={m.id} className={`assistant-bubble ${m.sender}`}>
-                    {m.text}
+                  <div key={m.id} className={`assistant-row ${m.sender}`}>
+                    {m.sender === "padayappa" && (
+                      <div className="assistant-msg-avatar">
+                        <Image
+                          src="/images/das.png"
+                          alt="Padayappa"
+                          width={26}
+                          height={26}
+                          style={{ objectFit: "cover", borderRadius: "50%" }}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "/images/model.ico";
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className={`assistant-bubble ${m.sender}`}>
+                      {m.text}
+                    </div>
                   </div>
                 ))}
 
                 {isLoading && (
-                  <div className="assistant-bubble padayappa" style={{ opacity: 0.75 }}>
-                    <em>Padayappa is thinking... ✈️</em>
+                  <div className="assistant-row padayappa">
+                    <div className="assistant-msg-avatar">
+                      <Image
+                        src="/images/das.png"
+                        alt="Padayappa"
+                        width={26}
+                        height={26}
+                        style={{ objectFit: "cover", borderRadius: "50%" }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            "/images/model.ico";
+                        }}
+                      />
+                    </div>
+                    <div
+                      className="assistant-bubble padayappa"
+                      style={{ opacity: 0.75 }}
+                    >
+                      <em>Padayappa is thinking... ✈️</em>
+                    </div>
                   </div>
                 )}
                 <div ref={messagesEndRef} />
