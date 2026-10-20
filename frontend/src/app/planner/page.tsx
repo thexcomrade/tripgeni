@@ -439,6 +439,30 @@ function PlannerContent() {
     return calculateTransitPricing(origin, destination);
   }, [origin, destination]);
 
+  // Dynamic Vehicle / Transit Cost Calculation for current traveler group
+  const calculatedTransitCost = useMemo(() => {
+    if (transportationMode === "Train") {
+      const fare = transitPricing.train.threeTierAcMin || transitPricing.train.sleeperMinFare || 800;
+      return fare * Math.max(1, travelersCount);
+    }
+    if (transportationMode === "Flight") {
+      const fare = transitPricing.flight.economyMinFare || 3500;
+      return fare * Math.max(1, travelersCount);
+    }
+    if (transportationMode === "Bus") {
+      const fare = transitPricing.bus.acSleeperMinFare || transitPricing.bus.nonAcMinFare || 650;
+      return fare * Math.max(1, travelersCount);
+    }
+    if (transportationMode === "Car") {
+      return transitPricing.car.fuelAndTollsApprox || 1500;
+    }
+    if (transportationMode === "Bike") {
+      const days = Math.max(1, durationDays);
+      return days * 700;
+    }
+    return 0;
+  }, [transportationMode, transitPricing, travelersCount, durationDays]);
+
   // Dynamically calibrate Activity & Interest Focus Points based on Google Travel Ideas & Dataset
   useEffect(() => {
     const dest = destination.trim().toLowerCase();
@@ -1209,7 +1233,7 @@ function PlannerContent() {
                     </div>
                   </div>
 
-                  {/* TRANSIT MINIMUM TICKET FARES GRID */}
+                  {/* TRANSIT MINIMUM TICKET FARES GRID — INTERACTIVE & SELECTABLE */}
                   <div
                     style={{
                       display: "grid",
@@ -1218,90 +1242,159 @@ function PlannerContent() {
                     }}
                   >
                     {/* TRAIN */}
-                    <div
-                      style={{
-                        background: transitPricing.train.available ? "rgba(255, 255, 255, 0.03)" : "rgba(239, 68, 68, 0.04)",
-                        border: transitPricing.train.available ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(239, 68, 68, 0.20)",
-                        borderRadius: "12px",
-                        padding: "12px 14px",
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                        <span style={{ fontWeight: 700, fontSize: "0.86rem", color: transitPricing.train.available ? "#E2E8F0" : "#94A3B8", display: "flex", alignItems: "center", gap: "6px" }}>
-                          🚆 Train (IRCTC)
-                        </span>
-                        <span style={{ fontSize: "0.72rem", color: transitPricing.train.available ? "#94A3B8" : "#EF4444" }}>
-                          {transitPricing.train.available ? `~${transitPricing.train.approxDurationHours} hrs` : "No Rail Route"}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
-                        {transitPricing.train.available ? (
-                          <>
-                            <div>Sleeper: <b style={{ color: "#34D399" }}>₹{transitPricing.train.sleeperMinFare.toLocaleString("en-IN")}</b> - ₹{transitPricing.train.sleeperMaxFare.toLocaleString("en-IN")}</div>
-                            <div>3AC: <b style={{ color: "#38BDF8" }}>₹{transitPricing.train.threeTierAcMin.toLocaleString("en-IN")}</b> - ₹{transitPricing.train.threeTierAcMax.toLocaleString("en-IN")}</div>
-                          </>
-                        ) : (
-                          <div style={{ color: "#EF4444", fontSize: "0.74rem" }}>
-                            {transitPricing.train.note}
+                    {(() => {
+                      const isTrainSelected = transportationMode === "Train";
+                      return (
+                        <div
+                          onClick={() => {
+                            if (transitPricing.train.available) {
+                              setTransportationMode("Train");
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          style={{
+                            background: isTrainSelected
+                              ? "rgba(52, 211, 153, 0.14)"
+                              : transitPricing.train.available
+                              ? "rgba(255, 255, 255, 0.03)"
+                              : "rgba(239, 68, 68, 0.04)",
+                            border: isTrainSelected
+                              ? "2px solid #34D399"
+                              : transitPricing.train.available
+                              ? "1px solid rgba(255, 255, 255, 0.12)"
+                              : "1px solid rgba(239, 68, 68, 0.20)",
+                            boxShadow: isTrainSelected ? "0 0 16px rgba(52, 211, 153, 0.25)" : "none",
+                            borderRadius: "12px",
+                            padding: "12px 14px",
+                            cursor: transitPricing.train.available ? "pointer" : "not-allowed",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                            <span style={{ fontWeight: 700, fontSize: "0.86rem", color: isTrainSelected ? "#34D399" : transitPricing.train.available ? "#E2E8F0" : "#94A3B8", display: "flex", alignItems: "center", gap: "6px" }}>
+                              🚆 Train (IRCTC)
+                            </span>
+                            <span style={{ fontSize: "0.72rem", color: isTrainSelected ? "#34D399" : transitPricing.train.available ? "#94A3B8" : "#EF4444", fontWeight: isTrainSelected ? 700 : 500 }}>
+                              {transitPricing.train.available ? `~${transitPricing.train.approxDurationHours} hrs` : "No Rail Route"}
+                            </span>
                           </div>
-                        )}
-                      </div>
-                    </div>
+                          <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
+                            {transitPricing.train.available ? (
+                              <>
+                                <div>Sleeper: <b style={{ color: "#34D399" }}>₹{transitPricing.train.sleeperMinFare.toLocaleString("en-IN")}</b> - ₹{transitPricing.train.sleeperMaxFare.toLocaleString("en-IN")}</div>
+                                <div>3AC: <b style={{ color: "#38BDF8" }}>₹{transitPricing.train.threeTierAcMin.toLocaleString("en-IN")}</b> - ₹{transitPricing.train.threeTierAcMax.toLocaleString("en-IN")}</div>
+                                <div style={{ marginTop: "6px", fontSize: "0.72rem", color: isTrainSelected ? "#34D399" : "#94A3B8", fontWeight: 600 }}>
+                                  {isTrainSelected ? "✓ Selected for your journey" : "Click to select Train"}
+                                </div>
+                              </>
+                            ) : (
+                              <div style={{ color: "#EF4444", fontSize: "0.74rem" }}>
+                                {transitPricing.train.note}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* FLIGHT */}
-                    <div
-                      style={{
-                        background: transitPricing.isInternational ? "rgba(14, 165, 233, 0.10)" : "rgba(255, 255, 255, 0.03)",
-                        border: transitPricing.isInternational ? "1px solid rgba(14, 165, 233, 0.40)" : "1px solid rgba(255, 255, 255, 0.08)",
-                        borderRadius: "12px",
-                        padding: "12px 14px",
-                        boxShadow: transitPricing.isInternational ? "0 0 16px rgba(14, 165, 233, 0.15)" : "none",
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                        <span style={{ fontWeight: 700, fontSize: "0.86rem", color: "#E2E8F0", display: "flex", alignItems: "center", gap: "6px" }}>
-                          ✈️ {transitPricing.isInternational ? "International Flight (Primary)" : "Flight + Transit"}
-                        </span>
-                        <span style={{ fontSize: "0.72rem", color: "#38BDF8", fontWeight: 600 }}>
-                          ~{transitPricing.flight.approxDurationHours} hrs
-                        </span>
-                      </div>
-                      <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
-                        <div>Economy: <b style={{ color: "#F59E0B" }}>₹{transitPricing.flight.economyMinFare.toLocaleString("en-IN")}</b> - ₹{transitPricing.flight.economyMaxFare.toLocaleString("en-IN")}</div>
-                        <div style={{ fontSize: "0.70rem", color: "#38BDF8" }}>{transitPricing.flight.note}</div>
-                      </div>
-                    </div>
+                    {(() => {
+                      const isFlightSelected = transportationMode === "Flight";
+                      return (
+                        <div
+                          onClick={() => setTransportationMode("Flight")}
+                          role="button"
+                          tabIndex={0}
+                          style={{
+                            background: isFlightSelected
+                              ? "rgba(56, 189, 248, 0.15)"
+                              : transitPricing.isInternational
+                              ? "rgba(14, 165, 233, 0.10)"
+                              : "rgba(255, 255, 255, 0.03)",
+                            border: isFlightSelected
+                              ? "2px solid #38BDF8"
+                              : transitPricing.isInternational
+                              ? "1px solid rgba(14, 165, 233, 0.40)"
+                              : "1px solid rgba(255, 255, 255, 0.08)",
+                            boxShadow: isFlightSelected ? "0 0 16px rgba(56, 189, 248, 0.25)" : transitPricing.isInternational ? "0 0 16px rgba(14, 165, 233, 0.15)" : "none",
+                            borderRadius: "12px",
+                            padding: "12px 14px",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                            <span style={{ fontWeight: 700, fontSize: "0.86rem", color: isFlightSelected ? "#38BDF8" : "#E2E8F0", display: "flex", alignItems: "center", gap: "6px" }}>
+                              ✈️ {transitPricing.isInternational ? "International Flight (Primary)" : "Flight + Transit"}
+                            </span>
+                            <span style={{ fontSize: "0.72rem", color: "#38BDF8", fontWeight: 600 }}>
+                              ~{transitPricing.flight.approxDurationHours} hrs
+                            </span>
+                          </div>
+                          <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
+                            <div>Economy: <b style={{ color: "#F59E0B" }}>₹{transitPricing.flight.economyMinFare.toLocaleString("en-IN")}</b> - ₹{transitPricing.flight.economyMaxFare.toLocaleString("en-IN")}</div>
+                            <div style={{ fontSize: "0.70rem", color: "#38BDF8" }}>{transitPricing.flight.note}</div>
+                            <div style={{ marginTop: "6px", fontSize: "0.72rem", color: isFlightSelected ? "#38BDF8" : "#94A3B8", fontWeight: 600 }}>
+                              {isFlightSelected ? "✓ Selected for your journey" : "Click to select Flight"}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* BUS / ROAD */}
-                    <div
-                      style={{
-                        background: "rgba(255, 255, 255, 0.03)",
-                        border: "1px solid rgba(255, 255, 255, 0.08)",
-                        borderRadius: "12px",
-                        padding: "12px 14px",
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                        <span style={{ fontWeight: 700, fontSize: "0.86rem", color: "#E2E8F0", display: "flex", alignItems: "center", gap: "6px" }}>
-                          🚌 Bus / Road
-                        </span>
-                        <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
-                          {transitPricing.bus.available ? `~${transitPricing.bus.approxDurationHours} hrs` : "N/A"}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
-                        {transitPricing.bus.available ? (
-                          <>
-                            <div>Express: <b style={{ color: "#A78BFA" }}>₹{transitPricing.bus.nonAcMinFare.toLocaleString("en-IN")}</b></div>
-                            <div>AC Sleeper: <b style={{ color: "#A78BFA" }}>₹{transitPricing.bus.acSleeperMinFare.toLocaleString("en-IN")}</b></div>
-                          </>
-                        ) : (
-                          <div style={{ color: "#64748B", fontSize: "0.74rem" }}>
-                            {transitPricing.isInternational ? "No cross-continental bus routes" : "Long distance route; Train or Flight advised"}
+                    {(() => {
+                      const isBusSelected = transportationMode === "Bus";
+                      return (
+                        <div
+                          onClick={() => {
+                            if (transitPricing.bus.available) {
+                              setTransportationMode("Bus");
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          style={{
+                            background: isBusSelected
+                              ? "rgba(245, 158, 11, 0.15)"
+                              : "rgba(255, 255, 255, 0.03)",
+                            border: isBusSelected
+                              ? "2px solid #F59E0B"
+                              : "1px solid rgba(255, 255, 255, 0.08)",
+                            boxShadow: isBusSelected ? "0 0 16px rgba(245, 158, 11, 0.25)" : "none",
+                            borderRadius: "12px",
+                            padding: "12px 14px",
+                            cursor: transitPricing.bus.available ? "pointer" : "not-allowed",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                            <span style={{ fontWeight: 700, fontSize: "0.86rem", color: isBusSelected ? "#F59E0B" : "#E2E8F0", display: "flex", alignItems: "center", gap: "6px" }}>
+                              🚌 Bus / Road
+                            </span>
+                            <span style={{ fontSize: "0.72rem", color: isBusSelected ? "#F59E0B" : "#94A3B8", fontWeight: isBusSelected ? 700 : 500 }}>
+                              {transitPricing.bus.available ? `~${transitPricing.bus.approxDurationHours} hrs` : "N/A"}
+                            </span>
                           </div>
-                        )}
-                      </div>
-                    </div>
+                          <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
+                            {transitPricing.bus.available ? (
+                              <>
+                                <div>Express: <b style={{ color: "#A78BFA" }}>₹{transitPricing.bus.nonAcMinFare.toLocaleString("en-IN")}</b></div>
+                                <div>AC Sleeper: <b style={{ color: "#A78BFA" }}>₹{transitPricing.bus.acSleeperMinFare.toLocaleString("en-IN") || "1,200"}</b></div>
+                                <div style={{ marginTop: "6px", fontSize: "0.72rem", color: isBusSelected ? "#F59E0B" : "#94A3B8", fontWeight: 600 }}>
+                                  {isBusSelected ? "✓ Selected for your journey" : "Click to select Bus"}
+                                </div>
+                              </>
+                            ) : (
+                              <div style={{ color: "#64748B", fontSize: "0.74rem" }}>
+                                {transitPricing.isInternational ? "No cross-continental bus routes" : "Long distance route; Train or Flight advised"}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   <div style={{ marginTop: "10px", fontSize: "0.75rem", color: "#94A3B8", display: "flex", alignItems: "center", gap: "6px" }}>
@@ -1701,6 +1794,44 @@ function PlannerContent() {
                         </button>
                       );
                     })}
+                  </div>
+                </div>
+
+                {/* DYNAMIC VEHICLE / TRANSIT COST INTEGRATION */}
+                <div
+                  style={{
+                    marginTop: "14px",
+                    background: "rgba(255, 255, 255, 0.03)",
+                    border: "1px solid rgba(255, 255, 255, 0.10)",
+                    borderRadius: "12px",
+                    padding: "12px 16px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: "10px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ fontSize: "1.4rem" }}>
+                      {transportationMode === "Train" ? "🚆" : transportationMode === "Flight" ? "✈️" : transportationMode === "Bus" ? "🚌" : transportationMode === "Bike" ? "🏍️" : "🚗"}
+                    </span>
+                    <div>
+                      <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF" }}>
+                        Estimated {transportationMode} Transit Fare Included
+                      </div>
+                      <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
+                        Calculated for {travelersCount} traveler{travelersCount > 1 ? "s" : ""} ({origin || "Starting City"} → {destination || "Destination"})
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: "1.08rem", fontWeight: 800, color: "#34D399" }}>
+                      ~₹{calculatedTransitCost.toLocaleString("en-IN")}
+                    </div>
+                    <div style={{ fontSize: "0.70rem", color: "#94A3B8" }}>
+                      {Math.round((calculatedTransitCost / Math.max(1, budget)) * 100)}% of total budget
+                    </div>
                   </div>
                 </div>
               </div>
