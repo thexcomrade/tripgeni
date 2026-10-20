@@ -199,6 +199,7 @@ export default function FloatingMascot() {
           }}
         >
           {/* 3D GLB CHARACTER WITH REAL-TIME CONTACT SHADOW & PROCEDURAL LIFE */}
+<<<<<<< HEAD
 
           <div className="mascot-image-wrapper">
             <Mascot3DCanvas
@@ -219,6 +220,18 @@ export default function FloatingMascot() {
                   style={{ objectFit: "contain", cursor: "pointer" }}
 
                   onClick={() => setIsOpen((prev) => !prev)}
+=======
+          <div className="mascot-image-wrapper">
+            <Mascot3DCanvas
+              fallback={
+                <Image
+                  src="/images/model.png"
+                  alt="Padayappa 3D Companion"
+                  fill
+                  sizes="140px"
+                  priority
+                  style={{ objectFit: "contain" }}
+>>>>>>> 4e4546dda16edeadc67e1a33ba0e0157eac6d527
                 />
               }
             />
