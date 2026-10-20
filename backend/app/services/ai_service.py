@@ -1304,7 +1304,7 @@ Return JSON.
         user_name: Optional[str] = None,
     ) -> dict:
         """
-        Generate warm, deeply analyzed, structured travel advice as PADAYAPPA (RAG Mode).
+        Generate warm, deeply analyzed, structured travel advice as Trip Geni AI (RAG Mode).
         Always grounds recommendations in verified tourism intelligence, greets warmly with
         'Namaskaram *username*!', covers worldwide destinations, structures replies cleanly,
         and asks exactly one focused question.
@@ -1361,7 +1361,7 @@ Return JSON.
             for item in recent_turns:
                 r = item.get("role", "user")
                 c = item.get("content", "")
-                speaker = "Traveler" if r == "user" else "PADAYAPPA"
+                speaker = "Traveler" if r == "user" else "Trip Geni AI"
                 history_lines.append(f"{speaker}: {c}")
             if history_lines:
                 history_formatted = (
@@ -1370,7 +1370,7 @@ Return JSON.
                     + "\n\n"
                 )
 
-        prompt = f"""You are DASAPPAN, the Next-Gen Travel AI Engine 2.0 on Trip Geni — a world-wise, charismatic, and extraordinarily knowledgeable personal travel companion and concierge.
+        prompt = f"""You are Trip Geni AI, the Next-Gen Travel AI Engine on Trip Geni — a world-wise, charismatic, and extraordinarily knowledgeable personal AI Travel Companion and concierge.
 You possess deep, authentic intelligence about travel across India (from the ancient ghats of Varanasi, tea hills of Munnar, serene waters of Varkala and Thenkasi, to Himachal, Rajasthan, and Goa) and worldwide (Paris, Tokyo, Bali, Swiss Alps, New York, and beyond).
 
 {history_formatted}Traveler: "{user_message}"
