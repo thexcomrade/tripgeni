@@ -83,7 +83,6 @@ export default function RootLayout({
           {children}
         </main>
         <AppFooter />
-        <FloatingMascot />
       </body>
     </html>
   );
