@@ -795,7 +795,7 @@ export default function GeneratedTripPage() {
 
           {/* HERO ACTIONS */}
           <div
-            style={{
+            className="mobile-wrap-actions" style={{
               display: "flex",
               gap: "12px",
               alignItems: "center",
