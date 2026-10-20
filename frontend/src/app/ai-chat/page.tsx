@@ -271,6 +271,7 @@ export default function AIChatPage() {
           ? navigator.language
           : "en-IN";
 
+      const SILENCE_TIMEOUT = 1500; // 1.5 seconds - optimal natural voice-assistant experience
       let silenceTimer: ReturnType<typeof setTimeout> | null = null;
 
       recognition.onstart = () => {
@@ -296,13 +297,13 @@ export default function AIChatPage() {
           latestTranscriptRef.current = combined;
         }
 
-        // Reset silence timer: when user pauses for 2.5 seconds, auto stop and submit
+        // Reset silence timer: when user pauses for 1.5 seconds, auto stop and submit
         if (silenceTimer) clearTimeout(silenceTimer);
         silenceTimer = setTimeout(() => {
           try {
             recognition.stop();
           } catch {}
-        }, 2500);
+        }, SILENCE_TIMEOUT);
       };
 
       recognition.onerror = (event: any) => {
