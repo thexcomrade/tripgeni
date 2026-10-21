@@ -266,6 +266,11 @@ export default function DashboardPage() {
     const trimmed = city.trim();
     if (!trimmed) return;
     setWeatherCity(trimmed);
+    setUserCity(trimmed);
+    try {
+      localStorage.setItem("tripgenius_weather_city", trimmed);
+      localStorage.setItem("tripgenius_weather_city_custom", "true");
+    } catch {}
     const profile = getCityWeatherProfile(trimmed);
     setWeatherData(profile);
     setIsCityPickerOpen(false);
@@ -279,33 +284,36 @@ export default function DashboardPage() {
     else if (hour < 21) setGreeting("Good evening");
     else setGreeting("Good night");
 
-    // Load user profile
+    // 1. Check persisted weather city preference first (user selected or typed)
+    const savedWeatherCity = localStorage.getItem("tripgenius_weather_city");
+    if (savedWeatherCity && savedWeatherCity.trim()) {
+      const city = savedWeatherCity.trim();
+      setWeatherCity(city);
+      setUserCity(city);
+      setWeatherData(getCityWeatherProfile(city));
+    }
+
+    // 2. Load user profile
     const storedUser = localStorage.getItem("tripgenius_user");
     if (storedUser) {
       try {
         const user = JSON.parse(storedUser);
-        if (
-          user.full_name &&
-          user.full_name !== "Traveler" &&
-          user.full_name !== "Sivya Babu"
-        ) {
+        if (user.full_name && user.full_name !== "Traveler" && user.full_name !== "Sivya Babu") {
           setUserName(user.full_name);
-        } else {
-          setUserName("Test Traveler");
+        } else if (user.full_name) {
+          setUserName(user.full_name);
         }
-        if (user.tripgenius_id && user.tripgenius_id !== "TG-SB8842") {
+        if (user.tripgenius_id) {
           setTripGeniusId(user.tripgenius_id);
-        } else {
-          setTripGeniusId("TG-TC8842");
         }
         if (user.eco_score !== undefined) setEcoScore(user.eco_score);
-        if (user.location || user.city || user.district) {
-          const loc = (user.location || user.city || user.district || "").split(",")[0].trim();
-          if (loc) {
-            setUserCity(loc);
-            setWeatherCity(loc);
-            setWeatherData(getCityWeatherProfile(loc));
-          }
+
+        // Fallback to profile base location only if user has not explicitly picked a weather city
+        const profileLoc = (user.country || user.location || user.city || user.district || "").split(",")[0].trim();
+        if (profileLoc && (!savedWeatherCity || !savedWeatherCity.trim())) {
+          setUserCity(profileLoc);
+          setWeatherCity(profileLoc);
+          setWeatherData(getCityWeatherProfile(profileLoc));
         }
       } catch {
         // ignore
@@ -355,9 +363,14 @@ export default function DashboardPage() {
     loadDashboardData();
   }, []);
 
-  // Fetch live weather data for selected city
+  // Fetch live weather data for selected city with safety timeout
   useEffect(() => {
     let isMounted = true;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      try { controller.abort(); } catch {}
+    }, 4000);
+
     const fetchWeather = async () => {
       setWeatherLoading(true);
       try {
@@ -368,6 +381,7 @@ export default function DashboardPage() {
 
         const res = await fetch(
           `${baseUrl}/api/weather?city=${encodeURIComponent(weatherCity)}`,
+          { signal: controller.signal }
         );
         if (res.ok) {
           const data = await res.json();
@@ -384,14 +398,17 @@ export default function DashboardPage() {
           }
         }
       } catch {
-        // fallback profile already set immediately by switchCityWeather
+        // fallback profile already set immediately by switchCityWeather / getCityWeatherProfile
       } finally {
+        clearTimeout(timeoutId);
         if (isMounted) setWeatherLoading(false);
       }
     };
     fetchWeather();
     return () => {
       isMounted = false;
+      try { controller.abort(); } catch {}
+      clearTimeout(timeoutId);
     };
   }, [weatherCity]);
 

@@ -191,19 +191,11 @@ export default function ProfilePage() {
         const profileData: UserProfile = {
           uid: parsed.uid ?? generateUID(),
           tripgenius_id: resolvedId,
-          full_name: name,
-          username: resolvedUsername,
-          email: resolvedEmail,
-          bio:
-            parsed.bio &&
-            !parsed.bio.includes("Dr. Sivya Menon") &&
-            !parsed.bio.includes("Healthcare Professional")
-              ? parsed.bio
-              : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
-          country:
-            parsed.country && parsed.country !== "India"
-              ? parsed.country
-              : "Trivandrum, Kerala, India",
+          full_name: parsed.full_name || name,
+          username: parsed.username || resolvedUsername,
+          email: parsed.email || resolvedEmail,
+          bio: parsed.bio !== undefined ? parsed.bio : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
+          country: parsed.country !== undefined ? parsed.country : "Trivandrum, Kerala, India",
           profile_image: image || parsed.profile_image || "",
           total_trips: liveTotalTrips,
           saved_trips: parsedSaved.length,
@@ -224,60 +216,42 @@ export default function ProfilePage() {
         };
 
         setUser(profileData);
-
-        // Update localStorage if old username or placeholder existed
-        if (
-          parsed.username !== resolvedUsername ||
-          parsed.full_name === "Sivya Babu" ||
-          !parsed.username
-        ) {
-          localStorage.setItem(
-            "tripgenius_user",
-            JSON.stringify({ ...parsed, ...profileData }),
-          );
-        }
       } else {
-        // Fallback for guest visitor
+        // Fallback for guest visitor: faithfully preserve all user-edited fields
         if (storedUser) {
           const parsed = JSON.parse(storedUser);
-          const name =
-            parsed.full_name &&
-            parsed.full_name !== "Traveler" &&
-            parsed.full_name !== "Sivya Babu"
-              ? parsed.full_name
-              : "Test Traveler";
+          const name = parsed.full_name || "Test Traveler";
+          const resolvedUsername = parsed.username || "thexcomrade";
+          const resolvedId = parsed.tripgenius_id || "TG-TC8842";
 
-          const resolvedUsername =
-            parsed.username &&
-            parsed.username !== "voyager" &&
-            parsed.username !== "sivyababu"
-              ? parsed.username
-              : "thexcomrade";
-
-          const resolvedId =
-            parsed.tripgenius_id && parsed.tripgenius_id !== "TG-SB8842"
-              ? parsed.tripgenius_id
-              : "TG-TC8842";
-
-          const guestData = {
-            ...parsed,
+          const guestData: UserProfile = {
+            uid: parsed.uid ?? generateUID(),
+            tripgenius_id: resolvedId,
             full_name: name,
             username: resolvedUsername,
-            tripgenius_id: resolvedId,
+            email: parsed.email || "thexcomrade@tripgenius.com",
+            bio: parsed.bio !== undefined ? parsed.bio : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
+            country: parsed.country !== undefined ? parsed.country : "Trivandrum, Kerala, India",
+            profile_image: image || parsed.profile_image || "",
+            total_trips: parsedSaved.length > 0 ? parsedSaved.length : 3,
             saved_trips: parsedSaved.length,
+            eco_score: parsed.eco_score ?? 92,
+            countries_visited: parsed.countries_visited ?? 3,
+            is_verified: parsed.is_verified ?? true,
+            created_at: parsed.created_at ?? new Date().toISOString(),
+            travel_preferences:
+              parsed.travel_preferences && parsed.travel_preferences.length > 0
+                ? parsed.travel_preferences
+                : [
+                    "Scenic Highlands & Tea Hills",
+                    "Coastal & Beach Escapes",
+                    "Eco Tourism & Sustainable",
+                    "Local Food & Street Dining",
+                    "Peaceful Wellness Retreats",
+                  ],
           };
 
-          setUser((prev) => ({
-            ...prev,
-            ...guestData,
-          }));
-
-          if (parsed.username !== resolvedUsername || !parsed.username) {
-            localStorage.setItem(
-              "tripgenius_user",
-              JSON.stringify(guestData),
-            );
-          }
+          setUser(guestData);
         } else {
           setUser((prev) => ({
             ...prev,
@@ -299,9 +273,20 @@ export default function ProfilePage() {
     const updatedUser = {
       ...user,
       ...updatedProfile,
+      location: updatedProfile.country !== undefined ? updatedProfile.country : user.country,
+      city: (updatedProfile.country !== undefined ? updatedProfile.country : user.country || "").split(",")[0].trim(),
     };
     setUser(updatedUser);
-    localStorage.setItem("tripgenius_user", JSON.stringify(updatedUser));
+    try {
+      localStorage.setItem("tripgenius_user", JSON.stringify(updatedUser));
+      // Sync weather city with base location if user hasn't explicitly set a custom weather city override
+      if (updatedProfile.country && updatedProfile.country.trim()) {
+        const city = updatedProfile.country.split(",")[0].trim();
+        if (city && !localStorage.getItem("tripgenius_weather_city_custom")) {
+          localStorage.setItem("tripgenius_weather_city", city);
+        }
+      }
+    } catch {}
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("storage"));
     }

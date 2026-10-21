@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import tripService from "../../services/trip.service";
 import { ensureTripItinerary } from "../../utils/itineraryHelper";
@@ -121,6 +121,12 @@ export default function ProfileGrid({
           "Local Food & Street Dining",
         ],
   );
+
+  useEffect(() => {
+    if (userPreferences && userPreferences.length > 0) {
+      setSelectedPrefs(userPreferences);
+    }
+  }, [userPreferences]);
   const [prefsSaved, setPrefsSaved] = useState(false);
   const [downloadingTripId, setDownloadingTripId] = useState<string | null>(null);
 

@@ -1,6 +1,11 @@
 "use client";
 
 import TripInteractiveMap from "../../../components/map/TripInteractiveMap";
+import {
+  detectDestinationCurrency,
+  formatCurrencyAmount,
+  SUPPORTED_CURRENCIES,
+} from "../../../utils/currencyHelper";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -26,6 +31,7 @@ import {
   ArrowRight,
   Clock,
   Compass,
+  Globe,
   Coffee,
   Luggage,
   Shield,
@@ -155,6 +161,41 @@ export default function GeneratedTripPage() {
 
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [pdfFeedback, setPdfFeedback] = useState<string>("");
+
+  // Multi-Currency Intelligence
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("INR");
+
+  useEffect(() => {
+    if (trip?.destination) {
+      const saved = localStorage.getItem("tripgenius_currency");
+      if (saved && SUPPORTED_CURRENCIES[saved]) {
+        setSelectedCurrency(saved);
+      } else {
+        const auto = detectDestinationCurrency(trip.destination);
+        setSelectedCurrency(auto.code);
+      }
+    }
+  }, [trip?.destination]);
+
+  const handleCurrencyChange = (currCode: string) => {
+    setSelectedCurrency(currCode);
+    try {
+      localStorage.setItem("tripgenius_currency", currCode);
+    } catch {}
+  };
+
+  const formatMoney = (amount: number) => {
+    const res = formatCurrencyAmount(amount, selectedCurrency);
+    if (selectedCurrency === "INR") {
+      return res.formatted;
+    }
+    return `${res.formatted} (~${res.inrFormatted})`;
+  };
+
+  const formatMoneyDirect = (amount: number) => {
+    const res = formatCurrencyAmount(amount, selectedCurrency);
+    return res.formatted;
+  };
 
   // RL Budget Learning / Actual Expense State
   const [actualTotalSpent, setActualTotalSpent] = useState<string>("");
@@ -869,6 +910,48 @@ export default function GeneratedTripPage() {
               zIndex: 30,
             }}
           >
+            {/* MULTI-CURRENCY SELECTOR PILL */}
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                background: "rgba(15, 23, 42, 0.75)",
+                backdropFilter: "blur(14px)",
+                border: "1px solid rgba(255, 255, 255, 0.20)",
+                borderRadius: "10px",
+                padding: "7px 12px",
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.35)",
+              }}
+            >
+              <Globe size={15} color="#38BDF8" />
+              <span style={{ fontSize: "0.80rem", color: "#94A3B8", fontWeight: 600 }}>
+                Currency:
+              </span>
+              <select
+                value={selectedCurrency}
+                onChange={(e) => handleCurrencyChange(e.target.value)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#38BDF8",
+                  fontSize: "0.85rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  outline: "none",
+                }}
+              >
+                {Object.values(SUPPORTED_CURRENCIES).map((c) => (
+                  <option
+                    key={c.code}
+                    value={c.code}
+                    style={{ background: "#0F172A", color: "#F8FAFC" }}
+                  >
+                    {c.flag} {c.code} ({c.symbol})
+                  </option>
+                ))}
+              </select>
+            </div>
             <Button
               variant="secondary"
               size="md"
@@ -981,7 +1064,7 @@ export default function GeneratedTripPage() {
             >
               <IndianRupee size={16} color="#34D399" />{" "}
               <strong>
-                ₹{resolvedBudget.toLocaleString()} Est. Budget
+                {formatMoney(resolvedBudget)} Est. Budget
               </strong>
             </span>
             <span
@@ -1112,6 +1195,7 @@ export default function GeneratedTripPage() {
           recommendedHotels={trip.recommended_hotels}
           travelStyle={trip.travel_style}
           budget={trip.estimated_trip_cost || trip.budget}
+          currencyCode={selectedCurrency}
         />
       )}
 
@@ -1133,6 +1217,7 @@ export default function GeneratedTripPage() {
             recommendedHotels={trip.recommended_hotels}
             travelStyle={trip.travel_style}
             budget={trip.estimated_trip_cost || trip.budget}
+            currencyCode={selectedCurrency}
           />
 
           {(() => {
@@ -1701,19 +1786,21 @@ export default function GeneratedTripPage() {
               </span>
               <h3
                 style={{
-                  fontSize: "1.8rem",
+                  fontSize: "1.65rem",
                   fontWeight: 800,
                   color: "#38BDF8",
                   marginTop: "6px",
                 }}
               >
-                ₹
-                {(
-                  trip.accommodation_cost ?? Math.round(trip.budget * 0.4)
-                ).toLocaleString()}
+                {formatMoneyDirect(trip.accommodation_cost ?? Math.round(trip.budget * 0.4))}
               </h3>
               <p style={{ fontSize: "0.78rem", color: "#64748B", marginTop: "4px" }}>
-                ~₹{Math.round((trip.accommodation_cost ?? (trip.budget * 0.4)) / Math.max(1, trip.duration_days - 1)).toLocaleString("en-IN")}/night ({Math.max(1, trip.duration_days - 1)} night{trip.duration_days - 1 > 1 ? "s" : ""})
+                {selectedCurrency !== "INR" && (
+                  <span style={{ display: "block", color: "#38BDF8", marginBottom: "2px" }}>
+                    ~₹{(trip.accommodation_cost ?? Math.round(trip.budget * 0.4)).toLocaleString("en-IN")} INR
+                  </span>
+                )}
+                ~{formatMoneyDirect(Math.round((trip.accommodation_cost ?? (trip.budget * 0.4)) / Math.max(1, trip.duration_days - 1)))}/night ({Math.max(1, trip.duration_days - 1)} night{trip.duration_days - 1 > 1 ? "s" : ""})
               </p>
             </div>
 
@@ -1730,19 +1817,21 @@ export default function GeneratedTripPage() {
               </span>
               <h3
                 style={{
-                  fontSize: "1.8rem",
+                  fontSize: "1.65rem",
                   fontWeight: 800,
                   color: "#FBBF24",
                   marginTop: "6px",
                 }}
               >
-                ₹
-                {(
-                  trip.food_cost ?? Math.round(trip.budget * 0.25)
-                ).toLocaleString()}
+                {formatMoneyDirect(trip.food_cost ?? Math.round(trip.budget * 0.25))}
               </h3>
               <p style={{ fontSize: "0.78rem", color: "#64748B", marginTop: "4px" }}>
-                ~₹{Math.round((trip.food_cost ?? (trip.budget * 0.25)) / Math.max(1, trip.duration_days)).toLocaleString("en-IN")}/day ({trip.travelers_count} traveler{trip.travelers_count > 1 ? "s" : ""})
+                {selectedCurrency !== "INR" && (
+                  <span style={{ display: "block", color: "#FBBF24", marginBottom: "2px" }}>
+                    ~₹{(trip.food_cost ?? Math.round(trip.budget * 0.25)).toLocaleString("en-IN")} INR
+                  </span>
+                )}
+                ~{formatMoneyDirect(Math.round((trip.food_cost ?? (trip.budget * 0.25)) / Math.max(1, trip.duration_days)))}/day ({trip.travelers_count} traveler{trip.travelers_count > 1 ? "s" : ""})
               </p>
             </div>
 
@@ -1759,18 +1848,20 @@ export default function GeneratedTripPage() {
               </span>
               <h3
                 style={{
-                  fontSize: "1.8rem",
+                  fontSize: "1.65rem",
                   fontWeight: 800,
                   color: "#34D399",
                   marginTop: "6px",
                 }}
               >
-                ₹
-                {(
-                  trip.transportation_cost ?? Math.round(trip.budget * 0.2)
-                ).toLocaleString()}
+                {formatMoneyDirect(trip.transportation_cost ?? Math.round(trip.budget * 0.2))}
               </h3>
               <p style={{ fontSize: "0.78rem", color: "#64748B", marginTop: "4px" }}>
+                {selectedCurrency !== "INR" && (
+                  <span style={{ display: "block", color: "#34D399", marginBottom: "2px" }}>
+                    ~₹{(trip.transportation_cost ?? Math.round(trip.budget * 0.2)).toLocaleString("en-IN")} INR
+                  </span>
+                )}
                 Sightseeing transit, fuel, & local cab fares
               </p>
             </div>
@@ -1788,18 +1879,20 @@ export default function GeneratedTripPage() {
               </span>
               <h3
                 style={{
-                  fontSize: "1.8rem",
+                  fontSize: "1.65rem",
                   fontWeight: 800,
                   color: "#C084FC",
                   marginTop: "6px",
                 }}
               >
-                ₹
-                {(
-                  trip.miscellaneous_cost ?? Math.round(trip.budget * 0.15)
-                ).toLocaleString()}
+                {formatMoneyDirect(trip.miscellaneous_cost ?? Math.round(trip.budget * 0.15))}
               </h3>
               <p style={{ fontSize: "0.78rem", color: "#64748B", marginTop: "4px" }}>
+                {selectedCurrency !== "INR" && (
+                  <span style={{ display: "block", color: "#C084FC", marginBottom: "2px" }}>
+                    ~₹{(trip.miscellaneous_cost ?? Math.round(trip.budget * 0.15)).toLocaleString("en-IN")} INR
+                  </span>
+                )}
                 Attraction passes, permits, & emergency contingency
               </p>
             </div>
@@ -1826,16 +1919,16 @@ export default function GeneratedTripPage() {
                   fontWeight: 700,
                 }}
               >
-                Total Allocated Budget: ₹{(trip.estimated_trip_cost ?? trip.budget).toLocaleString("en-IN")}
+                Total Allocated Budget: {formatMoney(trip.estimated_trip_cost ?? trip.budget)}
               </h4>
               <p style={{ color: "#94A3B8", fontSize: "0.85rem", marginTop: "2px" }}>
-                Paced at ~₹{Math.round((trip.estimated_trip_cost ?? trip.budget) / Math.max(1, trip.duration_days)).toLocaleString("en-IN")}/day (~₹{Math.round((trip.estimated_trip_cost ?? trip.budget) / Math.max(1, trip.duration_days * trip.travelers_count)).toLocaleString("en-IN")}/person/day)
+                Paced at ~{formatMoneyDirect(Math.round((trip.estimated_trip_cost ?? trip.budget) / Math.max(1, trip.duration_days)))}/day (~{formatMoneyDirect(Math.round((trip.estimated_trip_cost ?? trip.budget) / Math.max(1, trip.duration_days * trip.travelers_count)))}/person/day)
               </p>
             </div>
             <span
-              style={{ fontSize: "2rem", fontWeight: 900, color: "#38BDF8" }}
+              style={{ fontSize: "1.9rem", fontWeight: 900, color: "#38BDF8" }}
             >
-              ₹{(trip.estimated_trip_cost ?? trip.budget).toLocaleString()}
+              {formatMoneyDirect(trip.estimated_trip_cost ?? trip.budget)}
             </span>
           </div>
 

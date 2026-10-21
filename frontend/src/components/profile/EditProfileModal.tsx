@@ -61,31 +61,11 @@ export default function EditProfileModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    const resolvedName =
-      initialUser.full_name && initialUser.full_name !== "Sivya Babu"
-        ? initialUser.full_name
-        : "Test Traveler";
-
-    const resolvedUsername =
-      initialUser.username &&
-      initialUser.username !== "sivyababu" &&
-      initialUser.username !== "voyager"
-        ? initialUser.username
-        : "thexcomrade";
-
     setUser({
-      full_name: resolvedName,
-      username: resolvedUsername,
-      bio:
-        initialUser.bio &&
-        !initialUser.bio.includes("Healthcare Professional") &&
-        !initialUser.bio.includes("Dr. Sivya Menon")
-          ? initialUser.bio
-          : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
-      country:
-        initialUser.country && initialUser.country !== "India"
-          ? initialUser.country
-          : "Trivandrum, Kerala, India",
+      full_name: initialUser.full_name || "Test Traveler",
+      username: initialUser.username ? initialUser.username.replace(/^@+/, "") : "thexcomrade",
+      bio: initialUser.bio !== undefined ? initialUser.bio : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
+      country: initialUser.country !== undefined ? initialUser.country : "Trivandrum, Kerala, India",
       travel_preferences:
         initialUser.travel_preferences && initialUser.travel_preferences.length > 0
           ? initialUser.travel_preferences
@@ -135,7 +115,7 @@ export default function EditProfileModal({
       full_name: cleanFullName,
       username: cleanUsername,
       bio: user.bio.trim(),
-      country: user.country.trim() || "Trivandrum, Kerala, India",
+      country: user.country.trim(),
       travel_preferences: user.travel_preferences,
     });
 
