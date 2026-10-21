@@ -64,17 +64,12 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
     model.position.y = -0.06 + Math.sin(t * 1.8) * 0.028;
     model.position.x = Math.sin(t * 0.9) * 0.015;
 
-    // Subtle posture movement and pointer tracking.
+    // Subtle posture movement — horizontal pointer tracking only.
     const targetRoll = Math.sin(t * 0.9) * 0.012;
     const targetRotY = THREE.MathUtils.clamp(
       (state.pointer.x * Math.PI) / 6,
       -Math.PI / 5,
       Math.PI / 5
-    );
-    const targetRotX = THREE.MathUtils.clamp(
-      -(state.pointer.y * Math.PI) / 8,
-      -Math.PI / 10,
-      Math.PI / 10
     );
 
     model.rotation.z = THREE.MathUtils.lerp(
@@ -87,11 +82,8 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
       targetRotY,
       0.07
     );
-    model.rotation.x = THREE.MathUtils.lerp(
-      model.rotation.x,
-      targetRotX,
-      0.07
-    );
+    // Gradually return X rotation to 0 (no vertical tilt tracking)
+    model.rotation.x = THREE.MathUtils.lerp(model.rotation.x, 0, 0.05);
   });
 
   return (
@@ -203,7 +195,7 @@ export default function Mascot3DCanvas({
         userSelect: "none",
         touchAction: "pan-y",
       }}
-      title="Drag to rotate Padayappa 360° • Click to chat"
+      title="Spin Padayappa • Click to chat"
     >
       <Suspense fallback={fallback}>
         <Canvas
@@ -263,8 +255,8 @@ export default function Mascot3DCanvas({
             enableDamping
             dampingFactor={0.07}
             rotateSpeed={0.85}
-            minPolarAngle={Math.PI / 2 - 0.28}
-            maxPolarAngle={Math.PI / 2 + 0.22}
+            minPolarAngle={Math.PI / 2}
+            maxPolarAngle={Math.PI / 2}
           />
         </Canvas>
       </Suspense>

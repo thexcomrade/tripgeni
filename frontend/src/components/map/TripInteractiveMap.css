@@ -1,0 +1,479 @@
+/* ==============================================================================
+   TRIP GENI - INTERACTIVE MAP & ROUTE COMPONENT STYLES
+   Engineered for clean responsiveness across mobile, tablet, and desktop viewports.
+============================================================================== */
+
+.trip-interactive-map-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 20px;
+  padding: 24px;
+  color: #F8FAFC;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+/* TOP STRIP */
+.trip-map-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.trip-map-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.trip-map-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.trip-map-heading {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.trip-map-subheading {
+  font-size: 0.82rem;
+  color: #94A3B8;
+  margin: 3px 0 0 0;
+}
+
+/* TRANSIT MODE SELECTOR */
+.trip-transit-selector {
+  display: flex;
+  align-items: center;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.transit-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.transit-pill:hover {
+  color: #F8FAFC;
+}
+
+.transit-pill.active {
+  background: rgba(14, 165, 233, 0.25);
+  color: #38BDF8;
+  border: 1px solid rgba(14, 165, 233, 0.4);
+}
+
+/* DAY PILLS SCROLLBAR (MATCHES SCREENSHOT 4 & 5) */
+.trip-day-pills-bar {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  white-space: nowrap;
+}
+
+.trip-day-pills-bar::-webkit-scrollbar {
+  height: 4px;
+}
+.trip-day-pills-bar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.trip-day-pill {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 18px;
+  border-radius: 14px;
+  background: rgba(30, 41, 59, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #CBD5E1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 90px;
+}
+
+.trip-day-pill:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(14, 165, 233, 0.3);
+}
+
+.trip-day-pill.selected {
+  background: rgba(14, 165, 233, 0.18);
+  border: 1.5px solid #0EA5E9;
+  color: #FFFFFF;
+  box-shadow: 0 0 16px rgba(14, 165, 233, 0.25);
+}
+
+.trip-day-pill-icon {
+  margin-bottom: 4px;
+}
+
+.trip-day-pill-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.trip-day-pill-dist {
+  font-size: 0.7rem;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+/* MAP IFRAME CANVAS */
+.trip-map-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0D1525;
+}
+
+.trip-osm-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  filter: contrast(1.05) brightness(0.95);
+}
+
+/* TOP-RIGHT HUD OVERLAY */
+.trip-map-hud {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(11, 17, 32, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 8px 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.trip-map-hud-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.hud-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #94A3B8;
+  letter-spacing: 0.05em;
+}
+
+.hud-val {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #38BDF8;
+}
+
+.trip-map-hud-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* BOTTOM ACTION OVERLAY */
+.trip-map-footer-action {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+}
+
+.trip-map-external-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(11, 17, 32, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  color: #38BDF8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.trip-map-external-btn:hover {
+  background: rgba(14, 165, 233, 0.2);
+  color: #FFFFFF;
+  border-color: #0EA5E9;
+}
+
+/* ROUTE CORRIDOR (SCREENSHOT 4 STYLE) */
+.trip-route-corridor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(20, 29, 48, 0.45);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.corridor-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #F8FAFC;
+  margin: 0;
+}
+
+.corridor-stops-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 0;
+}
+
+.corridor-stop-card {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 170px;
+}
+
+.corridor-stop-card:hover {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(14, 165, 233, 0.35);
+}
+
+.corridor-stop-card.highlighted {
+  background: rgba(14, 165, 233, 0.15);
+  border: 1.5px solid #0EA5E9;
+}
+
+.corridor-stop-marker {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #0284C7;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.corridor-stop-body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.corridor-stop-body strong {
+  font-size: 0.82rem;
+  color: #F8FAFC;
+}
+
+.corridor-stop-theme {
+  font-size: 0.72rem;
+  color: #CBD5E1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.corridor-stop-dist {
+  font-size: 0.68rem;
+  color: #38BDF8;
+  margin-top: 1px;
+}
+
+.corridor-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.corridor-connector-line {
+  width: 24px;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, #38BDF8 0, #38BDF8 4px, transparent 4px, transparent 8px);
+}
+
+.corridor-connector-time {
+  font-size: 0.65rem;
+  color: #94A3B8;
+  font-weight: 600;
+}
+
+/* DAY DETAIL GRID (SCREENSHOT 5 CARDS) */
+.trip-active-day-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.trip-stay-feature-card,
+.trip-day-spots-card {
+  padding: 18px;
+  background: rgba(30, 41, 59, 0.45);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stay-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.stay-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(2, 132, 199, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stay-name {
+  font-size: 0.95rem;
+  color: #FFFFFF;
+  display: block;
+}
+
+.stay-dest {
+  font-size: 0.75rem;
+  color: #94A3B8;
+  margin: 2px 0 0 0;
+}
+
+.stay-timings-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.stay-timing-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stay-timing-label {
+  font-size: 0.68rem;
+  color: #94A3B8;
+}
+
+.stay-timing-val {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #F8FAFC;
+}
+
+.day-spots-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #F8FAFC;
+  margin-bottom: 12px;
+}
+
+.day-spots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.day-spot-row {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.spot-time-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #38BDF8;
+  background: rgba(14, 165, 233, 0.12);
+  padding: 2px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.spot-desc {
+  font-size: 0.8rem;
+  color: #CBD5E1;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 768px) {
+  .trip-interactive-map-card {
+    padding: 16px;
+  }
+  .trip-map-canvas-wrapper {
+    height: 300px;
+  }
+  .trip-active-day-grid {
+    grid-template-columns: 1fr;
+  }
+}

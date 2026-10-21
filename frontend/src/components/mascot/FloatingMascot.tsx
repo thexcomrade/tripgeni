@@ -16,16 +16,19 @@ interface ChatMessage {
 
 const PADAYAPPA_PROMPTS = [
   "Padayappa AI ✨",
-  "Rotate me 360° 🔄",
   "Namaskaram! 🙏",
   "Need a plan, macha? 🌴",
   "Ask Padayappa ✈️",
 ];
 
+const HIDE_PATHS = ["/login", "/register", "/forgot-password", "/reset-password"];
+const AUTH_REQUIRED_PATHS = ["/planner", "/ai-chat"];
+
 export default function FloatingMascot() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -73,8 +76,20 @@ export default function FloatingMascot() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  // Do not show the floating widget on the full chat page itself
-  if (pathname === "/ai-chat") {
+  // Track login state
+  useEffect(() => {
+    const check = () => setIsLoggedIn(!!localStorage.getItem("tripgenius_token"));
+    check();
+    window.addEventListener("storage", check);
+    return () => window.removeEventListener("storage", check);
+  }, []);
+
+  // Never show floating mascot on full ai-chat page or auth pages
+  if (pathname === '/ai-chat' || HIDE_PATHS.some((p) => pathname.startsWith(p))) {
+    return null;
+  }
+  // On planner, only pop up / appear if user is logged in
+  if (pathname.startsWith('/planner') && !isLoggedIn) {
     return null;
   }
 
