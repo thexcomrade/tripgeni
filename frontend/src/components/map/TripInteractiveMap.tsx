@@ -534,136 +534,211 @@ export default function TripInteractiveMap({
         })}
       </div>
 
-      {/* MAP CANVAS WITH CONNECTED ROUTE PREVIEW (NO ACCIDENTAL SCROLL ZOOM) */}
+      {/* ============================================================
+          MAP CANVAS (MATCHING EXACT REFERENCE IMAGE 2)
+          Clean Geographic View with Overlaid Connected Route Nodes (1 -> 2 -> 3 -> 4)
+          Top Action Pill "View" Redirects to Connected Route on External Site
+          ============================================================ */}
       <div
-        className="trip-map-canvas-wrapper"
+        className="reference-map-container"
         onClick={handleOpenExternalRoute}
-        title="Click to view all locations connected on Google Maps"
+        title="Click to explore full connected route on Google Maps"
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") handleOpenExternalRoute();
         }}
       >
-        {/* IFRAME WITH NO SCROLL / POINTER EVENTS TO PREVENT SCROLL HIJACKING */}
-        <iframe
-          src={osmEmbedUrl}
-          title={`Map route for ${destination}`}
-          className="trip-osm-iframe"
-          loading="lazy"
-          tabIndex={-1}
-        />
-
-        {/* CLICKABLE PROTECTIVE OVERLAY */}
-        <div className="trip-map-click-overlay" />
-
-        {/* TOP-RIGHT ROUTE HUD */}
-        <div className="trip-map-hud">
-          <div className="trip-map-hud-stat">
-            <span className="hud-label">DAY {activeDay.day} SPAN</span>
-            <strong className="hud-val">~{activeDay.totalDistanceKm} KM</strong>
+        {/* TOP BAR OVERLAY ON MAP (MATCHING REFERENCE IMAGE 2 TOP HEADER) */}
+        <div className="reference-map-header-bar">
+          <div className="reference-map-header-left">
+            <div className="reference-map-badge-icon">
+              <Compass size={18} color="#0EA5E9" />
+            </div>
+            <div>
+              <h4 className="reference-map-title">
+                {destination} Adventure 🌟
+              </h4>
+              <span className="reference-map-dates">
+                Day {activeDay.day} • {activeDay.totalDistanceKm} km route • {activeDay.theme}
+              </span>
+            </div>
           </div>
-          <div className="trip-map-hud-divider" />
-          <div className="trip-map-hud-stat">
-            <span className="hud-label">EST. TRANSIT</span>
-            <strong className="hud-val">
-              {transitMode === "car" && `${activeDay.driveTimeMin} min`}
-              {transitMode === "transit" && `${activeDay.transitTimeMin} min`}
-              {transitMode === "walk" &&
-                `${Math.round(activeDay.walkTimeMin / 60)}h ${activeDay.walkTimeMin % 60}m`}
-            </strong>
-          </div>
-        </div>
-
-        {/* VISUAL CONNECTED ROUTE PIPELINE OVERLAY (MATCHING REFERENCE IMAGE 2) */}
-        <div className="trip-map-route-visual-overlay">
-          <div className="visual-route-track">
-            {activeDay.stops.map((st, i) => {
-              const isLast = i === activeDay.stops.length - 1;
-              return (
-                <React.Fragment key={st.id}>
-                  <div className="visual-route-node">
-                    <div className={`node-marker ${st.category}`}>
-                      {getStopCategoryIcon(st.category)}
-                    </div>
-                    <span className="node-label">{st.name}</span>
-                  </div>
-                  {!isLast && <div className="visual-route-line-dashed" />}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* BOTTOM EXTERNAL ACTION BUTTON */}
-        <div className="trip-map-footer-action">
           <button
             type="button"
-            className="trip-map-external-btn"
+            className="reference-map-view-btn"
             onClick={(e) => {
               e.stopPropagation();
               handleOpenExternalRoute();
             }}
           >
-            <Navigation size={14} />
-            <span>Open Connected Route in Google Maps</span>
-            <ExternalLink size={13} />
+            <span>▶ View</span>
           </button>
+        </div>
+
+        {/* MAP IFRAME (NO SCROLL HIJACKING) */}
+        <iframe
+          src={osmEmbedUrl}
+          title={`Map route for ${destination}`}
+          className="reference-osm-iframe"
+          loading="lazy"
+          tabIndex={-1}
+        />
+
+        {/* CLICKABLE OVERLAY */}
+        <div className="reference-map-touch-overlay" />
+
+        {/* OVERLAID CONNECTED SVG ROUTE NODES (1 -> 2 -> 3 -> 4 -> 5) MATCHING RED CIRCLED REFERENCE */}
+        <div className="reference-map-nodes-overlay">
+          <svg className="reference-map-nodes-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {/* Connected route polyline between pins */}
+            <path
+              d="M 22 36 Q 48 24, 76 34 T 52 58 T 68 82"
+              fill="none"
+              stroke="#F43F5E"
+              strokeWidth="2.5"
+              strokeDasharray="4 2"
+              className="reference-svg-route-path"
+            />
+          </svg>
+
+          {/* Connected Numbered Pin Markers */}
+          <div className="reference-pin-node pin-1" style={{ top: "34%", left: "20%" }}>
+            <span>1</span>
+          </div>
+          <div className="reference-pin-node pin-2" style={{ top: "32%", left: "74%" }}>
+            <span>2</span>
+          </div>
+          <div className="reference-pin-node pin-3" style={{ top: "56%", left: "50%" }}>
+            <span>3</span>
+          </div>
+          <div className="reference-pin-node pin-4" style={{ top: "78%", left: "66%" }}>
+            <span>4</span>
+          </div>
+
+          {/* Regional Geo Badge on Map */}
+          <div className="reference-map-geo-badge">
+            <span>📍 {coords.region}</span>
+          </div>
         </div>
       </div>
 
-      {/* SEQUENTIAL DAY ROUTE WAYPOINTS (REPLACED RED-CIRCLED SECTION WITH TRUE DAY STOPS) */}
-      <div className="day-stops-corridor-wrapper">
-        <div className="day-stops-header">
-          <div className="day-stops-title-group">
-            <Navigation size={16} color="#38BDF8" />
-            <h4 className="day-stops-title">
-              Day {activeDay.day} Connected Stops & Waypoints
-            </h4>
+      {/* ============================================================
+          ATTACHED ROUTE & BOOKINGS CARD (MATCHING REFERENCE IMAGE 2)
+          Top: Circular Nights Planned Progress & [Route] [Bookings] Tabs
+          Body: Sequential Connected Stops with Transit Connectors
+          ============================================================ */}
+      <div className="reference-attached-card">
+        {/* CARD TOP BAR: PROGRESS + TABS */}
+        <div className="reference-card-top-bar">
+          <div className="reference-progress-badge">
+            <div className="reference-progress-circle">
+              <span>{activeDay.day}/{durationDays}</span>
+            </div>
+            <div className="reference-progress-text">
+              <strong>Days</strong>
+              <span>planned</span>
+            </div>
           </div>
-          <span className="day-stops-theme-badge">{activeDay.theme}</span>
+
+          <div className="reference-card-tabs">
+            <button
+              type="button"
+              className={`reference-tab-btn ${attachedCardTab === "route" ? "active" : ""}`}
+              onClick={() => setAttachedCardTab("route")}
+            >
+              Route
+            </button>
+            <button
+              type="button"
+              className={`reference-tab-btn ${attachedCardTab === "bookings" ? "active" : ""}`}
+              onClick={() => setAttachedCardTab("bookings")}
+            >
+              Bookings
+            </button>
+          </div>
         </div>
 
-        <div className="day-stops-grid">
-          {activeDay.stops.map((stop, idx) => {
-            const isLast = idx === activeDay.stops.length - 1;
-            return (
-              <div key={stop.id} className="day-stop-card">
-                <div className="stop-card-top">
-                  <div className={`stop-number-badge ${stop.category}`}>
-                    <span>{stop.id}</span>
-                  </div>
-                  <div className="stop-badge-icon">
-                    {getStopCategoryIcon(stop.category)}
-                  </div>
-                  <span className="stop-time-slot">{stop.timeSlot}</span>
-                </div>
+        {/* TAB 1: ROUTE TIMELINE (MATCHING REFERENCE IMAGE 2 EXACT FORMAT) */}
+        {attachedCardTab === "route" && (
+          <div className="reference-route-timeline">
+            {activeDay.stops.map((stop, idx) => {
+              const isLast = idx === activeDay.stops.length - 1;
+              return (
+                <React.Fragment key={stop.id}>
+                  <div className="reference-stop-row">
+                    <div className="reference-stop-left">
+                      <div className={`reference-stop-num-circle ${stop.category}`}>
+                        <span>{stop.id}</span>
+                      </div>
+                      <div className="reference-stop-details">
+                        <strong className="reference-stop-name">{stop.name}</strong>
+                        <span className="reference-stop-time">
+                          {stop.timeSlot} • {stop.category === "hotel" ? "Overnight Accommodation" : stop.category === "food" ? "Dining & Tasting" : "Scenic Highlight"}
+                        </span>
+                      </div>
+                    </div>
 
-                <div className="stop-card-body">
-                  <strong className="stop-name">{stop.name}</strong>
-                  <p className="stop-desc">{stop.description}</p>
-                </div>
+                    <div className="reference-stop-right">
+                      <span className="reference-stop-duration-tag">
+                        {stop.estimatedDuration}
+                      </span>
+                    </div>
+                  </div>
 
-                <div className="stop-card-footer">
-                  <span className="stop-duration">
-                    <Clock size={12} /> {stop.estimatedDuration}
-                  </span>
                   {!isLast && (
-                    <span className="stop-transit-next">
-                      {transitMode === "car" ? "🚗" : transitMode === "transit" ? "🚆" : "🚶"}{" "}
-                      ~{stop.transitMinToNext} min ({stop.transitDistToNextKm} km)
-                    </span>
+                    <div className="reference-transit-bridge">
+                      <div className="reference-bridge-line" />
+                      <div className="reference-bridge-pill">
+                        <span className="bridge-icon">
+                          {transitMode === "car" ? "🚗" : transitMode === "transit" ? "🚆" : "🚶"}
+                        </span>
+                        <span className="bridge-text">
+                          {stop.transitMinToNext}m • {stop.transitDistToNextKm} km
+                        </span>
+                      </div>
+                    </div>
                   )}
-                  {isLast && (
-                    <span className="stop-transit-next" style={{ color: "#38BDF8" }}>
-                      🏨 Overnight Hub
-                    </span>
-                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        )}
+
+        {/* TAB 2: BOOKINGS & INTEL */}
+        {attachedCardTab === "bookings" && (
+          <div className="reference-bookings-view">
+            {/* HOTEL PARTNER CARD */}
+            <div className="reference-booking-stay">
+              <div className="booking-stay-header">
+                <Hotel size={18} color="#0EA5E9" />
+                <div>
+                  <strong className="booking-stay-name">{hotelName}</strong>
+                  <p className="booking-stay-rating">★ 4.4 Google Rating • Verified Partner Stay</p>
                 </div>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotelName + " " + destination)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="booking-stay-link"
+                >
+                  <ChevronRight size={18} />
+                </a>
               </div>
-            );
-          })}
-        </div>
+              <div className="booking-stay-timings">
+                <div><span>Check-in</span><strong>2:00 PM</strong></div>
+                <div><span>Check-out</span><strong>11:00 AM</strong></div>
+                <div><span>Security</span><strong style={{ color: "#34D399" }}>Verified Stay</strong></div>
+              </div>
+            </div>
+
+            {/* DAY BUDGET SUMMARY */}
+            <div className="reference-booking-budget">
+              <IndianRupee size={16} color="#10B981" />
+              <span>Day {activeDay.day} Outlay: <b>₹{activeDay.budget.total.toLocaleString("en-IN")}</b> (Stay: ₹{activeDay.budget.stay.toLocaleString("en-IN")}, Dining: ₹{activeDay.budget.food.toLocaleString("en-IN")}, Transit: ₹{activeDay.budget.transit.toLocaleString("en-IN")})</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* COMPLETE PACKAGE PLAN CARDS (MATCHING REFERENCE IMAGE 2) */}

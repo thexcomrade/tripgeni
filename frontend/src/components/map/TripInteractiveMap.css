@@ -726,3 +726,449 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==============================================================================
+   REFERENCE IMAGE 2 SPECIFIC STYLES:
+   Clean Connected Map (1 -> 2 -> 3 -> 4) + Attached Vertical Route Card
+   ============================================================================== */
+
+.reference-map-container {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: none;
+  cursor: pointer;
+  background: #0f172a;
+}
+
+.reference-map-header-bar {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.reference-map-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 8px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  pointer-events: auto;
+}
+
+.reference-map-badge-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(14, 165, 233, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reference-map-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.reference-map-dates {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  display: block;
+}
+
+.reference-map-view-btn {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #10B981;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+  transition: all 0.2s ease;
+}
+
+.reference-map-view-btn:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.55);
+}
+
+.reference-osm-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  pointer-events: none;
+  filter: contrast(1.04) brightness(0.96);
+}
+
+.reference-map-touch-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: transparent;
+}
+
+.reference-map-nodes-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.reference-map-nodes-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.reference-svg-route-path {
+  stroke-dasharray: 6 3;
+  animation: routeDash 30s linear infinite;
+}
+
+@keyframes routeDash {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+.reference-pin-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2.5px solid #10B981;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.88rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease;
+}
+
+.reference-pin-node:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.reference-map-geo-badge {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  color: #E2E8F0;
+  font-weight: 600;
+}
+
+/* ==============================================================================
+   ATTACHED ROUTE CARD BELOW MAP (MATCHING REFERENCE IMAGE 2 SHEET)
+   ============================================================================== */
+
+.reference-attached-card {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0 0 20px 20px;
+  padding: 24px;
+  margin-top: -1px;
+}
+
+.reference-card-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.reference-progress-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reference-progress-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid #10B981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.reference-progress-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.reference-progress-text strong {
+  font-size: 0.95rem;
+  color: #FFFFFF;
+}
+
+.reference-progress-text span {
+  font-size: 0.75rem;
+  color: #94A3B8;
+}
+
+.reference-card-tabs {
+  display: flex;
+  gap: 6px;
+  background: rgba(30, 41, 59, 0.7);
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.reference-tab-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #94A3B8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reference-tab-btn.active {
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+/* ROUTE TIMELINE */
+.reference-route-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.reference-stop-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  transition: all 0.2s ease;
+}
+
+.reference-stop-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.reference-stop-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.reference-stop-num-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #10B981;
+  color: #10B981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.82rem;
+  background: rgba(16, 185, 129, 0.1);
+  flex-shrink: 0;
+}
+
+.reference-stop-num-circle.hotel {
+  border-color: #38BDF8;
+  color: #38BDF8;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.reference-stop-num-circle.food {
+  border-color: #FBBF24;
+  color: #FBBF24;
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.reference-stop-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reference-stop-name {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.reference-stop-time {
+  font-size: 0.75rem;
+  color: #94A3B8;
+}
+
+.reference-stop-right {
+  display: flex;
+  align-items: center;
+}
+
+.reference-stop-duration-tag {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #38BDF8;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* TRANSIT CONNECTOR BRIDGE */
+.reference-transit-bridge {
+  position: relative;
+  height: 40px;
+  margin-left: 29px;
+  display: flex;
+  align-items: center;
+}
+
+.reference-bridge-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.25) 0,
+    rgba(255, 255, 255, 0.25) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.reference-bridge-pill {
+  margin-left: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  color: #FB7185;
+  font-weight: 600;
+}
+
+/* BOOKINGS & INTEL TAB */
+.reference-bookings-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reference-booking-stay {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.booking-stay-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.booking-stay-name {
+  font-size: 0.95rem;
+  color: #FFFFFF;
+}
+
+.booking-stay-rating {
+  font-size: 0.74rem;
+  color: #94A3B8;
+  margin: 2px 0 0 0;
+}
+
+.booking-stay-link {
+  margin-left: auto;
+  color: #38BDF8;
+  padding: 4px;
+}
+
+.booking-stay-timings {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
+.booking-stay-timings div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.booking-stay-timings span {
+  font-size: 0.70rem;
+  color: #94A3B8;
+}
+
+.booking-stay-timings strong {
+  font-size: 0.82rem;
+  color: #FFFFFF;
+}
+
+.reference-booking-budget {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  color: #E2E8F0;
+}

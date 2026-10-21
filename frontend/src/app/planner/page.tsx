@@ -463,28 +463,50 @@ function PlannerContent() {
     return calculateTransitPricing(origin, destination);
   }, [origin, destination]);
 
-  // Dynamic Vehicle / Transit Cost Calculation for current traveler group
+  // Clean figure rounding: takes average price range and rounds to clean zeros (e.g. 14324 -> 14400 or 14500)
+  const roundToCleanZeros = (val: number): number => {
+    if (val <= 0) return 0;
+    if (val < 1000) return Math.ceil(val / 50) * 50;
+    if (val < 5000) return Math.ceil(val / 100) * 100;
+    const rem = val % 500;
+    if (rem >= 250) {
+      return Math.ceil(val / 500) * 500; // e.g. 14324 -> 14500
+    }
+    return Math.ceil(val / 100) * 100; // e.g. 14120 -> 14200
+  };
+
+  // Dynamic Vehicle / Travel Ticket Cost Calculation: takes the average of the estimated price range
+  // and rounds to clean zeros, factoring in total traveler ticket count
   const calculatedTransitCost = useMemo(() => {
+    let rawTotal = 0;
     if (transportationMode === "Train") {
-      const fare = transitPricing.train.threeTierAcMin || transitPricing.train.sleeperMinFare || 800;
-      return fare * Math.max(1, travelersCount);
-    }
-    if (transportationMode === "Flight") {
-      const fare = transitPricing.flight.economyMinFare || 3500;
-      return fare * Math.max(1, travelersCount);
-    }
-    if (transportationMode === "Bus") {
-      const fare = transitPricing.bus.acSleeperMinFare || transitPricing.bus.nonAcMinFare || 650;
-      return fare * Math.max(1, travelersCount);
-    }
-    if (transportationMode === "Car") {
-      return transitPricing.car.fuelAndTollsApprox || 1500;
-    }
-    if (transportationMode === "Bike") {
+      const minFare = transitPricing.train.threeTierAcMin || transitPricing.train.sleeperMinFare || 800;
+      const maxFare = transitPricing.train.threeTierAcMax || Math.round(minFare * 1.25) || 1200;
+      const avgFare = (minFare + maxFare) / 2;
+      rawTotal = avgFare * Math.max(1, travelersCount);
+    } else if (transportationMode === "Flight") {
+      const minFare = transitPricing.flight.economyMinFare || 3500;
+      const maxFare = transitPricing.flight.economyMaxFare || 6500;
+      const avgFare = (minFare + maxFare) / 2;
+      rawTotal = avgFare * Math.max(1, travelersCount);
+    } else if (transportationMode === "Bus") {
+      const minFare = transitPricing.bus.nonAcMinFare || 600;
+      const maxFare = transitPricing.bus.acSleeperMinFare || 1400;
+      const avgFare = (minFare + maxFare) / 2;
+      rawTotal = avgFare * Math.max(1, travelersCount);
+    } else if (transportationMode === "Car") {
+      const baseFuelAndTolls = transitPricing.car.fuelAndTollsApprox || 1500;
+      const vehiclesNeeded = Math.ceil(Math.max(1, travelersCount) / 4);
+      const minCar = baseFuelAndTolls * vehiclesNeeded;
+      const maxCar = Math.round(minCar * 1.35);
+      rawTotal = (minCar + maxCar) / 2;
+    } else if (transportationMode === "Bike") {
+      const bikesNeeded = Math.ceil(Math.max(1, travelersCount) / 2);
       const days = Math.max(1, durationDays);
-      return days * 700;
+      const avgDailyRental = (650 + 950) / 2;
+      rawTotal = days * avgDailyRental * bikesNeeded;
     }
-    return 0;
+    return roundToCleanZeros(rawTotal);
   }, [transportationMode, transitPricing, travelersCount, durationDays]);
 
   // Dynamically calibrate Activity & Interest Focus Points based on Google Travel Ideas & Dataset
@@ -1783,8 +1805,10 @@ function PlannerContent() {
                       { label: "🌟 Comfort", perDayPerson: 3500, style: "3-star hotels, cabs, restaurants", desc: "Most popular choice" },
                       { label: "💎 Luxury", perDayPerson: 8000, style: "5-star resorts, private cars, fine dining", desc: "Premium experience" },
                     ].map((tier) => {
-                      const calculatedTotal = tier.perDayPerson * durationDays * travelersCount;
-                      const isSelected = Math.abs(budget - calculatedTotal) < 1500;
+                      // Total price includes stay, dining & activities + travel ticket charge for all travelers
+                      const dailyStayAndActivities = tier.perDayPerson * durationDays * travelersCount;
+                      const calculatedTotal = roundToCleanZeros(dailyStayAndActivities + calculatedTransitCost);
+                      const isSelected = Math.abs(budget - calculatedTotal) < 2500;
 
                       return (
                         <button
@@ -1808,12 +1832,15 @@ function PlannerContent() {
                         >
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
                             <span style={{ fontWeight: 700, fontSize: "0.90rem" }}>{tier.label}</span>
-                            <span style={{ color: "#10B981", fontSize: "0.85rem", fontWeight: 700 }}>
+                            <span style={{ color: "#10B981", fontSize: "0.90rem", fontWeight: 800 }}>
                               ₹{calculatedTotal.toLocaleString("en-IN")}
                             </span>
                           </div>
-                          <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
+                          <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginBottom: "3px" }}>
                             {tier.style}
+                          </div>
+                          <div style={{ fontSize: "0.68rem", color: "#38BDF8", fontWeight: 600 }}>
+                            Includes ~₹{calculatedTransitCost.toLocaleString("en-IN")} travel tickets + stay & meals
                           </div>
                         </button>
                       );
@@ -1842,10 +1869,10 @@ function PlannerContent() {
                     </span>
                     <div>
                       <div style={{ fontSize: "0.86rem", fontWeight: 700, color: "#FFFFFF" }}>
-                        Estimated {transportationMode} Transit Fare Included
+                        Estimated {transportationMode} Travel Tickets Included (Avg Fare Range)
                       </div>
                       <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>
-                        Calculated for {travelersCount} traveler{travelersCount > 1 ? "s" : ""} ({origin || "Starting City"} → {destination || "Destination"})
+                        Calculated for {travelersCount} traveler{travelersCount > 1 ? "s" : ""} ({origin || "Starting City"} → {destination || "Destination"}) • Clean zero approx
                       </div>
                     </div>
                   </div>
