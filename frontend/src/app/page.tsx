@@ -28,6 +28,7 @@ import {
 import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
 import { GlassCard, SectionHeader } from "../components/ui/Card";
+import FloatingMascot from "../components/mascot/FloatingMascot";
 
 export default function HomePage() {
   const router = useRouter();
@@ -1432,6 +1433,7 @@ export default function HomePage() {
           </div>
         </div>
       )}
+      <FloatingMascot />
     </div>
     </>
   );

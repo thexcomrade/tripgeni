@@ -76,20 +76,35 @@ export default function FloatingMascot() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  // Track login state
+  // Track login state (supports both token and user object)
   useEffect(() => {
-    const check = () => setIsLoggedIn(!!localStorage.getItem("tripgenius_token"));
+    const check = () => {
+      const token = localStorage.getItem("tripgenius_token");
+      const user = localStorage.getItem("tripgenius_user");
+      setIsLoggedIn(!!(token || user));
+    };
     check();
     window.addEventListener("storage", check);
-    return () => window.removeEventListener("storage", check);
+    window.addEventListener("auth-change", check);
+    return () => {
+      window.removeEventListener("storage", check);
+      window.removeEventListener("auth-change", check);
+    };
   }, []);
 
-  // STRICT VISIBILITY: Only show mascot where it is designated and available (/dashboard, /explore, /favorites)
-  // Completely removed from /planner, /ai-chat, /trip, auth pages, and all other views
-  const ALLOWED_MASCOT_PATHS = ["/dashboard", "/explore", "/favorites"];
-  const isAllowedPath = ALLOWED_MASCOT_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
-  if (!isAllowedPath) {
-    return null;
+  // STRICT VISIBILITY:
+  // 1. Home page ("/") ONLY if the user is in logged-in stage
+  // 2. Otherwise only available on designated exploratory pages: /dashboard, /explore, /favorites
+  // 3. Completely removed from /planner, /ai-chat, /trip, auth pages, and all other views
+  const isHomePage = pathname === "/";
+  if (isHomePage) {
+    if (!isLoggedIn) return null;
+  } else {
+    const ALLOWED_MASCOT_PATHS = ["/dashboard", "/explore", "/favorites"];
+    const isAllowedPath = ALLOWED_MASCOT_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+    if (!isAllowedPath) {
+      return null;
+    }
   }
 
   const handleOpenFullChat = () => {
