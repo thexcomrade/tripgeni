@@ -221,7 +221,7 @@ export default function FloatingMascot() {
               onModelClick={() => setIsOpen((prev) => !prev)}
               fallback={
                 <Image
-                  src="/images/model.png"
+                  src="/images/model.glb"
                   alt="Padayappa 3D Companion"
                   fill
                   sizes="140px"
