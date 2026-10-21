@@ -19,6 +19,7 @@ import {
 import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
 import { GlassCard, SectionHeader } from "../../components/ui/Card";
+import FloatingMascot from "../../components/mascot/FloatingMascot";
 
 interface DestinationItem {
   id: number;
@@ -1015,6 +1016,7 @@ export default function ExplorePage() {
           </GlassCard>
         )}
       </section>
+      <FloatingMascot />
       </div>
     </div>
   );

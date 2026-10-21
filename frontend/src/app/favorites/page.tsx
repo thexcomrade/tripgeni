@@ -20,6 +20,7 @@ import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
 import { GlassCard, SectionHeader } from "../../components/ui/Card";
 import tripService from "../../services/trip.service";
+import FloatingMascot from "../../components/mascot/FloatingMascot";
 
 interface FavoriteTrip {
   id?: string;
@@ -397,6 +398,7 @@ export default function FavoritesPage() {
           </Link>
         </GlassCard>
       )}
+      <FloatingMascot />
     </div>
   );
 }

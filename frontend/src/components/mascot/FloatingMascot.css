@@ -57,8 +57,8 @@
 /* 3D IMAGE FRAME (Strict 2:3 aspect ratio matching model.png) */
 .mascot-image-wrapper {
   position: relative;
-  width: 20px;
-  height: 20px;
+  width: 190px;
+  height: 250px;
   display: flex;
   align-items: center;
   justify-content: center;

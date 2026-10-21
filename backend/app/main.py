@@ -43,17 +43,17 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+
 cors_origins = settings.cors_origins_list
-is_wildcard = "*" in cors_origins or settings.CORS_ORIGINS.strip() == "*"
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[] if is_wildcard else cors_origins,
-    allow_origin_regex=r".*" if is_wildcard else r"^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$",
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 app.include_router(auth_router)
 app.include_router(trip_router)
