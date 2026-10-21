@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+import tripService from "../../services/trip.service";
+import { ensureTripItinerary } from "../../utils/itineraryHelper";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -17,6 +20,8 @@ import {
   Sparkles,
   BookmarkCheck,
   Check,
+  Download,
+  Loader2,
 } from "lucide-react";
 
 interface Achievement {
@@ -117,6 +122,69 @@ export default function ProfileGrid({
         ],
   );
   const [prefsSaved, setPrefsSaved] = useState(false);
+  const [downloadingTripId, setDownloadingTripId] = useState<string | null>(null);
+
+  const handleDownloadTripPDF = async (trip: any) => {
+    const tripId = trip.id || `tg-${trip.destination}`;
+    setDownloadingTripId(tripId);
+    try {
+      let userName = "Traveler";
+      try {
+        const u = JSON.parse(localStorage.getItem("tripgenius_user") || "{}");
+        userName = u.full_name || u.name || u.username || "Traveler";
+      } catch {
+        // fallback
+      }
+
+      // Check if full itinerary is in localStorage
+      let fullTrip = trip;
+      try {
+        const savedList = JSON.parse(localStorage.getItem("tripgenius_saved_trips") || "[]");
+        const found = savedList.find((s: any) => s.id === trip.id || s.destination === trip.destination);
+        if (found) fullTrip = found;
+      } catch {
+        // ignore
+      }
+
+      fullTrip = ensureTripItinerary(fullTrip);
+
+      const { blob, filename } = await tripService.exportTripPDF(fullTrip, userName);
+      const url = window.URL.createObjectURL(blob);
+
+      if (blob.type && blob.type.includes("html")) {
+        const win = window.open(url, "_blank");
+        if (win) {
+          win.onload = () => {
+            setTimeout(() => {
+              win.print();
+            }, 400);
+          };
+        } else {
+          const a = document.createElement("a");
+          a.href = url;
+          a.setAttribute("download", filename.replace(".pdf", ".html"));
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+      } else {
+        const a = document.createElement("a");
+        a.href = url;
+        a.setAttribute("download", filename);
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      window.URL.revokeObjectURL(url);
+      toast.success(`PDF downloaded for ${trip.destination}! ✓`);
+    } catch (err) {
+      console.error("PDF export error:", err);
+      toast.error("Could not export PDF. Please try again.");
+    } finally {
+      setDownloadingTripId(null);
+    }
+  };
+
 
   const togglePreference = (pref: string) => {
     if (selectedPrefs.includes(pref)) {
@@ -437,40 +505,78 @@ export default function ProfileGrid({
                       justifyContent: "space-between",
                     }}
                   >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (hasSaved) {
-                          localStorage.setItem(
-                            "tripgenius_generated_trip",
-                            JSON.stringify(trip),
-                          );
-                          localStorage.setItem(
-                            "latest_trip",
-                            JSON.stringify(trip),
-                          );
-                          router.push("/trip/generated");
-                        } else {
-                          router.push(
-                            `/planner?destination=${encodeURIComponent(trip.destination)}&duration=${trip.duration_days}`,
-                          );
-                        }
-                      }}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        background: "transparent",
-                        border: "none",
-                        color: "#38BDF8",
-                        fontSize: "0.82rem",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                      }}
-                    >
-                      <span>View Itinerary</span>
-                      <ExternalLink size={13} />
-                    </button>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (hasSaved) {
+                            localStorage.setItem(
+                              "tripgenius_generated_trip",
+                              JSON.stringify(trip),
+                            );
+                            localStorage.setItem(
+                              "latest_trip",
+                              JSON.stringify(trip),
+                            );
+                            router.push("/trip/generated");
+                          } else {
+                            router.push(
+                              `/planner?destination=${encodeURIComponent(trip.destination)}&duration=${trip.duration_days}`,
+                            );
+                          }
+                        }}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          background: "transparent",
+                          border: "none",
+                          color: "#38BDF8",
+                          fontSize: "0.82rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <span>View Plan</span>
+                        <ExternalLink size={12} />
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={downloadingTripId === (trip.id || `tg-${trip.destination}`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadTripPDF(trip);
+                        }}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          padding: "5px 10px",
+                          borderRadius: "8px",
+                          background: "rgba(14, 165, 233, 0.15)",
+                          border: "1px solid rgba(14, 165, 233, 0.35)",
+                          color: "#38BDF8",
+                          fontSize: "0.78rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                        }}
+                        title="Download Itinerary PDF directly"
+                      >
+                        {downloadingTripId === (trip.id || `tg-${trip.destination}`) ? (
+                          <>
+                            <Loader2 size={12} className="animate-spin" />
+                            <span>Exporting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Download size={12} />
+                            <span>PDF</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
 
                     {hasSaved && onDeleteSavedTrip && (
                       <button
@@ -704,38 +810,71 @@ export default function ProfileGrid({
                 </span>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  localStorage.setItem(
-                    "tripgenius_generated_trip",
-                    JSON.stringify(trip),
-                  );
-                  localStorage.setItem(
-                    "latest_trip",
-                    JSON.stringify(trip),
-                  );
-                  router.push("/trip/generated");
-                }}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "10px",
-                  fontSize: "0.82rem",
-                  fontWeight: 600,
-                  background: "rgba(255, 255, 255, 0.08)",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
-                  color: "#FFFFFF",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "6px",
-                }}
-              >
-                <span>View Full Itinerary</span>
-                <ExternalLink size={13} />
-              </button>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "8px" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.setItem(
+                      "tripgenius_generated_trip",
+                      JSON.stringify(trip),
+                    );
+                    localStorage.setItem(
+                      "latest_trip",
+                      JSON.stringify(trip),
+                    );
+                    router.push("/trip/generated");
+                  }}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "10px",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    background: "rgba(255, 255, 255, 0.08)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    color: "#FFFFFF",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px",
+                  }}
+                >
+                  <span>View Plan</span>
+                  <ExternalLink size={13} />
+                </button>
+
+                <button
+                  type="button"
+                  disabled={downloadingTripId === (trip.id || `tg-${trip.destination}`)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownloadTripPDF(trip);
+                  }}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: "10px",
+                    fontSize: "0.82rem",
+                    fontWeight: 700,
+                    background: "rgba(14, 165, 233, 0.18)",
+                    border: "1px solid rgba(14, 165, 233, 0.35)",
+                    color: "#38BDF8",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
+                  title="Download Itinerary PDF directly"
+                >
+                  {downloadingTripId === (trip.id || `tg-${trip.destination}`) ? (
+                    <Loader2 size={13} className="animate-spin" />
+                  ) : (
+                    <>
+                      <Download size={13} />
+                      <span>PDF</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           ))}
         </div>

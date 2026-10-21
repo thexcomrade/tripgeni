@@ -851,3 +851,75 @@ pre, code, table {
 .mobile-scroll-tabs::-webkit-scrollbar {
   display: none;
 }
+
+
+/* ==============================================================================
+   SENIOR DEVELOPER PROFESSIONAL LAYOUT REFINEMENTS
+   Ensures tight, aligned, non-stretched layouts across phone, tablet & desktop.
+============================================================================== */
+
+.navbar-content-container {
+  max-width: 1320px !important;
+  margin: 0 auto !important;
+  padding: 12px clamp(16px, 2.5vw, 36px) !important;
+}
+
+.page-container {
+  max-width: 1240px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Eliminate awkward stretched input look on widescreen desktop & phone desktop mode */
+.form-constrained-container {
+  max-width: 780px !important;
+  margin: 0 auto !important;
+}
+
+/* Tablet & Mobile in Desktop Mode containment */
+@media (min-width: 768px) and (max-width: 1080px) {
+  .page-container {
+    padding: 24px 20px !important;
+  }
+  
+  .glass-card, .glass-panel {
+    padding: 24px 20px !important;
+  }
+
+  .grid-3-col {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+  }
+}
+
+/* Clean professional card elevation */
+.glass-card {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(15, 23, 42, 0.72) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32) !important;
+}
+
+/* Subtle sleek input fields */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(20, 29, 48, 0.55) !important;
+  color: #F8FAFC !important;
+  border-radius: 12px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #0EA5E9 !important;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18) !important;
+  outline: none !important;
+}

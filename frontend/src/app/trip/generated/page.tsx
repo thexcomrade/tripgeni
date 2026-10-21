@@ -1,5 +1,7 @@
 "use client";
 
+import TripInteractiveMap from "../../../components/map/TripInteractiveMap";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -141,7 +143,7 @@ export default function GeneratedTripPage() {
   const [trip, setTrip] = useState<TripData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<
-    "itinerary" | "stays" | "budget" | "weather" | "eco"
+    "itinerary" | "map" | "stays" | "budget" | "weather" | "eco"
   >("itinerary");
   const [saving, setSaving] = useState(false);
   const [saveFeedback, setSaveFeedback] = useState<
@@ -422,16 +424,34 @@ export default function GeneratedTripPage() {
         userName,
       );
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+
+      if (blob.type && blob.type.includes("html")) {
+        const printWin = window.open(url, "_blank");
+        if (printWin) {
+          printWin.onload = () => {
+            setTimeout(() => {
+              printWin.print();
+            }, 400);
+          };
+        } else {
+          const a = document.createElement("a");
+          a.href = url;
+          a.setAttribute("download", filename.replace(".pdf", ".html"));
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+      } else {
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
       window.URL.revokeObjectURL(url);
       setPdfFeedback(`Downloaded ${filename} successfully!`);
-      toast.success(`Downloaded ${filename} successfully!`);
-      setTimeout(() => setPdfFeedback(""), 5000);
+      toast.success(`PDF downloaded for ${trip.destination}! ✓`);
     } catch (err) {
       console.error("PDF export error:", err);
       setPdfFeedback("Failed to download PDF. Please try again.");
@@ -997,6 +1017,7 @@ export default function GeneratedTripPage() {
       >
         {[
           { id: "itinerary", label: "Day-by-Day Timeline", icon: Calendar },
+          { id: "map", label: "Interactive Route Map", icon: MapPin },
           { id: "stays", label: "Stays & Food", icon: Hotel },
           { id: "budget", label: "Cost Breakdown", icon: IndianRupee },
           { id: "weather", label: "Weather & Packing", icon: Sun },
@@ -1035,6 +1056,18 @@ export default function GeneratedTripPage() {
         })}
       </div>
 
+      {/* TAB: INTERACTIVE ROUTE MAP */}
+      {activeTab === "map" && (
+        <TripInteractiveMap
+          destination={trip.destination}
+          origin={trip.origin}
+          durationDays={trip.duration_days}
+          dayPlans={trip.ai_itinerary}
+          recommendedHotels={trip.recommended_hotels}
+          travelStyle={trip.travel_style}
+        />
+      )}
+
       {/* TAB 1: DAY-BY-DAY ITINERARY */}
       {activeTab === "itinerary" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -1042,6 +1075,16 @@ export default function GeneratedTripPage() {
             badge="Sequential Timeline"
             title="Your Daily Journey"
             subtitle="Optimized schedule factoring travel transit, attraction visiting hours, and peak scenery windows."
+          />
+
+          {/* Embedded Interactive Route Map & Waypoints Preview */}
+          <TripInteractiveMap
+            destination={trip.destination}
+            origin={trip.origin}
+            durationDays={trip.duration_days}
+            dayPlans={trip.ai_itinerary}
+            recommendedHotels={trip.recommended_hotels}
+            travelStyle={trip.travel_style}
           />
 
           {(() => {

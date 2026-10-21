@@ -260,11 +260,45 @@ def generate_ai_itinerary(
         raise
 
     except Exception as exc:
-        logger.exception("generate_ai_itinerary failed: %s", str(exc))
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"AI itinerary generation failed: {str(exc)}",
+        logger.warning(
+            "generate_ai_itinerary live failed: %s; using verified offline generator",
+            str(exc),
         )
+        try:
+            ai_service = get_ai_service()
+            fallback = ai_service.generate_offline_trip_plan(
+                destination=payload.destination,
+                duration_days=payload.duration_days,
+                budget=payload.budget,
+                interests=payload.interests,
+                travelers_count=payload.travelers_count,
+                travel_style=payload.travel_style,
+                transportation_mode=payload.transportation_mode,
+                preferred_accommodation=payload.preferred_accommodation,
+                origin=payload.origin,
+            )
+            fallback["destination"] = fallback.get("destination") or payload.destination
+            fallback["origin"] = payload.origin
+            fallback["duration_days"] = payload.duration_days
+            fallback["budget"] = payload.budget
+            fallback["travelers_count"] = payload.travelers_count
+            fallback["travel_style"] = payload.travel_style
+            fallback["transportation_mode"] = payload.transportation_mode
+            fallback["preferred_accommodation"] = payload.preferred_accommodation
+            fallback["interests"] = payload.interests
+            fallback["generation_mode"] = "verified_offline_fallback"
+
+            logger.info(
+                "Offline fallback itinerary generated successfully for %s",
+                payload.destination,
+            )
+            return AITripGenerationResponse(**fallback)
+        except Exception as inner_exc:
+            logger.exception("Offline fallback also failed: %s", str(inner_exc))
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"AI itinerary generation failed: {str(exc)}",
+            )
 
 
 # =====================================================

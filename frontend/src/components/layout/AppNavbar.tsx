@@ -137,7 +137,7 @@ export default function AppNavbar() {
         }}
       >
         {/* BRAND LOGO (LEFT) */}
-        <div style={{ flex: 1, display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+        <div style={{ flex: "0 0 auto", display: "flex", justifyContent: "flex-start", alignItems: "center", minWidth: "fit-content" }}>
           <Link
             href="/"
             className={isHome ? "animate-blur-fade-up" : ""}
@@ -160,9 +160,10 @@ export default function AppNavbar() {
             <span
               style={{
                 color: "#FFFFFF",
-                fontSize: "1.8rem",
+                fontSize: "clamp(1.25rem, 2vw, 1.55rem)",
                 fontWeight: 800,
                 letterSpacing: "-0.5px",
+                whiteSpace: "nowrap",
               }}
             >
               Trip Geni
@@ -176,9 +177,11 @@ export default function AppNavbar() {
             display: "none",
             alignItems: "center",
             justifyContent: "center",
-            gap: "6px",
+            gap: "clamp(2px, 0.6vw, 8px)",
             flexWrap: "nowrap",
-            flexShrink: 0,
+            flex: "1 1 auto",
+            maxWidth: "680px",
+            overflow: "hidden",
           }}
           className="desktop-nav-container"
         >
@@ -190,10 +193,12 @@ export default function AppNavbar() {
                 href={item.href}
                 className={isHome ? "animate-blur-fade-up" : ""}
                 style={{
-                  padding: "8px 14px",
+                  padding: "6px clamp(6px, 0.9vw, 12px)",
                   borderRadius: "10px",
-                  fontSize: "0.92rem",
+                  fontSize: "clamp(0.8rem, 0.9vw, 0.9rem)",
                   fontWeight: active ? 700 : 500,
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
                   color: active ? "#38BDF8" : "#CBD5E1",
                   background: active
                     ? "rgba(14, 165, 233, 0.12)"
@@ -322,11 +327,12 @@ export default function AppNavbar() {
         {/* RIGHT ACTION CONTROLS (RIGHT) */}
         <div
           style={{
-            flex: 1,
+            flex: "0 0 auto",
             display: "flex",
             alignItems: "center",
             justifyContent: "flex-end",
-            gap: "12px",
+            gap: "clamp(6px, 1vw, 12px)",
+            minWidth: "fit-content",
           }}
         >
           {/* NOTIFICATIONS BELL */}
@@ -485,7 +491,7 @@ export default function AppNavbar() {
 
       {/* RESPONSIVE MEDIA STYLES */}
       <style jsx>{`
-        @media (max-width: 899px) {
+        @media (max-width: 1020px) {
           .desktop-auth-pill {
             display: none !important;
           }
@@ -499,7 +505,7 @@ export default function AppNavbar() {
             display: flex !important;
           }
         }
-        @media (min-width: 900px) {
+        @media (min-width: 1021px) {
           .desktop-nav-container {
             display: flex !important;
           }

@@ -35,7 +35,8 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = Field(default="")
     OPENWEATHER_API_KEY: str = Field(default="")
 
-    CORS_ORIGINS: str = Field(default="*")
+    CORS_ORIGINS: str = Field(
+    default="https://tripgenius-kohl.vercel.app,http://localhost:3000,http://127.0.0.1:3000")
 
     LOG_LEVEL: str = Field(default="INFO")
 
