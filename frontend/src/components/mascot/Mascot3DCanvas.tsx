@@ -55,7 +55,7 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
 
     const t = state.clock.getElapsedTime();
     const breath = Math.sin(t * 2.2);
-    const baseScale = 1.05;
+    const baseScale = 1.32;
 
     model.scale.y = baseScale * (1 + breath * 0.014);
     model.scale.x = baseScale * (1 - breath * 0.007);
@@ -87,7 +87,7 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
   });
 
   return (
-    <group ref={group} position={[0, -0.06, 0]} scale={1.05}>
+    <group ref={group} position={[0, -0.28, 0]} scale={1.32}>
       <primitive object={scene} />
     </group>
   );
@@ -200,7 +200,7 @@ export default function Mascot3DCanvas({
       <Suspense fallback={fallback}>
         <Canvas
           shadows
-          camera={{ position: [0, 0, 3.9], fov: 34 }}
+          camera={{ position: [0, -0.02, 2.5], fov: 35 }}
           gl={{
             alpha: true,
             antialias: true,
@@ -240,9 +240,9 @@ export default function Mascot3DCanvas({
           />
 
           <ContactShadows
-            position={[0, -0.96, 0]}
+            position={[0, -0.92, 0]}
             opacity={0.78}
-            scale={2.2}
+            scale={2.7}
             blur={1.6}
             far={1.6}
             resolution={256}

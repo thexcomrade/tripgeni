@@ -187,34 +187,34 @@ export default function FloatingMascot() {
           FLOATING 3D MASCOT WIDGET (PADAYAPPA - OMNI COMPANION)
           ============================================================ */}
       <div className="mascot-widget">
-        {/* OMNI SPEECH BADGE (No artificial glow, clean dark glass pill) */}
-        {!isOpen && (
-          <div className="mascot-speech-badge" onClick={() => setIsOpen(true)}>
-            <span className="mascot-live-indicator" />
-            <span>{PADAYAPPA_PROMPTS[speechIndex]}</span>
-          </div>
-        )}
-
         <div
           role="button"
-
           tabIndex={0}
-
           className="mascot-trigger"
-
           aria-label={isOpen ? "Close Padayappa" : "Open Padayappa Assistant"}
-
           aria-expanded={isOpen}
-
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-
               setIsOpen((prev) => !prev);
             }
           }}
         >
-         {/* 3D GLB CHARACTER WITH REAL-TIME CONTACT SHADOW & PROCEDURAL LIFE */}
+          {/* OMNI SPEECH BADGE (Directly anchored & centered right above Padayappa) */}
+          {!isOpen && (
+            <div
+              className="mascot-speech-badge"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOpen(true);
+              }}
+            >
+              <span className="mascot-live-indicator" />
+              <span>{PADAYAPPA_PROMPTS[speechIndex]}</span>
+            </div>
+          )}
+
+          {/* 3D GLB CHARACTER WITH REAL-TIME CONTACT SHADOW & PROCEDURAL LIFE */}
 
           <div className="mascot-image-wrapper">
             <Mascot3DCanvas
