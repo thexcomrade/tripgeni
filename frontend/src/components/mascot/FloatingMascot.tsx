@@ -84,12 +84,13 @@ export default function FloatingMascot() {
     return () => window.removeEventListener("storage", check);
   }, []);
 
-  // Never show floating mascot on full ai-chat page or auth pages
-  if (pathname === '/ai-chat' || HIDE_PATHS.some((p) => pathname.startsWith(p))) {
+  // Hide on auth pages completely (Login / Register / Forgot-password / Reset-password)
+  if (HIDE_PATHS.some((p) => pathname.startsWith(p))) {
     return null;
   }
-  // On planner, only pop up / appear if user is logged in
-  if (pathname.startsWith('/planner') && !isLoggedIn) {
+
+  // Hide on Planner & AI-Chat unless logged in (auth-gated popup)
+  if (AUTH_REQUIRED_PATHS.some((p) => pathname.startsWith(p)) && !isLoggedIn) {
     return null;
   }
 
@@ -232,13 +233,7 @@ export default function FloatingMascot() {
             />
           </div>
 
-          {/* 360° ROTATION INTERACTION HINT */}
-          <div
-            className="mascot-rotate-pill"
-            title="Drag character to rotate 360°"
-          >
-            <span>🔄</span> 360°
-          </div>
+
 
           {/* NATURAL PHYSICAL GROUND CONTACT SHADOW */}
           <div className="mascot-ground-shadow" />

@@ -85,12 +85,12 @@ export default function AppNavbar() {
     { name: "Home", href: "/" },
     { name: "Planner", href: "/planner", highlight: true },
     { name: "Explore", href: "/explore" },
+    { name: "AI Chat", href: "/ai-chat" },
     { name: "Dashboard", href: "/dashboard" },
     { name: "Favorites", href: "/favorites" },
   ];
 
   const moreNav = [
-    { name: "AI Chatbot", href: "/ai-chat", icon: Bot },
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
     { name: "Achievements", href: "/achievements", icon: Award },
   ];

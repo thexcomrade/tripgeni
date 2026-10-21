@@ -1065,6 +1065,7 @@ export default function GeneratedTripPage() {
           dayPlans={trip.ai_itinerary}
           recommendedHotels={trip.recommended_hotels}
           travelStyle={trip.travel_style}
+          budget={trip.estimated_trip_cost || trip.budget}
         />
       )}
 
@@ -1085,6 +1086,7 @@ export default function GeneratedTripPage() {
             dayPlans={trip.ai_itinerary}
             recommendedHotels={trip.recommended_hotels}
             travelStyle={trip.travel_style}
+            budget={trip.estimated_trip_cost || trip.budget}
           />
 
           {(() => {

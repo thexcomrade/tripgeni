@@ -1015,7 +1015,6 @@ export default function ExplorePage() {
           </GlassCard>
         )}
       </section>
-      <FloatingMascot />
       </div>
     </div>
   );
