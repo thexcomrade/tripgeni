@@ -9,6 +9,16 @@
     "start:prod": "next start -H 0.0.0.0 -p 3000",
     "lint": "next lint"
   },
+  "allowScripts": {
+    "sharp": true,
+    "unrs-resolver": true
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",

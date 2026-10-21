@@ -427,7 +427,7 @@ export default function HomePage() {
               type="text"
               value={quickDestination}
               onChange={(e) => setQuickDestination(e.target.value)}
-              placeholder="Where to? (e.g. Munnar, Coorg, Ooty, Varkala...)"
+              placeholder="Where would you like to explore?"
               style={{
                 flex: 1,
                 background: "transparent",

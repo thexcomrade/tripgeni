@@ -84,13 +84,11 @@ export default function FloatingMascot() {
     return () => window.removeEventListener("storage", check);
   }, []);
 
-  // Hide on auth pages completely (Login / Register / Forgot-password / Reset-password)
-  if (HIDE_PATHS.some((p) => pathname.startsWith(p))) {
-    return null;
-  }
-
-  // Hide on Planner & AI-Chat unless logged in (auth-gated popup)
-  if (AUTH_REQUIRED_PATHS.some((p) => pathname.startsWith(p)) && !isLoggedIn) {
+  // STRICT VISIBILITY: Only show mascot where it is designated and available (/dashboard, /explore, /favorites)
+  // Completely removed from /planner, /ai-chat, /trip, auth pages, and all other views
+  const ALLOWED_MASCOT_PATHS = ["/dashboard", "/explore", "/favorites"];
+  const isAllowedPath = ALLOWED_MASCOT_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+  if (!isAllowedPath) {
     return null;
   }
 

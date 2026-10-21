@@ -3,7 +3,6 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import AppNavbar from "../components/layout/AppNavbar";
 import AppFooter from "../components/layout/AppFooter";
-import FloatingMascot from "../components/mascot/FloatingMascot";
 
 export const viewport: Viewport = {
   themeColor: "#030712",
@@ -83,7 +82,6 @@ export default function RootLayout({
           {children}
         </main>
         <AppFooter />
-        <FloatingMascot />
       </body>
     </html>
   );

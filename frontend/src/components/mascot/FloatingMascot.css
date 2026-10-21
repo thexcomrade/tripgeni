@@ -92,8 +92,9 @@
 /* OMNI-STYLE SPEECH BADGE (Clean dark pill above character) */
 .mascot-speech-badge {
   position: absolute;
-  top: -12px;
-  right: -4px;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 10;
   display: flex;
   align-items: center;
@@ -119,7 +120,7 @@
 .mascot-speech-badge:hover {
   background: rgba(30, 41, 59, 0.96);
   border-color: rgba(255, 255, 255, 0.3);
-  transform: scale(1.03);
+  transform: translateX(-50%) scale(1.04);
 }
 
 .mascot-live-indicator {
