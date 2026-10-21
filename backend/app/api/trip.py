@@ -1,4 +1,5 @@
 from typing import Annotated, Any
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
 from pydantic import BaseModel, Field
@@ -39,6 +40,11 @@ class RecordExpenseRequest(BaseModel):
     actual_spent_total: float = Field(gt=0)
     category_actuals: dict[str, float] = Field(default_factory=dict)
     user_notes: str | None = None
+    destination: str | None = None
+    duration_days: int | None = None
+    budget: float | None = None
+    travel_style: str | None = None
+    trip_title: str | None = None
 
 
 router = APIRouter(prefix="/api/trips", tags=["Trips"])
@@ -591,6 +597,29 @@ def export_trip_pdf(
     )
 
 
+
+def ensure_guest_user(db: Session) -> User:
+    guest = db.query(User).filter(User.id == "guest-traveler-id").first()
+    if not guest:
+        guest = db.query(User).filter(User.email == "guest@tripgenius.ai").first()
+    if not guest:
+        guest = User(
+            id="guest-traveler-id",
+            full_name="Guest Traveler",
+            email="guest@tripgenius.ai",
+            hashed_password="guest_no_login_needed",
+            is_active=True,
+            is_verified=True,
+        )
+        db.add(guest)
+        try:
+            db.commit()
+            db.refresh(guest)
+        except Exception:
+            db.rollback()
+            guest = db.query(User).filter(User.email == "guest@tripgenius.ai").first()
+    return guest
+
 # =====================================================
 # Record Actual Trip Expense (RL Human Feedback Learning)
 # =====================================================
@@ -600,29 +629,59 @@ def export_trip_pdf(
 def record_trip_expense(
     trip_id: str,
     payload: RecordExpenseRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User | None = Depends(get_current_user_or_guest),
     db: Session = Depends(get_db),
 ):
     """
     Logs actual traveler spending (chelavakkiya budget) against an AI generated trip.
-    Updates the database and triggers the Reinforcement Learning / Contextual Bandit
-    engine to calibrate future predictions.
+    Persists to SQL database (trips & trip_expense_learnings tables) and triggers
+    the Reinforcement Learning engine to calibrate future predictions.
     """
+    active_user = current_user or ensure_guest_user(db)
     rl_service = get_budget_rl_service()
+    logger = logging.getLogger(__name__)
+
     try:
+        # Check if trip exists in DB; if not (e.g. freshly generated itinerary), auto-persist it
+        trip = db.query(Trip).filter(Trip.id == trip_id).first()
+        if not trip:
+            dest_name = payload.destination or "Destination"
+            est_cost = payload.budget or payload.actual_spent_total
+            clean_trip_id = trip_id if len(trip_id) == 36 and "-" in trip_id else str(uuid4())
+
+            trip = Trip(
+                id=clean_trip_id,
+                user_id=active_user.id,
+                trip_title=payload.trip_title or f"{dest_name} Journey",
+                destination=dest_name,
+                duration_days=payload.duration_days or 3,
+                travelers_count=1,
+                budget=est_cost,
+                travel_style=payload.travel_style or "leisure",
+                interests=[],
+                ai_itinerary={},
+                estimated_trip_cost=est_cost,
+                is_completed=True,
+                status="completed",
+            )
+            db.add(trip)
+            db.commit()
+            db.refresh(trip)
+
         result = rl_service.record_trip_expense(
             db=db,
-            trip_id=trip_id,
-            user_id=current_user.id,
+            trip_id=trip.id,
+            user_id=active_user.id,
             actual_total=payload.actual_spent_total,
             category_actuals=payload.category_actuals,
             user_notes=payload.user_notes,
         )
+        result["trip_id"] = trip.id
         return result
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        logger.warning("record_trip_expense value error: %s", e)
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger = logging.getLogger(__name__)
         logger.exception("Error recording trip expense: %s", e)
         raise HTTPException(status_code=500, detail="Failed to record expense feedback.")
 
