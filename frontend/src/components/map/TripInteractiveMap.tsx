@@ -209,6 +209,7 @@ export default function TripInteractiveMap({
 }: TripInteractiveMapProps) {
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [transitMode, setTransitMode] = useState<"car" | "transit" | "walk">("car");
+  const [attachedCardTab, setAttachedCardTab] = useState<"route" | "bookings">("route");
   const [dynamicCoords, setDynamicCoords] = useState<{
     lat: number;
     lon: number;
