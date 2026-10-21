@@ -93,6 +93,8 @@ export default function AppNavbar() {
   const moreNav = [
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
     { name: "Achievements", href: "/achievements", icon: Award },
+    { name: "Notifications", href: "/notifications", icon: Bell },
+    { name: "Trip History", href: "/trip/history", icon: History },
   ];
 
   const isHome = pathname === "/";
@@ -180,8 +182,8 @@ export default function AppNavbar() {
             gap: "clamp(2px, 0.6vw, 8px)",
             flexWrap: "nowrap",
             flex: "1 1 auto",
-            maxWidth: "680px",
-            overflow: "hidden",
+            maxWidth: "780px",
+            overflow: "visible",
           }}
           className="desktop-nav-container"
         >
@@ -229,26 +231,32 @@ export default function AppNavbar() {
                 <>
                   <button
                     type="button"
-                    onClick={() => setMoreOpen((prev) => !prev)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMoreOpen((prev) => !prev);
+                    }}
+                    aria-expanded={moreOpen}
+                    aria-haspopup="true"
                     style={{
                       padding: "8px 12px",
                       borderRadius: "10px",
-                      fontSize: "0.92rem",
+                      fontSize: "clamp(0.8rem, 0.9vw, 0.9rem)",
                       fontWeight: isMoreActive ? 700 : 500,
                       color: isMoreActive || moreOpen ? "#38BDF8" : "#CBD5E1",
                       background:
                         isMoreActive || moreOpen
-                          ? "rgba(14, 165, 233, 0.12)"
+                          ? "rgba(14, 165, 233, 0.14)"
                           : "transparent",
                       border:
                         isMoreActive || moreOpen
-                          ? "1px solid rgba(14, 165, 233, 0.25)"
+                          ? "1px solid rgba(14, 165, 233, 0.3)"
                           : "1px solid transparent",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
                       gap: "6px",
                       transition: "all 0.2s ease",
+                      userSelect: "none",
                     }}
                   >
                     <span>More</span>
@@ -265,22 +273,25 @@ export default function AppNavbar() {
                     <div
                       style={{
                         position: "absolute",
-                        top: "100%",
-                        left: 0,
+                        top: "calc(100% + 4px)",
+                        right: 0,
                         paddingTop: "6px",
-                        zIndex: 150,
+                        zIndex: 9999,
+                        minWidth: "215px",
                       }}
                     >
                       <div
                         style={{
-                          width: "210px",
-                          background: "rgba(15, 23, 42, 0.96)",
-                          backdropFilter: "blur(20px)",
-                          WebkitBackdropFilter: "blur(20px)",
-                          border: "1px solid rgba(255, 255, 255, 0.12)",
+                          background: "rgba(15, 23, 42, 0.98)",
+                          backdropFilter: "blur(24px)",
+                          WebkitBackdropFilter: "blur(24px)",
+                          border: "1px solid rgba(255, 255, 255, 0.16)",
                           borderRadius: "14px",
                           padding: "6px",
-                          boxShadow: "0 18px 40px rgba(0, 0, 0, 0.55)",
+                          boxShadow: "0 20px 48px rgba(0, 0, 0, 0.70)",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "2px",
                         }}
                       >
                         {moreNav.map((item) => {
@@ -295,11 +306,11 @@ export default function AppNavbar() {
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "10px",
-                                padding: "10px 12px",
+                                padding: "10px 14px",
                                 borderRadius: "8px",
                                 color: active ? "#38BDF8" : "#E2E8F0",
                                 background: active
-                                  ? "rgba(14, 165, 233, 0.12)"
+                                  ? "rgba(14, 165, 233, 0.14)"
                                   : "transparent",
                                 fontSize: "0.88rem",
                                 fontWeight: active ? 600 : 500,
