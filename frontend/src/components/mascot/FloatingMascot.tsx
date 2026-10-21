@@ -30,12 +30,59 @@ export default function FloatingMascot() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isNearFooter, setIsNearFooter] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [speechIndex, setSpeechIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // Smooth footer detection: fade mascot away when reaching footer, fade in when scrolling up
+  useEffect(() => {
+    let observer: IntersectionObserver | null = null;
+
+    const setupObserver = () => {
+      const footer = document.querySelector("footer");
+      if (!footer) return;
+
+      if (typeof IntersectionObserver !== "undefined") {
+        observer = new IntersectionObserver(
+          (entries) => {
+            const [entry] = entries;
+            setIsNearFooter(entry.isIntersecting);
+          },
+          {
+            root: null,
+            rootMargin: "0px 0px 80px 0px", // triggers smoothly right before contacting footer
+            threshold: 0,
+          }
+        );
+        observer.observe(footer);
+      }
+    };
+
+    setupObserver();
+
+    // Scroll listener fallback for rapid scrolling
+    const handleScroll = () => {
+      const footer = document.querySelector("footer");
+      if (footer) {
+        const rect = footer.getBoundingClientRect();
+        // If top of footer enters or is near viewport bottom
+        setIsNearFooter(rect.top < window.innerHeight + 60);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, [pathname]);
 
   // Close panel with smooth fade when user clicks or touches outside
   useEffect(() => {
@@ -199,7 +246,7 @@ export default function FloatingMascot() {
       {/* ============================================================
           FLOATING 3D MASCOT WIDGET (PADAYAPPA - OMNI COMPANION)
           ============================================================ */}
-      <div className="mascot-widget">
+      <div className={`mascot-widget ${isNearFooter ? "mascot-faded-footer" : ""}`} aria-hidden={isNearFooter}>
         <div
           role="button"
           tabIndex={0}
@@ -232,17 +279,7 @@ export default function FloatingMascot() {
           <div className="mascot-image-wrapper">
             <Mascot3DCanvas
               onModelClick={() => setIsOpen((prev) => !prev)}
-              fallback={
-                <Image
-                  src="/images/model.png"
-                  alt=""
-                  fill
-                  sizes="140px"
-                  priority
-                  style={{ objectFit: "contain", cursor: "pointer" }}
-                  onClick={() => setIsOpen((prev) => !prev)}
-                />
-              }
+              fallback={null}
             />
           </div>
 
@@ -270,7 +307,7 @@ export default function FloatingMascot() {
       {isOpen && (
         <section
           ref={panelRef}
-          className="assistant-panel"
+          className={`assistant-panel ${isNearFooter ? "panel-faded-footer" : ""}`}
           aria-label="Padayappa Virtual Assistant"
         >
           {/* HEADER */}

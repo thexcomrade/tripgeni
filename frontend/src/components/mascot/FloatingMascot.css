@@ -16,6 +16,28 @@
   justify-content: flex-end;
   pointer-events: none;
   user-select: none;
+  transition:
+    opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.42s ease;
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+/* FADE AWAY WHEN SCROLLED TO FOOTER (FADES OUT SMOOTHLY & FADES IN ON SCROLL UP) */
+.mascot-widget.mascot-faded-footer {
+  opacity: 0 !important;
+  transform: translateY(35px) scale(0.92) !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.assistant-panel.panel-faded-footer {
+  opacity: 0 !important;
+  transform: translateY(20px) scale(0.95) !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 /* 3D CHARACTER TRIGGER CONTAINER (Red Box Size: ~105px x 195px Full Body) */
