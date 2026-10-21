@@ -429,12 +429,15 @@ export default function HomePage() {
               value={quickDestination}
               onChange={(e) => setQuickDestination(e.target.value)}
               placeholder="Where would you like to explore?"
+              className="hero-search-input"
               style={{
                 flex: 1,
                 background: "transparent",
+                backgroundColor: "transparent",
                 border: "none",
+                boxShadow: "none",
                 color: "#FFFFFF",
-                fontSize: "1rem",
+                fontSize: "1.05rem",
                 outline: "none",
               }}
             />

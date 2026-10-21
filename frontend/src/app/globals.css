@@ -923,3 +923,24 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18) !important;
   outline: none !important;
 }
+
+/* Hero Search Form Input: Clean, Borderless & Seamless inside Glass Pill */
+.hero-quick-form input,
+.hero-quick-form input[type="text"],
+.hero-quick-form input[type="text"]:focus,
+.hero-quick-form input:focus {
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  color: #FFFFFF !important;
+  font-size: 1rem !important;
+}
+
+.hero-quick-form input::placeholder,
+.hero-quick-form input[type="text"]::placeholder {
+  color: #94A3B8 !important;
+  opacity: 1 !important;
+}
