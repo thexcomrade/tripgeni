@@ -1500,7 +1500,7 @@ export default function DashboardPage() {
           
         )}
       </section>
-       <FloatingMascot />
+      <FloatingMascot />
     </div>
   );
 }
