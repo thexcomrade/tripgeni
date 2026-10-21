@@ -93,7 +93,6 @@ export default function AppNavbar() {
   const moreNav = [
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
     { name: "Achievements", href: "/achievements", icon: Award },
-    { name: "Notifications", href: "/notifications", icon: Bell },
     { name: "Trip History", href: "/trip/history", icon: History },
   ];
 

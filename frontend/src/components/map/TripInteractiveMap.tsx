@@ -196,6 +196,7 @@ interface TripInteractiveMapProps {
   recommendedHotels?: string[];
   travelStyle?: string;
   budget?: number;
+  currencyCode?: string;
 }
 
 export default function TripInteractiveMap({
@@ -206,6 +207,7 @@ export default function TripInteractiveMap({
   recommendedHotels = [],
   travelStyle = "Leisure",
   budget,
+  currencyCode = "INR",
 }: TripInteractiveMapProps) {
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [transitMode, setTransitMode] = useState<"car" | "transit" | "walk">("car");
@@ -426,13 +428,32 @@ export default function TripInteractiveMap({
 
   const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${coords.lat}%2C${coords.lon}`;
 
-  // Multi-stop Google Maps URL connecting ALL locations for that day
+  // Dynamic transit duration calculator based on real-time transitMode (Drive, Transit, Walk)
+  const getDynamicStopTransitTime = (distKm: number, mode: "car" | "transit" | "walk") => {
+    if (mode === "car") {
+      return `${Math.max(4, Math.round(distKm * 2.1 + 3))}m`;
+    }
+    if (mode === "transit") {
+      return `${Math.max(8, Math.round(distKm * 3.4 + 7))}m`;
+    }
+    // Walk mode at 4.2 km/h average pacing
+    const mins = Math.max(8, Math.round((distKm / 4.2) * 60));
+    if (mins >= 60) {
+      const hrs = Math.floor(mins / 60);
+      const remMins = mins % 60;
+      return remMins > 0 ? `${hrs}h ${remMins}m` : `${hrs}h`;
+    }
+    return `${mins}m`;
+  };
+
+  // Multi-stop Google Maps URL connecting ALL locations for that day with explicit travelmode
   const googleMapsConnectedRouteUrl = useMemo(() => {
     const stopQueryParts = activeDay.stops
       .map((s) => encodeURIComponent(`${s.name}, ${destination}`))
       .join("/");
-    return `https://www.google.com/maps/dir/${stopQueryParts}`;
-  }, [activeDay, destination]);
+    const modeParam = transitMode === "car" ? "driving" : transitMode === "transit" ? "transit" : "walking";
+    return `https://www.google.com/maps/dir/${stopQueryParts}?travelmode=${modeParam}`;
+  }, [activeDay, destination, transitMode]);
 
   const handleOpenExternalRoute = () => {
     window.open(googleMapsConnectedRouteUrl, "_blank", "noopener,noreferrer");
@@ -630,30 +651,76 @@ export default function TripInteractiveMap({
           Body: Sequential Connected Stops with Transit Connectors
           ============================================================ */}
       <div className="reference-attached-card">
-        {/* CARD TOP BAR: PROGRESS + TABS */}
+        {/* CARD TOP BAR: COMPACT PROGRESS + WORKING TRANSIT SWITCHER + TABS */}
         <div className="reference-card-top-bar">
           <div className="reference-progress-badge">
             <div className="reference-progress-circle">
               <span>{activeDay.day}/{durationDays}</span>
             </div>
             <div className="reference-progress-text">
-              <strong>Days</strong>
-              <span>planned</span>
+              <strong>Day {activeDay.day}</strong>
+              <span>of {durationDays} Days</span>
             </div>
+          </div>
+
+          {/* WORKING ROUTE TRANSIT MODE SWITCHER (Drive, Transit, Walk) */}
+          <div className="reference-transit-toggles">
+            <button
+              type="button"
+              className={`ref-transit-pill ${transitMode === "car" ? "active" : ""}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setTransitMode("car");
+              }}
+              title="Switch to Drive Mode"
+            >
+              <Car size={13} />
+              <span>Drive</span>
+            </button>
+            <button
+              type="button"
+              className={`ref-transit-pill ${transitMode === "transit" ? "active" : ""}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setTransitMode("transit");
+              }}
+              title="Switch to Transit Mode"
+            >
+              <Train size={13} />
+              <span>Transit</span>
+            </button>
+            <button
+              type="button"
+              className={`ref-transit-pill ${transitMode === "walk" ? "active" : ""}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setTransitMode("walk");
+              }}
+              title="Switch to Walk Mode"
+            >
+              <Footprints size={13} />
+              <span>Walk</span>
+            </button>
           </div>
 
           <div className="reference-card-tabs">
             <button
               type="button"
               className={`reference-tab-btn ${attachedCardTab === "route" ? "active" : ""}`}
-              onClick={() => setAttachedCardTab("route")}
+              onClick={(e) => {
+                e.stopPropagation();
+                setAttachedCardTab("route");
+              }}
             >
               Route
             </button>
             <button
               type="button"
               className={`reference-tab-btn ${attachedCardTab === "bookings" ? "active" : ""}`}
-              onClick={() => setAttachedCardTab("bookings")}
+              onClick={(e) => {
+                e.stopPropagation();
+                setAttachedCardTab("bookings");
+              }}
             >
               Bookings
             </button>
@@ -695,7 +762,7 @@ export default function TripInteractiveMap({
                           {transitMode === "car" ? "🚗" : transitMode === "transit" ? "🚆" : "🚶"}
                         </span>
                         <span className="bridge-text">
-                          {stop.transitMinToNext}m • {stop.transitDistToNextKm} km
+                          {getDynamicStopTransitTime(stop.transitDistToNextKm, transitMode)} • {stop.transitDistToNextKm} km
                         </span>
                       </div>
                     </div>

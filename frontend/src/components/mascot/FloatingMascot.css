@@ -1,14 +1,14 @@
 /* ============================================================
-   PADAYAPPA — Playful Mini 3D Companion (~2cm Pocket Height)
-   Compact, Unobtrusive, Perfectly Centered Proportional Message
+   PADAYAPPA — Refined Medium-Compact 3D Companion (~3.5cm Height)
+   Slightly Bigger for Crisp Character Details & Balanced Presence
    ============================================================ */
 
 .mascot-widget {
   position: fixed;
-  right: 20px;
+  right: 24px;
   bottom: 0px;
-  width: 68px;
-  height: 98px;
+  width: 105px;
+  height: 195px;
   z-index: 9998;
   display: flex;
   flex-direction: column;
@@ -18,11 +18,11 @@
   user-select: none;
 }
 
-/* 3D CHARACTER TRIGGER CONTAINER (~2cm Height, Playful Miniature) */
+/* 3D CHARACTER TRIGGER CONTAINER (Red Box Size: ~105px x 195px Full Body) */
 .mascot-trigger {
   position: relative;
-  width: 68px;
-  height: 98px;
+  width: 105px;
+  height: 195px;
   padding: 0;
   border: none;
   outline: none;
@@ -38,26 +38,26 @@
   transition:
     transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
     filter 0.25s ease;
-  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.60));
-  animation: padayappa-idle-float 3.6s ease-in-out infinite;
+  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.65));
+  animation: padayappa-idle-float 4.0s ease-in-out infinite;
 }
 
 .mascot-trigger:hover {
-  transform: translateY(-4px) scale(1.06);
-  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.70));
+  transform: translateY(-5px) scale(1.04);
+  filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.75));
 }
 
 /* Subtle click feedback without interfering with 3D canvas drag */
 .mascot-trigger:focus-visible {
   outline: 2px solid #38bdf8;
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
-/* 3D IMAGE FRAME (Mini 2cm height proportional) */
+/* 3D IMAGE FRAME (Matches red box target ~100px x 190px) */
 .mascot-image-wrapper {
   position: relative;
-  width: 65px;
-  height: 92px;
+  width: 100px;
+  height: 190px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,44 +71,44 @@
   image-rendering: -webkit-optimize-contrast;
 }
 
-/* PHOTOREALISTIC COMPACT GROUND SHADOW */
+/* PHOTOREALISTIC GROUND CONTACT SHADOW */
 .mascot-ground-shadow {
-  width: 46px;
-  height: 8px;
+  width: 72px;
+  height: 12px;
   background: radial-gradient(
     ellipse at center,
-    rgba(0, 0, 0, 0.70) 0%,
-    rgba(0, 0, 0, 0.35) 45%,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.38) 45%,
     transparent 75%
   );
   border-radius: 50%;
-  margin-top: -3px;
+  margin-top: -5px;
   pointer-events: none;
-  animation: padayappa-shadow-pulse 3.6s ease-in-out infinite;
+  animation: padayappa-shadow-pulse 4.0s ease-in-out infinite;
 }
 
-/* REFINED MINI SPEECH BADGE (Harmonized, centered right above mini Padayappa) */
+/* PROPORTIONAL SPEECH BADGE (Cleanly anchored above head, centered) */
 .mascot-speech-badge {
   position: absolute;
-  top: -11px;
+  top: -12px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
+  gap: 5px;
+  padding: 4px 11px;
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.94);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #f8fafc;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.50);
   pointer-events: auto;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -117,8 +117,8 @@
 
 .mascot-speech-badge:hover {
   background: rgba(30, 41, 59, 0.98);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateX(-50%) scale(1.05);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateX(-50%) scale(1.04);
 }
 
 .mascot-live-indicator {
