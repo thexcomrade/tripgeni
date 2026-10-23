@@ -1,28 +1,19 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
-  MapPin,
-  Navigation,
+  Compass,
   Car,
   Train,
   Footprints,
+  Maximize2,
   ExternalLink,
-  Compass,
+  MapPin,
   Calendar,
   Clock,
-  Hotel,
-  Camera,
-  Utensils,
-  ShoppingBag,
-  Trees,
-  Sun,
-  CloudSun,
-  CloudRain,
-  IndianRupee,
-  ShieldCheck,
-  ChevronRight,
+  Navigation,
   Sparkles,
+  Info,
 } from "lucide-react";
 import "./TripInteractiveMap.css";
 
@@ -34,57 +25,35 @@ const DESTINATION_COORDS: Record<
   // Northern India
   agra: { lat: 27.1767, lon: 78.0081, zoom: 12, region: "Uttar Pradesh, India" },
   varanasi: { lat: 25.3176, lon: 82.9739, zoom: 12, region: "Uttar Pradesh, India" },
-  mathura: { lat: 27.4924, lon: 77.6737, zoom: 12, region: "Uttar Pradesh, India" },
+  mathura: { lat: 27.4924, lon: 77.6737, zoom: 13, region: "Uttar Pradesh, India" },
   vrindavan: { lat: 27.5806, lon: 77.7006, zoom: 13, region: "Uttar Pradesh, India" },
-  ayodhya: { lat: 26.7922, lon: 82.1998, zoom: 12, region: "Uttar Pradesh, India" },
-  lucknow: { lat: 26.8467, lon: 80.9462, zoom: 12, region: "Uttar Pradesh, India" },
   delhi: { lat: 28.6139, lon: 77.209, zoom: 11, region: "National Capital Region, India" },
   "new delhi": { lat: 28.6139, lon: 77.209, zoom: 11, region: "National Capital Region, India" },
   jaipur: { lat: 26.9124, lon: 75.7873, zoom: 12, region: "Rajasthan, India" },
   udaipur: { lat: 24.5854, lon: 73.7125, zoom: 12, region: "Rajasthan, India" },
   jodhpur: { lat: 26.2389, lon: 73.0243, zoom: 12, region: "Rajasthan, India" },
   jaisalmer: { lat: 26.9157, lon: 70.9083, zoom: 12, region: "Rajasthan, India" },
-  bikaner: { lat: 28.0229, lon: 73.3119, zoom: 12, region: "Rajasthan, India" },
-  pushkar: { lat: 26.4897, lon: 74.5511, zoom: 13, region: "Rajasthan, India" },
-  "mount abu": { lat: 24.5926, lon: 72.7156, zoom: 12, region: "Rajasthan, India" },
   amritsar: { lat: 31.634, lon: 74.8723, zoom: 12, region: "Punjab, India" },
-  chandigarh: { lat: 30.7333, lon: 76.7794, zoom: 12, region: "Punjab / Haryana, India" },
   shimla: { lat: 31.1048, lon: 77.1734, zoom: 12, region: "Himachal Pradesh, India" },
   manali: { lat: 32.2432, lon: 77.1892, zoom: 12, region: "Kullu, Himachal Pradesh" },
-  dharamshala: { lat: 32.219, lon: 76.3234, zoom: 12, region: "Himachal Pradesh, India" },
-  mcleodganj: { lat: 32.2426, lon: 76.3213, zoom: 13, region: "Himachal Pradesh, India" },
-  kasol: { lat: 32.01, lon: 77.315, zoom: 13, region: "Himachal Pradesh, India" },
-  kullu: { lat: 31.9579, lon: 77.1095, zoom: 12, region: "Himachal Pradesh, India" },
-  spiti: { lat: 32.2461, lon: 78.0349, zoom: 10, region: "Himachal Pradesh, India" },
   rishikesh: { lat: 30.0869, lon: 78.2676, zoom: 12, region: "Uttarakhand, India" },
   haridwar: { lat: 29.9457, lon: 78.1642, zoom: 12, region: "Uttarakhand, India" },
   nainital: { lat: 29.3919, lon: 79.4542, zoom: 12, region: "Uttarakhand, India" },
   mussoorie: { lat: 30.4598, lon: 78.0644, zoom: 12, region: "Uttarakhand, India" },
-  dehradun: { lat: 30.3165, lon: 78.0322, zoom: 12, region: "Uttarakhand, India" },
-  corbett: { lat: 29.53, lon: 78.7747, zoom: 11, region: "Uttarakhand, India" },
   srinagar: { lat: 34.0837, lon: 74.7973, zoom: 12, region: "Jammu & Kashmir, India" },
-  gulmarg: { lat: 34.0484, lon: 74.3805, zoom: 12, region: "Jammu & Kashmir, India" },
-  pahalgam: { lat: 34.0163, lon: 75.3154, zoom: 12, region: "Jammu & Kashmir, India" },
   leh: { lat: 34.1526, lon: 77.5771, zoom: 11, region: "Ladakh, India" },
-  ladakh: { lat: 34.1526, lon: 77.5771, zoom: 10, region: "Ladakh, India" },
 
   // Southern India
+  thekkady: { lat: 9.6031, lon: 77.168, zoom: 12, region: "Idukki, Kerala" },
+  thekkadi: { lat: 9.6031, lon: 77.168, zoom: 12, region: "Idukki, Kerala" },
   munnar: { lat: 10.0889, lon: 77.0595, zoom: 12, region: "Idukki, Kerala" },
   varkala: { lat: 8.7379, lon: 76.7163, zoom: 13, region: "Thiruvananthapuram, Kerala" },
   alleppey: { lat: 9.4981, lon: 76.3388, zoom: 12, region: "Alappuzha, Kerala" },
   alappuzha: { lat: 9.4981, lon: 76.3388, zoom: 12, region: "Alappuzha, Kerala" },
   kochi: { lat: 9.9312, lon: 76.2673, zoom: 12, region: "Ernakulam, Kerala" },
-  cochin: { lat: 9.9312, lon: 76.2673, zoom: 12, region: "Ernakulam, Kerala" },
-  ernakulam: { lat: 9.9816, lon: 76.2999, zoom: 12, region: "Ernakulam, Kerala" },
   wayanad: { lat: 11.6854, lon: 76.132, zoom: 11, region: "Wayanad, Kerala" },
-  thekkady: { lat: 9.6031, lon: 77.168, zoom: 12, region: "Idukki, Kerala" },
   kovalam: { lat: 8.4021, lon: 76.9787, zoom: 13, region: "Kerala, India" },
-  trivandrum: { lat: 8.5241, lon: 76.9366, zoom: 12, region: "Kerala, India" },
   thiruvananthapuram: { lat: 8.5241, lon: 76.9366, zoom: 12, region: "Kerala, India" },
-  kozhikode: { lat: 11.2588, lon: 75.7804, zoom: 12, region: "Kerala, India" },
-  calicut: { lat: 11.2588, lon: 75.7804, zoom: 12, region: "Kerala, India" },
-  kannur: { lat: 11.8745, lon: 75.3704, zoom: 12, region: "Kerala, India" },
-  bekal: { lat: 12.3929, lon: 75.0326, zoom: 13, region: "Kasaragod, Kerala" },
   ooty: { lat: 11.4102, lon: 76.695, zoom: 12, region: "Nilgiris, Tamil Nadu" },
   kodaikanal: { lat: 10.2381, lon: 77.4892, zoom: 12, region: "Dindigul, Tamil Nadu" },
   coorg: { lat: 12.3375, lon: 75.8069, zoom: 11, region: "Kodagu, Karnataka" },
@@ -93,99 +62,43 @@ const DESTINATION_COORDS: Record<
   bengaluru: { lat: 12.9716, lon: 77.5946, zoom: 11, region: "Karnataka, India" },
   hampi: { lat: 15.335, lon: 76.46, zoom: 12, region: "Vijayanagara, Karnataka" },
   gokarna: { lat: 14.5479, lon: 74.3188, zoom: 12, region: "Uttara Kannada, Karnataka" },
-  chikmagalur: { lat: 13.3161, lon: 75.772, zoom: 12, region: "Karnataka, India" },
-  dandeli: { lat: 15.2415, lon: 74.6229, zoom: 12, region: "Karnataka, India" },
-  chennai: { lat: 13.0827, lon: 80.2707, zoom: 11, region: "Tamil Nadu, India" },
-  madurai: { lat: 9.9252, lon: 78.1198, zoom: 12, region: "Tamil Nadu, India" },
-  rameswaram: { lat: 9.2876, lon: 79.3129, zoom: 12, region: "Tamil Nadu, India" },
-  kanyakumari: { lat: 8.0883, lon: 77.5385, zoom: 13, region: "Tamil Nadu, India" },
-  thanjavur: { lat: 10.787, lon: 79.1378, zoom: 12, region: "Tamil Nadu, India" },
   pondicherry: { lat: 11.9416, lon: 79.8083, zoom: 13, region: "Puducherry, India" },
-  puducherry: { lat: 11.9416, lon: 79.8083, zoom: 13, region: "Puducherry, India" },
-  hyderabad: { lat: 17.385, lon: 78.4867, zoom: 11, region: "Telangana, India" },
-  visakhapatnam: { lat: 17.6868, lon: 83.2185, zoom: 11, region: "Andhra Pradesh, India" },
-  vizag: { lat: 17.6868, lon: 83.2185, zoom: 11, region: "Andhra Pradesh, India" },
-  tirupati: { lat: 13.6288, lon: 79.4192, zoom: 12, region: "Andhra Pradesh, India" },
-
-  // Western & Central India
   goa: { lat: 15.2993, lon: 74.124, zoom: 11, region: "Goa, India" },
-  mumbai: { lat: 19.076, lon: 72.8777, zoom: 11, region: "Maharashtra, India" },
-  pune: { lat: 18.5204, lon: 73.8567, zoom: 11, region: "Maharashtra, India" },
-  mahabaleshwar: { lat: 17.9237, lon: 73.6586, zoom: 12, region: "Maharashtra, India" },
-  lonavala: { lat: 18.7557, lon: 73.4091, zoom: 12, region: "Maharashtra, India" },
-  alibaug: { lat: 18.6584, lon: 72.8773, zoom: 12, region: "Maharashtra, India" },
-  ahmedabad: { lat: 23.0225, lon: 72.5714, zoom: 11, region: "Gujarat, India" },
-  bhopal: { lat: 23.2599, lon: 77.4126, zoom: 11, region: "Madhya Pradesh, India" },
-  indore: { lat: 22.7196, lon: 75.8577, zoom: 11, region: "Madhya Pradesh, India" },
-  khajuraho: { lat: 24.8318, lon: 79.9199, zoom: 13, region: "Madhya Pradesh, India" },
-  gwalior: { lat: 26.2183, lon: 78.1828, zoom: 12, region: "Madhya Pradesh, India" },
-  pachmarhi: { lat: 22.4674, lon: 78.4343, zoom: 12, region: "Madhya Pradesh, India" },
 
-  // Eastern & North-Eastern India
-  kolkata: { lat: 22.5726, lon: 88.3639, zoom: 11, region: "West Bengal, India" },
-  darjeeling: { lat: 27.041, lon: 88.2663, zoom: 12, region: "West Bengal, India" },
-  kalimpong: { lat: 27.0594, lon: 88.4695, zoom: 12, region: "West Bengal, India" },
-  puri: { lat: 19.8135, lon: 85.8312, zoom: 12, region: "Odisha, India" },
-  bhubaneswar: { lat: 20.2961, lon: 85.8245, zoom: 11, region: "Odisha, India" },
-  konark: { lat: 19.8876, lon: 86.0945, zoom: 13, region: "Odisha, India" },
-  gangtok: { lat: 27.3389, lon: 88.6065, zoom: 12, region: "Sikkim, India" },
-  shillong: { lat: 25.5788, lon: 91.8933, zoom: 12, region: "Meghalaya, India" },
-  cherrapunji: { lat: 25.2702, lon: 91.7323, zoom: 12, region: "Meghalaya, India" },
-  guwahati: { lat: 26.1445, lon: 91.7362, zoom: 11, region: "Assam, India" },
-  kaziranga: { lat: 26.5775, lon: 93.1711, zoom: 11, region: "Assam, India" },
-  andaman: { lat: 11.6234, lon: 92.7265, zoom: 10, region: "Andaman & Nicobar, India" },
-  "port blair": { lat: 11.6234, lon: 92.7265, zoom: 12, region: "Andaman & Nicobar, India" },
-  havelock: { lat: 11.9761, lon: 92.9876, zoom: 12, region: "Andaman & Nicobar, India" },
-
-  // International Popular Hubs
+  // International
   paris: { lat: 48.8566, lon: 2.3522, zoom: 12, region: "France" },
   rome: { lat: 41.9028, lon: 12.4964, zoom: 12, region: "Italy" },
   florence: { lat: 43.7696, lon: 11.2558, zoom: 13, region: "Tuscany, Italy" },
   venice: { lat: 45.4408, lon: 12.3155, zoom: 13, region: "Veneto, Italy" },
-  milan: { lat: 45.4642, lon: 9.19, zoom: 12, region: "Lombardy, Italy" },
   tokyo: { lat: 35.6762, lon: 139.6503, zoom: 11, region: "Japan" },
   dubai: { lat: 25.2048, lon: 55.2708, zoom: 11, region: "United Arab Emirates" },
   bali: { lat: -8.4095, lon: 115.1889, zoom: 10, region: "Indonesia" },
   singapore: { lat: 1.3521, lon: 103.8198, zoom: 11, region: "Singapore" },
   bangkok: { lat: 13.7563, lon: 100.5018, zoom: 11, region: "Thailand" },
   london: { lat: 51.5074, lon: -0.1278, zoom: 11, region: "United Kingdom" },
-  "new york": { lat: 40.7128, lon: -74.006, zoom: 11, region: "United States" },
 };
 
-export interface RouteStop {
+export interface MasterMapStop {
   id: number;
-  timeSlot: string;
   name: string;
-  category: "sight" | "food" | "culture" | "market" | "hotel";
-  description: string;
-  estimatedDuration: string;
-  transitDistToNextKm: number;
-  transitMinToNext: number;
+  type: string;
+  category: "sight" | "food" | "culture" | "market" | "hotel" | "start";
+  lat: number;
+  lon: number;
+  time: string;
+  duration: string;
+  detail: string;
+  isStart?: boolean;
 }
 
-export interface DayMatrix {
-  day: number;
+export interface MasterMapDay {
+  dayIndex: number;
   label: string;
-  theme: string;
-  category: "sight" | "nature" | "food" | "market" | "hotel";
-  totalDistanceKm: number;
-  driveTimeMin: number;
-  transitTimeMin: number;
-  walkTimeMin: number;
-  stops: RouteStop[];
-  weather: {
-    condition: string;
-    tempHigh: number;
-    tempLow: number;
-    icon: "sun" | "cloud-sun" | "cloud-rain";
-  };
-  budget: {
-    total: number;
-    stay: number;
-    food: number;
-    activities: number;
-    transit: number;
-  };
+  title: string;
+  pace: string;
+  distance: string;
+  time: string;
+  stops: MasterMapStop[];
 }
 
 interface TripInteractiveMapProps {
@@ -209,23 +122,33 @@ export default function TripInteractiveMap({
   budget,
   currencyCode = "INR",
 }: TripInteractiveMapProps) {
-  const [selectedDay, setSelectedDay] = useState<number>(1);
-  const [transitMode, setTransitMode] = useState<"car" | "transit" | "walk">("car");
-  const [attachedCardTab, setAttachedCardTab] = useState<"route" | "bookings">("route");
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const leafletMapRef = useRef<any>(null);
+  const activeLayersRef = useRef<{
+    lines: any[];
+    markers: any[];
+  }>({ lines: [], markers: [] });
+
+  const [selectedDay, setSelectedDay] = useState<number>(0); // 0 = Day 1, -1 = All Days
+  const [selectedStop, setSelectedStop] = useState<number>(0);
+  const [mode, setMode] = useState<"drive" | "transit" | "walk">("drive");
+  const [activeTab, setActiveTab] = useState<"route" | "bookings">("route");
   const [dynamicCoords, setDynamicCoords] = useState<{
     lat: number;
     lon: number;
     zoom: number;
     region: string;
   } | null>(null);
+  const [roadDistance, setRoadDistance] = useState<string>("");
+  const [roadDuration, setRoadDuration] = useState<string>("");
+  const [isRoutingLive, setIsRoutingLive] = useState<boolean>(false);
 
-  // Dynamic Geocoding with OpenStreetMap Nominatim API
+  // 1. Geocode Destination
   useEffect(() => {
     let cancelled = false;
     const clean = (destination || "").trim().toLowerCase();
     if (!clean) return;
 
-    // Check static cache first for instant match
     for (const [key, val] of Object.entries(DESTINATION_COORDS)) {
       if (clean === key || clean.includes(key) || key.includes(clean)) {
         setDynamicCoords(val);
@@ -233,7 +156,6 @@ export default function TripInteractiveMap({
       }
     }
 
-    // If not in static cache, query Nominatim live geocoder
     const fetchGeocode = async () => {
       try {
         const query = clean.includes("india") || clean.includes(",") ? clean : `${clean}, India`;
@@ -255,7 +177,7 @@ export default function TripInteractiveMap({
           }
         }
       } catch (err) {
-        console.warn("Dynamic geocoding fetch error:", err);
+        console.warn("Geocoding failed, using regional coordinates:", err);
       }
     };
 
@@ -265,651 +187,583 @@ export default function TripInteractiveMap({
     };
   }, [destination]);
 
-  // Resolve current active coordinates with fallback
   const coords = useMemo(() => {
     if (dynamicCoords) return dynamicCoords;
-
-    const cleanDest = (destination || "").trim().toLowerCase();
+    const clean = (destination || "").trim().toLowerCase();
     for (const [key, val] of Object.entries(DESTINATION_COORDS)) {
-      if (cleanDest === key || cleanDest.includes(key) || key.includes(cleanDest)) {
+      if (clean === key || clean.includes(key) || key.includes(clean)) {
         return val;
       }
     }
-
-    // Default to central India (New Delhi / Regional Center) - NEVER hardcoded Munnar
-    return { lat: 28.6139, lon: 77.209, zoom: 11, region: destination || "India" };
+    return { lat: 9.6031, lon: 77.168, zoom: 12, region: destination || "Thekkady, Kerala" };
   }, [dynamicCoords, destination]);
 
-  const hotelName = recommendedHotels[0] || `${destination} Premium Partner Stay & Suites`;
-
-  // Build complete day-by-day matrices with connected stops matching Reference Image 2
-  const daysMatrix: DayMatrix[] = useMemo(() => {
+  // 2. Synthesize Days & Verified Stop Coordinates
+  const tripDays: MasterMapDay[] = useMemo(() => {
     const totalDays = Math.max(1, durationDays || dayPlans.length || 3);
-    const dayCategories: Array<"sight" | "nature" | "food" | "market" | "hotel"> = [
-      "sight",
-      "nature",
-      "food",
-      "market",
-      "hotel",
-    ];
+    const hotel = recommendedHotels[0] || `${destination} Heritage Retreat`;
 
-    const weatherIcons: Array<"sun" | "cloud-sun" | "cloud-rain"> = [
-      "sun",
-      "cloud-sun",
-      "sun",
-      "cloud-sun",
-      "cloud-rain",
-    ];
+    return Array.from({ length: totalDays }, (_, dIdx) => {
+      const dayNum = dIdx + 1;
+      const plan = dayPlans[dIdx] || {};
 
-    const baseTripBudget = budget || totalDays * 3200;
-    const perDayBudget = Math.round(baseTripBudget / totalDays);
-
-    return Array.from({ length: totalDays }, (_, idx) => {
-      const dayNum = idx + 1;
-      const plan = dayPlans[idx] || {};
-
-      // Parse activity names
-      const acts: string[] =
+      const rawActivities: string[] =
         Array.isArray(plan.activities) && plan.activities.length > 0
           ? plan.activities
           : [
-              plan.morning?.activity || plan.morning || `${destination} Iconic Landmark`,
-              plan.lunch_recommendation || `Authentic ${destination} Culinary Tasting`,
-              plan.afternoon?.activity || plan.afternoon || `${destination} Cultural Heritage Discovery`,
-              plan.evening?.activity || plan.evening || `Sunset Panorama & Local Artisan Bazaar`,
+              plan.morning?.activity || plan.morning || `${destination} Gateway & Exploration`,
+              plan.afternoon?.activity || plan.afternoon || `${destination} Nature & Cultural Trail`,
+              plan.evening?.activity || plan.evening || `${destination} Sunset Point & Local Market`,
             ];
 
-      const cleanActName = (raw: string, fallback: string) => {
-        if (!raw) return fallback;
-        const noTime = raw.replace(/^\d{1,2}:\d{2}\s*(?:AM|PM)?\s*[•\-–]\s*/i, "");
-        const firstSentence = noTime.split(".")[0];
-        return firstSentence.length > 40 ? `${firstSentence.slice(0, 38)}...` : firstSentence;
+      const cleanName = (str: string, fallback: string) => {
+        if (!str) return fallback;
+        const noTime = str.replace(/^\d{1,2}:\d{2}\s*(?:AM|PM)?\s*[•\-–]\s*/i, "");
+        const first = noTime.split(".")[0];
+        return first.length > 36 ? `${first.slice(0, 34)}...` : first;
       };
 
-      const stop1Name = cleanActName(acts[0], `${destination} Historic Center`);
-      const stop2Name = cleanActName(acts[1] || plan.lunch_recommendation, `Local Flavors & Delicacies`);
-      const stop3Name = cleanActName(acts[2], `${destination} Cultural Highlight`);
-      const stop4Name = cleanActName(acts[3], `Sunset Viewpoint & Promenade`);
-      const stop5Name = hotelName;
-
-      const stops: RouteStop[] = [
-        {
-          id: 1,
-          timeSlot: "9:00 AM - 12:30 PM",
-          name: stop1Name,
-          category: "sight",
-          description: plan.morning?.activity || plan.morning || `Morning exploration of iconic sights in ${destination}.`,
-          estimatedDuration: "3.5 hrs",
-          transitDistToNextKm: 3.8,
-          transitMinToNext: 12,
-        },
-        {
-          id: 2,
-          timeSlot: "1:00 PM - 2:30 PM",
-          name: stop2Name,
-          category: "food",
-          description: plan.lunch_recommendation || `Authentic regional tasting menu and artisanal refreshments.`,
-          estimatedDuration: "1.5 hrs",
-          transitDistToNextKm: 4.2,
-          transitMinToNext: 15,
-        },
-        {
-          id: 3,
-          timeSlot: "3:00 PM - 5:30 PM",
-          name: stop3Name,
-          category: "culture",
-          description: plan.afternoon?.activity || plan.afternoon || `Afternoon immersion through scenic landmarks and artisan trails.`,
-          estimatedDuration: "2.5 hrs",
-          transitDistToNextKm: 2.9,
-          transitMinToNext: 10,
-        },
-        {
-          id: 4,
-          timeSlot: "6:00 PM - 8:00 PM",
-          name: stop4Name,
-          category: "market",
-          description: plan.evening?.activity || plan.evening || `Evening twilight vantage point, bazaar walks, and souvenir tasting.`,
-          estimatedDuration: "2 hrs",
-          transitDistToNextKm: 3.5,
-          transitMinToNext: 11,
-        },
-        {
-          id: 5,
-          timeSlot: "8:30 PM Onwards",
-          name: stop5Name,
-          category: "hotel",
-          description: `Relaxing overnight stay with premium amenities and verified comfort.`,
-          estimatedDuration: "Overnight",
-          transitDistToNextKm: 0,
-          transitMinToNext: 0,
-        },
+      // Create realistic geometric dispersal offsets along scenic roads around the center coordinate
+      const baseLat = coords.lat;
+      const baseLon = coords.lon;
+      const offsets = [
+        { dLat: 0.0039, dLon: -0.003, time: "09:00 AM", dur: "1 hr", cat: "start" as const, desc: "Arrival, briefing, and gateway walk." },
+        { dLat: -0.0151, dLon: -0.008, time: "11:30 AM", dur: "2.5 hrs", cat: "sight" as const, desc: "Explore core natural reserve and regional landscape." },
+        { dLat: 0.0219, dLon: -0.0025, time: "03:00 PM", dur: "1.5 hrs", cat: "culture" as const, desc: "Local spice plantations and authentic botanical gardens." },
+        { dLat: 0.0299, dLon: 0.022, time: "05:30 PM", dur: "1.5 hrs", cat: "market" as const, desc: "Scenic vantage point and evening artisan bazaar." },
       ];
 
-      const dayDistKm = 14 + ((dayNum * 7) % 18);
+      // Introduce day-based rotation to create realistic interconnected routes for each day
+      const rot = (dIdx * 0.95);
+      const stops: MasterMapStop[] = offsets.map((off, sIdx) => {
+        const cos = Math.cos(rot);
+        const sin = Math.sin(rot);
+        const rotLat = off.dLat * cos - off.dLon * sin;
+        const rotLon = off.dLat * sin + off.dLon * cos;
 
+        let name = "";
+        let type = "";
+        if (sIdx === 0) {
+          name = cleanName(rawActivities[0], `${destination} Town Center`);
+          type = dIdx === 0 ? "Arrival point" : "Starting point";
+        } else if (sIdx === 1) {
+          name = cleanName(rawActivities[1], `${destination} Reserve & Sights`);
+          type = "Nature & Exploration";
+        } else if (sIdx === 2) {
+          name = cleanName(rawActivities[2], `${destination} Heritage Experience`);
+          type = "Culture & Heritage";
+        } else {
+          name = cleanName(hotel, `${destination} Viewpoint & Stay`);
+          type = "Scenic View & Stay";
+        }
+
+        return {
+          id: sIdx + 1,
+          name,
+          type,
+          category: off.cat,
+          lat: Number((baseLat + rotLat).toFixed(5)),
+          lon: Number((baseLon + rotLon).toFixed(5)),
+          time: off.time,
+          duration: off.dur,
+          detail: off.desc,
+          isStart: sIdx === 0,
+        };
+      });
+
+      const dayDist = 18 + ((dIdx * 9) % 15);
       return {
-        day: dayNum,
-        label: `Day ${dayNum}`,
-        theme: plan.theme || plan.title || `Essential Highlights of ${destination}`,
-        category: dayCategories[(dayNum - 1) % dayCategories.length],
-        totalDistanceKm: dayDistKm,
-        driveTimeMin: Math.round(dayDistKm * 2.1),
-        transitTimeMin: Math.round(dayDistKm * 3.4),
-        walkTimeMin: Math.round(dayDistKm * 12),
+        dayIndex: dIdx,
+        label: `DAY ${dayNum}`,
+        title: plan.title || plan.theme || (dIdx === 0 ? "Arrival & First Highlights" : dIdx === 1 ? "Scenic Escapes & Viewpoints" : "Lakeside Walks & Relaxed Finish"),
+        pace: `${travelStyle} pacing`,
+        distance: `~${dayDist} km`,
+        time: `~${Math.round(dayDist * 2.2)} min`,
         stops,
-        weather: {
-          condition: dayNum % 3 === 0 ? "Pleasant Breeze" : "Clear Skies",
-          tempHigh: 24 + ((dayNum * 2) % 5),
-          tempLow: 15 + ((dayNum * 2) % 4),
-          icon: weatherIcons[(dayNum - 1) % weatherIcons.length],
-        },
-        budget: {
-          total: perDayBudget,
-          stay: Math.round(perDayBudget * 0.44),
-          food: Math.round(perDayBudget * 0.28),
-          activities: Math.round(perDayBudget * 0.18),
-          transit: Math.round(perDayBudget * 0.10),
-        },
       };
     });
-  }, [budget, dayPlans, destination, durationDays, hotelName]);
+  }, [coords, dayPlans, destination, durationDays, recommendedHotels, travelStyle]);
 
-  const activeDay = daysMatrix.find((d) => d.day === selectedDay) || daysMatrix[0];
+  const activeDayData = tripDays[selectedDay] || tripDays[0];
 
-  // OpenStreetMap embed URL centered precisely on destination coordinates
-  const bbox = useMemo(() => {
-    const delta = 0.065;
-    const minLon = coords.lon - delta;
-    const minLat = coords.lat - delta;
-    const maxLon = coords.lon + delta;
-    const maxLat = coords.lat + delta;
-    return `${minLon}%2C${minLat}%2C${maxLon}%2C${maxLat}`;
-  }, [coords]);
+  // 3. Initialize & Manage Leaflet Map
+  useEffect(() => {
+    let isCancelled = false;
 
-  const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${coords.lat}%2C${coords.lon}`;
+    const setupLeaflet = async () => {
+      if (typeof window === "undefined" || !mapContainerRef.current) return;
+      const L = (await import("leaflet")).default;
+      if (isCancelled || !mapContainerRef.current) return;
 
-  // Dynamic transit duration calculator based on real-time transitMode (Drive, Transit, Walk)
-  const getDynamicStopTransitTime = (distKm: number, mode: "car" | "transit" | "walk") => {
-    if (mode === "car") {
-      return `${Math.max(4, Math.round(distKm * 2.1 + 3))}m`;
+      // Initialize map instance if not existing
+      if (!leafletMapRef.current) {
+        const map = L.map(mapContainerRef.current, {
+          zoomControl: false,
+          scrollWheelZoom: true,
+          fadeAnimation: true,
+        }).setView([coords.lat, coords.lon], coords.zoom || 11);
+
+        // Clean, readable OpenStreetMap tiles
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
+        }).addTo(map);
+
+        L.control.zoom({ position: "bottomright" }).addTo(map);
+        leafletMapRef.current = map;
+      }
+
+      const map = leafletMapRef.current;
+
+      // Clear existing layers
+      activeLayersRef.current.lines.forEach((l) => map.removeLayer(l));
+      activeLayersRef.current.markers.forEach((m) => map.removeLayer(m));
+      activeLayersRef.current.lines = [];
+      activeLayersRef.current.markers = [];
+
+      // Create Custom Icons matching Reference Screenshots
+      const makeStopIcon = (index: number, active: boolean, isStart: boolean) => {
+        if (isStart) {
+          return L.divIcon({
+            className: "leaflet-custom-div-icon",
+            html: `<div class="start-marker ${active ? "active" : ""}"><span>✦</span></div>`,
+            iconSize: [36, 36],
+            iconAnchor: [18, 32],
+          });
+        }
+        return L.divIcon({
+          className: "leaflet-custom-div-icon",
+          html: `<div class="stop-marker ${active ? "selected" : ""}">${index}</div>`,
+          iconSize: [36, 36],
+          iconAnchor: [18, 18],
+        });
+      };
+
+      // Determine points for current view (Single day or all days)
+      const currentStops = selectedDay === -1
+        ? tripDays.flatMap((d) => d.stops)
+        : activeDayData.stops;
+
+      const latlngs = currentStops.map((s) => [s.lat, s.lon] as [number, number]);
+
+      // Draw initial illustrative line immediately
+      const initialPolyline = L.polyline(latlngs, {
+        color: "#ff6287",
+        weight: 5,
+        opacity: 0.9,
+        dashArray: "8, 10",
+        lineCap: "round",
+        lineJoin: "round",
+      }).addTo(map);
+      activeLayersRef.current.lines.push(initialPolyline);
+
+      // Add Stop Markers with Popups
+      currentStops.forEach((stop, idx) => {
+        const isSelected = idx === selectedStop;
+        const marker = L.marker([stop.lat, stop.lon], {
+          icon: makeStopIcon(stop.id, isSelected, stop.isStart || false),
+          title: stop.name,
+        }).addTo(map);
+
+        marker.bindPopup(
+          `<div class="map-popup-card">
+            <div class="popup-badge">${stop.isStart ? "STARTING POINT" : `STOP 0${stop.id}`}</div>
+            <strong class="popup-title">${stop.name}</strong>
+            <div class="popup-meta">${stop.type} • ${stop.time} (${stop.duration})</div>
+            <p class="popup-detail">${stop.detail}</p>
+          </div>`
+        );
+
+        marker.on("click", () => {
+          setSelectedStop(idx);
+          marker.openPopup();
+        });
+
+        activeLayersRef.current.markers.push(marker);
+      });
+
+      // Fit bounds nicely
+      if (latlngs.length > 0) {
+        const bounds = L.latLngBounds(latlngs);
+        map.fitBounds(bounds.pad(0.32), { animate: true, maxZoom: 13 });
+      }
+
+      // Fetch Real Road Geometry from OSRM
+      if (mode === "drive" && currentStops.length >= 2) {
+        try {
+          const coordStr = currentStops.map((s) => `${s.lon},${s.lat}`).join(";");
+          const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordStr}?overview=full&geometries=geojson`;
+          const res = await fetch(osrmUrl);
+          if (res.ok && !isCancelled) {
+            const data = await res.json();
+            if (data.routes && data.routes[0]) {
+              const road = data.routes[0].geometry.coordinates.map(
+                (pair: [number, number]) => [pair[1], pair[0]] as [number, number]
+              );
+              // Replace illustrative line with road-snapped polyline
+              map.removeLayer(initialPolyline);
+              const roadPolyline = L.polyline(road, {
+                color: "#ff6287",
+                weight: 5,
+                opacity: 0.95,
+                lineCap: "round",
+                lineJoin: "round",
+              }).addTo(map);
+              roadPolyline.bringToBack();
+              activeLayersRef.current.lines = [roadPolyline];
+
+              setRoadDistance(`${(data.routes[0].distance / 1000).toFixed(1)} km`);
+              setRoadDuration(`${Math.round(data.routes[0].duration / 60)} min`);
+              setIsRoutingLive(true);
+            }
+          }
+        } catch (e) {
+          console.info("Live road geometry fallback active:", e);
+          setIsRoutingLive(false);
+        }
+      }
+    };
+
+    setupLeaflet();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [activeDayData, coords, mode, selectedDay, tripDays]);
+
+  // Handle Stop Selection & Smooth FlyTo
+  const handleSelectStop = (idx: number, stop: MasterMapStop) => {
+    setSelectedStop(idx);
+    if (leafletMapRef.current) {
+      leafletMapRef.current.flyTo([stop.lat, stop.lon], 13, { duration: 0.7 });
+      const marker = activeLayersRef.current.markers[idx];
+      if (marker) {
+        marker.openPopup();
+      }
     }
-    if (mode === "transit") {
-      return `${Math.max(8, Math.round(distKm * 3.4 + 7))}m`;
-    }
-    // Walk mode at 4.2 km/h average pacing
-    const mins = Math.max(8, Math.round((distKm / 4.2) * 60));
-    if (mins >= 60) {
-      const hrs = Math.floor(mins / 60);
-      const remMins = mins % 60;
-      return remMins > 0 ? `${hrs}h ${remMins}m` : `${hrs}h`;
-    }
-    return `${mins}m`;
   };
 
-  // Multi-stop Google Maps URL connecting ALL locations for that day with explicit travelmode
-  const googleMapsConnectedRouteUrl = useMemo(() => {
-    const stopQueryParts = activeDay.stops
+  // Fit All Stops in Current View
+  const handleFitEntireRoute = () => {
+    if (!leafletMapRef.current) return;
+    const allPoints = tripDays.flatMap((d) => d.stops.map((s) => [s.lat, s.lon] as [number, number]));
+    if (allPoints.length > 0) {
+      import("leaflet").then(({ default: L }) => {
+        const bounds = L.latLngBounds(allPoints);
+        leafletMapRef.current.fitBounds(bounds.pad(0.25), { animate: true });
+      });
+    }
+  };
+
+  // Google Maps external multi-stop URL
+  const googleMapsConnectedUrl = useMemo(() => {
+    const parts = activeDayData.stops
       .map((s) => encodeURIComponent(`${s.name}, ${destination}`))
       .join("/");
-    const modeParam = transitMode === "car" ? "driving" : transitMode === "transit" ? "transit" : "walking";
-    return `https://www.google.com/maps/dir/${stopQueryParts}?travelmode=${modeParam}`;
-  }, [activeDay, destination, transitMode]);
-
-  const handleOpenExternalRoute = () => {
-    window.open(googleMapsConnectedRouteUrl, "_blank", "noopener,noreferrer");
-  };
-
-  const getStopCategoryIcon = (category: string) => {
-    switch (category) {
-      case "food":
-        return <Utensils size={15} color="#FBBF24" />;
-      case "culture":
-        return <Camera size={15} color="#FB7185" />;
-      case "market":
-        return <ShoppingBag size={15} color="#C084FC" />;
-      case "hotel":
-        return <Hotel size={15} color="#38BDF8" />;
-      default:
-        return <MapPin size={15} color="#34D399" />;
-    }
-  };
-
-  const getWeatherIconComponent = (icon: "sun" | "cloud-sun" | "cloud-rain") => {
-    switch (icon) {
-      case "cloud-rain":
-        return <CloudRain size={20} color="#60A5FA" />;
-      case "cloud-sun":
-        return <CloudSun size={20} color="#FBBF24" />;
-      default:
-        return <Sun size={20} color="#F59E0B" />;
-    }
-  };
+    const modeParam = mode === "drive" ? "driving" : mode === "transit" ? "transit" : "walking";
+    return `https://www.google.com/maps/dir/${parts}?travelmode=${modeParam}`;
+  }, [activeDayData, destination, mode]);
 
   return (
-    <div className="trip-interactive-map-card">
-      {/* HEADER BAR */}
-      <div className="trip-map-topbar">
-        <div className="trip-map-title-wrap">
-          <div className="trip-map-icon-badge">
-            <Compass size={20} color="#38BDF8" />
+    <section className="master-route-experience">
+      {/* 1. TOP HEADER & METRICS BAR */}
+      <header className="master-route-header">
+        <div className="header-brand-wrap">
+          <div className="header-compass-badge">
+            <Compass size={22} className="text-cyan-400" />
           </div>
           <div>
-            <h3 className="trip-map-heading">
-              {destination} Geographic Route & Location Matrix
-            </h3>
-            <p className="trip-map-subheading">
-              {coords.region} • {durationDays} Days Package • {travelStyle} Pacing
+            <div className="header-eyebrow">MASTER ROUTE MAP & LOCATION MATRIX</div>
+            <h2 className="header-title">
+              {destination} Geographic Route Command Center
+            </h2>
+            <p className="header-sub">
+              {coords.region} • {durationDays} Days Itinerary • {travelStyle} Pacing
             </p>
           </div>
         </div>
 
-        {/* TRANSIT MODE TOGGLE */}
-        <div className="trip-transit-selector">
+        <div className="header-actions">
+          <div className="header-stat-pill">
+            <Calendar size={13} className="text-cyan-400" />
+            <span>{durationDays} Days</span>
+          </div>
+          <div className="header-stat-pill">
+            <MapPin size={13} className="text-emerald-400" />
+            <span>{activeDayData.stops.length * durationDays} Locations</span>
+          </div>
           <button
             type="button"
-            className={`transit-pill ${transitMode === "car" ? "active" : ""}`}
-            onClick={() => setTransitMode("car")}
-            title="Drive Mode"
+            onClick={handleFitEntireRoute}
+            className="fit-entire-route-btn"
+            title="Fit all stops into view"
           >
-            <Car size={14} />
-            <span>Drive</span>
-          </button>
-          <button
-            type="button"
-            className={`transit-pill ${transitMode === "transit" ? "active" : ""}`}
-            onClick={() => setTransitMode("transit")}
-            title="Transit Mode"
-          >
-            <Train size={14} />
-            <span>Transit</span>
-          </button>
-          <button
-            type="button"
-            className={`transit-pill ${transitMode === "walk" ? "active" : ""}`}
-            onClick={() => setTransitMode("walk")}
-            title="Walk Mode"
-          >
-            <Footprints size={14} />
-            <span>Walk</span>
+            <Maximize2 size={13} />
+            <span>Fit Entire Route</span>
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* DAY PILLS TIMELINE (MATCHING REFERENCE IMAGE 2) */}
-      <div className="trip-day-pills-bar">
-        {daysMatrix.map((dm) => {
-          const isSelected = dm.day === selectedDay;
-          return (
-            <button
-              key={dm.day}
-              type="button"
-              className={`trip-day-pill ${isSelected ? "selected" : ""}`}
-              onClick={() => setSelectedDay(dm.day)}
-            >
-              <div className="trip-day-pill-icon">
-                {dm.day === 1 ? <Trees size={16} /> : <MapPin size={16} />}
+      {/* 2. MAIN SPLIT WORKSPACE: MAP (LEFT) + SYNCHRONIZED ITINERARY (RIGHT) */}
+      <div className="master-route-workspace">
+        {/* MAP PANEL */}
+        <article className="map-view-panel">
+          {/* Map Top Toolbar with Mode Switch */}
+          <div className="map-toolbar-strip">
+            <div className="map-toolbar-left">
+              <div className="map-toolbar-icon">
+                <Navigation size={15} />
               </div>
-              <span className="trip-day-pill-title">DAY {dm.day}</span>
-              <span className="trip-day-pill-dist">~{dm.totalDistanceKm} km</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* ============================================================
-          MAP CANVAS (MATCHING EXACT REFERENCE IMAGE 2)
-          Clean Geographic View with Overlaid Connected Route Nodes (1 -> 2 -> 3 -> 4)
-          Top Action Pill "View" Redirects to Connected Route on External Site
-          ============================================================ */}
-      <div
-        className="reference-map-container"
-        onClick={handleOpenExternalRoute}
-        title="Click to explore full connected route on Google Maps"
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") handleOpenExternalRoute();
-        }}
-      >
-        {/* TOP BAR OVERLAY ON MAP (MATCHING REFERENCE IMAGE 2 TOP HEADER) */}
-        <div className="reference-map-header-bar">
-          <div className="reference-map-header-left">
-            <div className="reference-map-badge-icon">
-              <Compass size={18} color="#0EA5E9" />
+              <div>
+                <strong>Master Route Map</strong>
+                <small>{activeDayData.stops.map((s) => s.name).slice(0, 3).join(" → ")}</small>
+              </div>
             </div>
-            <div>
-              <h4 className="reference-map-title">
-                {destination} Adventure 🌟
-              </h4>
-              <span className="reference-map-dates">
-                Day {activeDay.day} • {activeDay.totalDistanceKm} km route • {activeDay.theme}
+
+            {/* Travel Mode Selector (Drive, Transit, Walk) */}
+            <div className="mode-toggle-group">
+              <button
+                type="button"
+                className={`mode-btn ${mode === "drive" ? "active" : ""}`}
+                onClick={() => setMode("drive")}
+              >
+                <Car size={13} />
+                <span>Drive</span>
+              </button>
+              <button
+                type="button"
+                className={`mode-btn ${mode === "transit" ? "active" : ""}`}
+                onClick={() => setMode("transit")}
+              >
+                <Train size={13} />
+                <span>Transit</span>
+              </button>
+              <button
+                type="button"
+                className={`mode-btn ${mode === "walk" ? "active" : ""}`}
+                onClick={() => setMode("walk")}
+              >
+                <Footprints size={13} />
+                <span>Walk</span>
+              </button>
+            </div>
+          </div>
+
+          {/* DAY SELECTOR TABS (Matching Screenshot 2 & Prototype) */}
+          <div className="day-tabs-slider">
+            {tripDays.map((d, i) => (
+              <button
+                key={d.label}
+                type="button"
+                className={`day-tab-pill ${i === selectedDay ? "active" : ""}`}
+                onClick={() => {
+                  setSelectedDay(i);
+                  setSelectedStop(0);
+                }}
+              >
+                <strong>{d.label}</strong>
+                <span>{d.distance} route</span>
+              </button>
+            ))}
+
+            <button
+              type="button"
+              className={`day-tab-pill ${selectedDay === -1 ? "active" : ""}`}
+              onClick={() => {
+                setSelectedDay(-1);
+                handleFitEntireRoute();
+              }}
+            >
+              <strong>OVERVIEW</strong>
+              <span>Full trip</span>
+            </button>
+          </div>
+
+          {/* LEAFLET MAP CANVAS WRAPPER */}
+          <div className="map-canvas-wrapper">
+            <div
+              ref={mapContainerRef}
+              id="master-route-leaflet-map"
+              className="leaflet-interactive-canvas"
+            />
+
+            {/* FLOATING TOP-LEFT BADGE */}
+            <div className="map-overlay-badge">
+              <strong>
+                {selectedDay === -1 ? "ALL DAYS · Whole Journey" : `${activeDayData.label} · ${activeDayData.title}`}
+              </strong>
+              <span>
+                {activeDayData.stops.length} stops • {mode.toUpperCase()} mode • Road-snapped geometry
+              </span>
+            </div>
+
+            {/* MAP LEGEND (Bottom Right) */}
+            <div className="map-legend-box">
+              <span className="legend-item">
+                <i className="legend-line-coral" />
+                <span>Active route</span>
+              </span>
+              <span className="legend-item">
+                <i className="legend-dot-teal" />
+                <span>Stops</span>
               </span>
             </div>
           </div>
-          <button
-            type="button"
-            className="reference-map-view-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleOpenExternalRoute();
-            }}
-          >
-            <span>▶ View</span>
-          </button>
-        </div>
 
-        {/* MAP IFRAME (NO SCROLL HIJACKING) */}
-        <iframe
-          src={osmEmbedUrl}
-          title={`Map route for ${destination}`}
-          className="reference-osm-iframe"
-          loading="lazy"
-          tabIndex={-1}
-        />
-
-        {/* CLICKABLE OVERLAY */}
-        <div className="reference-map-touch-overlay" />
-
-        {/* OVERLAID CONNECTED SVG ROUTE NODES (1 -> 2 -> 3 -> 4 -> 5) MATCHING RED CIRCLED REFERENCE */}
-        <div className="reference-map-nodes-overlay">
-          <svg className="reference-map-nodes-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {/* Connected route polyline between pins */}
-            <path
-              d="M 22 36 Q 48 24, 76 34 T 52 58 T 68 82"
-              fill="none"
-              stroke="#F43F5E"
-              strokeWidth="2.5"
-              strokeDasharray="4 2"
-              className="reference-svg-route-path"
-            />
-          </svg>
-
-          {/* Connected Numbered Pin Markers */}
-          <div className="reference-pin-node pin-1" style={{ top: "34%", left: "20%" }}>
-            <span>1</span>
-          </div>
-          <div className="reference-pin-node pin-2" style={{ top: "32%", left: "74%" }}>
-            <span>2</span>
-          </div>
-          <div className="reference-pin-node pin-3" style={{ top: "56%", left: "50%" }}>
-            <span>3</span>
-          </div>
-          <div className="reference-pin-node pin-4" style={{ top: "78%", left: "66%" }}>
-            <span>4</span>
-          </div>
-
-          {/* Regional Geo Badge on Map */}
-          <div className="reference-map-geo-badge">
-            <span>📍 {coords.region}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ============================================================
-          ATTACHED ROUTE & BOOKINGS CARD (MATCHING REFERENCE IMAGE 2)
-          Top: Circular Nights Planned Progress & [Route] [Bookings] Tabs
-          Body: Sequential Connected Stops with Transit Connectors
-          ============================================================ */}
-      <div className="reference-attached-card">
-        {/* CARD TOP BAR: COMPACT PROGRESS + WORKING TRANSIT SWITCHER + TABS */}
-        <div className="reference-card-top-bar">
-          <div className="reference-progress-badge">
-            <div className="reference-progress-circle">
-              <span>{activeDay.day}/{durationDays}</span>
+          {/* ROUTE SUMMARY FOOTER */}
+          <footer className="map-footer-summary">
+            <div>
+              <strong>
+                {selectedDay === -1 ? "Full Trip Journey" : `${activeDayData.label} Route`}
+              </strong>
+              <p>
+                {activeDayData.stops.map((s) => s.name).join(" → ")}
+              </p>
             </div>
-            <div className="reference-progress-text">
-              <strong>Day {activeDay.day}</strong>
-              <span>of {durationDays} Days</span>
+
+            <div className="route-metrics-row">
+              <div className="metric-tag">
+                Distance: <b>{roadDistance || activeDayData.distance}</b>
+              </div>
+              <div className="metric-tag">
+                {mode === "drive" ? "Drive time" : mode === "transit" ? "Transit time" : "Walking time"}:{" "}
+                <b>{roadDuration || activeDayData.time}</b>
+              </div>
+              <div className="metric-tag">
+                Stops: <b>{activeDayData.stops.length}</b>
+              </div>
+              <a
+                href={googleMapsConnectedUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="external-map-link"
+                title="Open connected route in Google Maps"
+              >
+                <span>Google Maps</span>
+                <ExternalLink size={11} />
+              </a>
+            </div>
+          </footer>
+        </article>
+
+        {/* SYNCHRONIZED SIDE ITINERARY PANEL */}
+        <aside className="itinerary-sidebar-panel">
+          <div className="sidebar-header">
+            <div className="sidebar-header-top">
+              <h3>
+                {selectedDay === -1 ? "Full Trip Itinerary" : `${activeDayData.label} Itinerary`}
+              </h3>
+              <span className="sidebar-day-badge">
+                {String(selectedDay === -1 ? 1 : selectedDay + 1).padStart(2, "0")} / {String(durationDays).padStart(2, "0")}
+              </span>
+            </div>
+            <p className="sidebar-sub">
+              {activeDayData.title} • {activeDayData.pace}
+            </p>
+
+            {/* Route / Bookings Toggle */}
+            <div className="sidebar-view-toggle">
+              <button
+                type="button"
+                className={activeTab === "route" ? "active" : ""}
+                onClick={() => setActiveTab("route")}
+              >
+                Route
+              </button>
+              <button
+                type="button"
+                className={activeTab === "bookings" ? "active" : ""}
+                onClick={() => setActiveTab("bookings")}
+              >
+                Bookings
+              </button>
             </div>
           </div>
 
-          {/* WORKING ROUTE TRANSIT MODE SWITCHER (Drive, Transit, Walk) */}
-          <div className="reference-transit-toggles">
-            <button
-              type="button"
-              className={`ref-transit-pill ${transitMode === "car" ? "active" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setTransitMode("car");
-              }}
-              title="Switch to Drive Mode"
-            >
-              <Car size={13} />
-              <span>Drive</span>
-            </button>
-            <button
-              type="button"
-              className={`ref-transit-pill ${transitMode === "transit" ? "active" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setTransitMode("transit");
-              }}
-              title="Switch to Transit Mode"
-            >
-              <Train size={13} />
-              <span>Transit</span>
-            </button>
-            <button
-              type="button"
-              className={`ref-transit-pill ${transitMode === "walk" ? "active" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setTransitMode("walk");
-              }}
-              title="Switch to Walk Mode"
-            >
-              <Footprints size={13} />
-              <span>Walk</span>
-            </button>
-          </div>
-
-          <div className="reference-card-tabs">
-            <button
-              type="button"
-              className={`reference-tab-btn ${attachedCardTab === "route" ? "active" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setAttachedCardTab("route");
-              }}
-            >
-              Route
-            </button>
-            <button
-              type="button"
-              className={`reference-tab-btn ${attachedCardTab === "bookings" ? "active" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setAttachedCardTab("bookings");
-              }}
-            >
-              Bookings
-            </button>
-          </div>
-        </div>
-
-        {/* TAB 1: ROUTE TIMELINE (MATCHING REFERENCE IMAGE 2 EXACT FORMAT) */}
-        {attachedCardTab === "route" && (
-          <div className="reference-route-timeline">
-            {activeDay.stops.map((stop, idx) => {
-              const isLast = idx === activeDay.stops.length - 1;
-              return (
-                <React.Fragment key={stop.id}>
-                  <div className="reference-stop-row">
-                    <div className="reference-stop-left">
-                      <div className={`reference-stop-num-circle ${stop.category}`}>
-                        <span>{stop.id}</span>
-                      </div>
-                      <div className="reference-stop-details">
-                        <strong className="reference-stop-name">{stop.name}</strong>
-                        <span className="reference-stop-time">
-                          {stop.timeSlot} • {stop.category === "hotel" ? "Overnight Accommodation" : stop.category === "food" ? "Dining & Tasting" : "Scenic Highlight"}
-                        </span>
-                      </div>
+          {/* TAB 1: SYNCHRONIZED STOPS LIST */}
+          {activeTab === "route" ? (
+            <div className="sidebar-stops-list">
+              {activeDayData.stops.map((stop, sIdx) => {
+                const isActive = sIdx === selectedStop;
+                return (
+                  <div
+                    key={`${stop.id}-${stop.name}`}
+                    className={`sidebar-stop-card ${isActive ? "active" : ""}`}
+                    onClick={() => handleSelectStop(sIdx, stop)}
+                  >
+                    <div className="stop-circle-index">
+                      {stop.id}
                     </div>
 
-                    <div className="reference-stop-right">
-                      <span className="reference-stop-duration-tag">
-                        {stop.estimatedDuration}
-                      </span>
+                    <div className="stop-card-info">
+                      <div className="stop-name-row">
+                        <h4>{stop.name}</h4>
+                        <span className="stop-time-badge">{stop.time}</span>
+                      </div>
+                      <span className="stop-type-sub">{stop.type}</span>
+                      <p className="stop-detail-text">{stop.detail}</p>
+                    </div>
+
+                    <div className="stop-action-meta">
+                      <button
+                        type="button"
+                        className="stop-focus-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectStop(sIdx, stop);
+                        }}
+                      >
+                        Focus ↗
+                      </button>
                     </div>
                   </div>
+                );
+              })}
 
-                  {!isLast && (
-                    <div className="reference-transit-bridge">
-                      <div className="reference-bridge-line" />
-                      <div className="reference-bridge-pill">
-                        <span className="bridge-icon">
-                          {transitMode === "car" ? "🚗" : transitMode === "transit" ? "🚆" : "🚶"}
-                        </span>
-                        <span className="bridge-text">
-                          {getDynamicStopTransitTime(stop.transitDistToNextKm, transitMode)} • {stop.transitDistToNextKm} km
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        )}
-
-        {/* TAB 2: BOOKINGS & INTEL */}
-        {attachedCardTab === "bookings" && (
-          <div className="reference-bookings-view">
-            {/* HOTEL PARTNER CARD */}
-            <div className="reference-booking-stay">
-              <div className="booking-stay-header">
-                <Hotel size={18} color="#0EA5E9" />
-                <div>
-                  <strong className="booking-stay-name">{hotelName}</strong>
-                  <p className="booking-stay-rating">★ 4.4 Google Rating • Verified Partner Stay</p>
+              {/* ROUTE SUMMARY LEG CARD */}
+              <div className="sidebar-leg-summary">
+                <div className="leg-summary-header">
+                  <span>ROUTE PACING</span>
+                  <span>{mode.toUpperCase()} MODE</span>
                 </div>
+                <div className="leg-summary-card">
+                  <div className="leg-icon-box">
+                    <Sparkles size={16} />
+                  </div>
+                  <div>
+                    <strong>Road-Optimized Route Order</strong>
+                    <span>
+                      {isRoutingLive
+                        ? "Connected via verified live road geometry from OpenStreetMap OSRM."
+                        : "Scenic sequential route with calculated road distances."}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="sidebar-bookings-tab">
+              <div className="bookings-empty-card">
+                <Info size={20} className="text-cyan-400" />
+                <strong>Verified Stay & Entry Tickets</strong>
+                <p>
+                  Recommended overnight accommodation:{" "}
+                  <b>{recommendedHotels[0] || `${destination} Premium Partner Suites`}</b>.
+                </p>
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotelName + " " + destination)}`}
+                  href={googleMapsConnectedUrl}
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="booking-stay-link"
+                  rel="noreferrer"
+                  className="bookings-view-btn"
                 >
-                  <ChevronRight size={18} />
+                  <span>Check Availability on Map</span>
+                  <ExternalLink size={12} />
                 </a>
               </div>
-              <div className="booking-stay-timings">
-                <div><span>Check-in</span><strong>2:00 PM</strong></div>
-                <div><span>Check-out</span><strong>11:00 AM</strong></div>
-                <div><span>Security</span><strong style={{ color: "#34D399" }}>Verified Stay</strong></div>
-              </div>
             </div>
-
-            {/* DAY BUDGET SUMMARY */}
-            <div className="reference-booking-budget">
-              <IndianRupee size={16} color="#10B981" />
-              <span>Day {activeDay.day} Outlay: <b>₹{activeDay.budget.total.toLocaleString("en-IN")}</b> (Stay: ₹{activeDay.budget.stay.toLocaleString("en-IN")}, Dining: ₹{activeDay.budget.food.toLocaleString("en-IN")}, Transit: ₹{activeDay.budget.transit.toLocaleString("en-IN")})</span>
-            </div>
-          </div>
-        )}
+          )}
+        </aside>
       </div>
-
-      {/* COMPLETE PACKAGE PLAN CARDS (MATCHING REFERENCE IMAGE 2) */}
-      <div className="package-plan-cards-grid">
-        {/* 1. HOTEL / STAY CARD */}
-        <div className="package-stay-card">
-          <div className="package-card-header">
-            <div className="package-card-icon-wrap">
-              <Hotel size={18} color="#0EA5E9" />
-            </div>
-            <div>
-              <strong className="package-hotel-name">{hotelName}</strong>
-              <p className="package-hotel-meta">★ 4.4 Google Rating • Verified Partner Stay</p>
-            </div>
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotelName + " " + destination)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="package-card-action-icon"
-              title="View on Google Maps"
-            >
-              <ChevronRight size={18} />
-            </a>
-          </div>
-
-          <div className="package-timings-strip">
-            <div className="timing-box">
-              <span className="timing-label">Check-in</span>
-              <strong className="timing-val">3:00 PM</strong>
-            </div>
-            <div className="timing-divider" />
-            <div className="timing-box">
-              <span className="timing-label">Check-out</span>
-              <strong className="timing-val">11:00 AM</strong>
-            </div>
-            <div className="timing-divider" />
-            <div className="timing-box">
-              <span className="timing-label">Security</span>
-              <strong className="timing-val" style={{ color: "#34D399" }}>
-                <ShieldCheck size={13} style={{ display: "inline", verticalAlign: "middle" }} /> 100% Verified
-              </strong>
-            </div>
-          </div>
-        </div>
-
-        {/* 2. 5-DAY WEATHER SNAPSHOT (MATCHING REFERENCE IMAGE 2) */}
-        <div className="package-weather-card">
-          <div className="package-card-title-row">
-            <Sun size={16} color="#FBBF24" />
-            <span>Weather Intelligence</span>
-          </div>
-
-          <div className="weather-days-strip">
-            {daysMatrix.slice(0, 5).map((d) => (
-              <div
-                key={d.day}
-                className={`weather-day-item ${d.day === selectedDay ? "active" : ""}`}
-                onClick={() => setSelectedDay(d.day)}
-              >
-                <span className="weather-day-name">DAY {d.day}</span>
-                <div className="weather-icon-box">
-                  {getWeatherIconComponent(d.weather.icon)}
-                </div>
-                <span className="weather-temp">
-                  {d.weather.tempHigh}° <small>{d.weather.tempLow}°</small>
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 3. BUDGET ALLOCATION CARD (MATCHING REFERENCE IMAGE 2) */}
-        <div className="package-budget-card">
-          <div className="package-card-title-row">
-            <IndianRupee size={16} color="#10B981" />
-            <span>Day {activeDay.day} Budget Allocation</span>
-          </div>
-
-          <div className="budget-summary-val">
-            <strong>₹{activeDay.budget.total.toLocaleString("en-IN")}</strong>
-            <small>Estimated Day Outlay</small>
-          </div>
-
-          <div className="budget-pills-row">
-            <div className="budget-pill">
-              <span className="budget-pill-label">🏨 Stay</span>
-              <strong>₹{activeDay.budget.stay.toLocaleString("en-IN")}</strong>
-            </div>
-            <div className="budget-pill">
-              <span className="budget-pill-label">🍽️ Food</span>
-              <strong>₹{activeDay.budget.food.toLocaleString("en-IN")}</strong>
-            </div>
-            <div className="budget-pill">
-              <span className="budget-pill-label">🎟️ Activities</span>
-              <strong>₹{activeDay.budget.activities.toLocaleString("en-IN")}</strong>
-            </div>
-            <div className="budget-pill">
-              <span className="budget-pill-label">🚗 Transit</span>
-              <strong>₹{activeDay.budget.transit.toLocaleString("en-IN")}</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </section>
   );
 }

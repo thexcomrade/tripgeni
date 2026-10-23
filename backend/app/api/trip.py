@@ -338,6 +338,7 @@ def create_trip(
 # =====================================================
 
 
+@router.get("/history", response_model=TripHistoryResponse)
 @router.get("/history/list", response_model=TripHistoryResponse)
 def trip_history(
     current_user: User = Depends(get_current_user),
@@ -392,6 +393,7 @@ def trip_history(
 # =====================================================
 
 
+@router.get("/statistics", response_model=TripStatisticsResponse)
 @router.get("/statistics/summary", response_model=TripStatisticsResponse)
 def trip_statistics(
     current_user: User = Depends(get_current_user),
