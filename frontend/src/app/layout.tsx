@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
+import "leaflet/dist/leaflet.css";
 import AppNavbar from "../components/layout/AppNavbar";
 import AppFooter from "../components/layout/AppFooter";
 
@@ -11,7 +12,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Trip Geni — AI-Powered Sustainable Travel Intelligence",
+  title: "Trip Geni",
   description:
     "Next-generation travel platform generating personalized, eco-conscious, data-backed travel itineraries.",
   keywords: [

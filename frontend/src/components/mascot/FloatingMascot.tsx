@@ -140,13 +140,11 @@ export default function FloatingMascot() {
   }, []);
 
   // STRICT VISIBILITY:
-  // 1. Home page ("/") ONLY if the user is in logged-in stage
-  // 2. Otherwise only available on designated exploratory pages: /dashboard, /explore, /favorites
-  // 3. Completely removed from /planner, /ai-chat, /trip, auth pages, and all other views
+  // 1. Home page ("/") is ALWAYS allowed even if not logged in so visitors can see, rotate and interact with 3D Padayappa!
+  // 2. Otherwise allowed on exploratory pages: /dashboard, /explore, /favorites
+  // 3. Removed from /planner, /ai-chat, /trip, auth pages
   const isHomePage = pathname === "/";
-  if (isHomePage) {
-    if (!isLoggedIn) return null;
-  } else {
+  if (!isHomePage) {
     const ALLOWED_MASCOT_PATHS = ["/dashboard", "/explore", "/favorites"];
     const isAllowedPath = ALLOWED_MASCOT_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
     if (!isAllowedPath) {
@@ -155,6 +153,10 @@ export default function FloatingMascot() {
   }
 
   const handleOpenFullChat = () => {
+    if (!isLoggedIn) {
+      router.push("/login");
+      return;
+    }
     router.push("/ai-chat");
   };
 
@@ -170,6 +172,21 @@ export default function FloatingMascot() {
 
     setMessages((prev) => [...prev, userMsg]);
     setMessage("");
+
+    if (!isLoggedIn) {
+      setIsLoading(true);
+      setTimeout(() => {
+        const loginPromptMsg: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          sender: "padayappa",
+          text: "Namaskaram! 🙏 Please login to chat with me and create personalized itineraries with Trip Geni.",
+        };
+        setMessages((prev) => [...prev, loginPromptMsg]);
+        setIsLoading(false);
+      }, 400);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -465,6 +482,43 @@ export default function FloatingMascot() {
               </div>
             )}
           </div>
+
+          {!isLoggedIn && (
+            <div
+              style={{
+                margin: "8px 16px 4px",
+                padding: "8px 12px",
+                borderRadius: "10px",
+                background: "rgba(56, 200, 244, 0.09)",
+                border: "1px solid rgba(56, 200, 244, 0.25)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "8px",
+                fontSize: "11px",
+                color: "#cbd5e1",
+              }}
+            >
+              <span>🔒 Login to chat with Padayappa</span>
+              <button
+                type="button"
+                onClick={() => router.push("/login")}
+                style={{
+                  background: "linear-gradient(135deg, #38c8f4, #16c7a0)",
+                  color: "#07111f",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "4px 10px",
+                  fontWeight: 700,
+                  fontSize: "11px",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Login
+              </button>
+            </div>
+          )}
 
           {/* INPUT FORM */}
           <form className="assistant-form" onSubmit={handleSubmit}>
