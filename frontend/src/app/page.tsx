@@ -373,8 +373,16 @@ export default function HomePage() {
           >
             Plan Extraordinary Journeys with
             <br />
-            <span className="text-intelligent-cyan">Intelligent</span>{" "}
-            <span className="text-precision-gold">Precision</span>
+            <span
+              className="gradient-text-luxury"
+              style={{
+                fontFamily: "inherit",
+                fontWeight: 600,
+                textShadow: "none",
+              }}
+            >
+              Intelligent Precision
+            </span>
           </h1>
 
           <p

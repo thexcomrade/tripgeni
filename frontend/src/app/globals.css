@@ -690,29 +690,29 @@ h6 {
 
 .gradient-text-luxury {
   font-family: inherit;
-  /* Radiant Crystal Glass Texture: high-luminance frosted ice, prism specular highlights & bright sky sheen */
+  font-weight: 600;
+  /* Exact luminous cyan-to-gold palette from screenshot: no dark tone, pure radiant colors */
   background: linear-gradient(
-    130deg,
-    #FFFFFF 0%,
-    #F0FDF4 10%,
-    #E0F2FE 22%,
-    #BAE6FD 36%,
-    #38BDF8 50%,
-    #7DD3FC 66%,
-    #E0F7FA 80%,
-    #FFFFFF 92%,
-    #BAE6FD 100%
+    135deg,
+    #0284c7 0%,
+    #0ea5e9 16%,
+    #06b6d4 32%,
+    #14b8a6 48%,
+    #10b981 64%,
+    #84cc16 78%,
+    #eab308 90%,
+    #f59e0b 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  display: inline;
-  padding-bottom: 0.12em;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  /* Glass specular shimmer and subtle refraction glow */
-  filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.60))
-    drop-shadow(0 0 32px rgba(186, 230, 253, 0.45))
-    drop-shadow(0 2px 8px rgba(0, 0, 0, 0.85));
+  display: inline-block;
+  vertical-align: baseline;
+  padding-bottom: 0.10em;
+  text-shadow: none !important;
+  /* Luminous color glow (NO black drop shadow that causes dark tone) */
+  filter: drop-shadow(0 0 22px rgba(14, 165, 233, 0.65))
+    drop-shadow(0 0 36px rgba(20, 184, 166, 0.40))
+    drop-shadow(0 0 22px rgba(234, 179, 8, 0.50));
 }
 
 .more-dropdown-link:hover {
@@ -1104,7 +1104,7 @@ textarea:focus {
   vertical-align: baseline;
   padding-bottom: 0.10em;
   filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.60))
-    drop-shadow(0 4px 14px rgba(0, 0, 0, 0.85));
+    drop-shadow(0 0 30px rgba(56, 189, 248, 0.40));
 }
 
 .text-precision-gold {
@@ -1124,5 +1124,5 @@ textarea:focus {
   vertical-align: baseline;
   padding-bottom: 0.10em;
   filter: drop-shadow(0 0 20px rgba(234, 179, 8, 0.60))
-    drop-shadow(0 4px 14px rgba(0, 0, 0, 0.85));
+    drop-shadow(0 0 30px rgba(56, 189, 248, 0.40));
 }
