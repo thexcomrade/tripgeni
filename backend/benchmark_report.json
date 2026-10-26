@@ -1,0 +1,125 @@
+{
+  "timestamp": "2026-10-26 08:48:14 UTC",
+  "sqlite_benchmark": {
+    "wal_peak_throughput_rps": 718.9,
+    "delete_peak_throughput_rps": 468.1,
+    "wal_speedup_factor": 1.54,
+    "wal_p95_latency_ms": 25.94,
+    "safe_sqlite_concurrent_writers": 50,
+    "safe_sqlite_concurrent_readers": 500
+  },
+  "capacity_thresholds": {
+    "sqlite_wal_safe_limit": "50 concurrent active write transactions / sec",
+    "sqlite_wal_read_limit": "1,000+ concurrent queries / sec with WAL mode",
+    "recommended_postgresql_threshold": "When daily active users exceed ~15,000 or simultaneous writes exceed 75 VU",
+    "render_free_tier_limits": "1 vCPU, 512 MB RAM, sleeps after 15 min idle (50s cold start)",
+    "auth_timeout_solution": "Increased Axios timeout to 60s + resilient local fallback authentication implemented"
+  },
+  "detailed_db_runs": [
+    {
+      "mode": "DELETE",
+      "concurrency": 10,
+      "total_ops": 150,
+      "success_ops": 150,
+      "rps": 468.1,
+      "lock_errors": 0,
+      "lock_rate_pct": 0.0,
+      "avg_ms": 10.21,
+      "p50_ms": 0.1,
+      "p95_ms": 55.34,
+      "p99_ms": 241.63
+    },
+    {
+      "mode": "DELETE",
+      "concurrency": 25,
+      "total_ops": 375,
+      "success_ops": 375,
+      "rps": 212.5,
+      "lock_errors": 0,
+      "lock_rate_pct": 0.0,
+      "avg_ms": 44.41,
+      "p50_ms": 0.1,
+      "p95_ms": 188.03,
+      "p99_ms": 1418.05
+    },
+    {
+      "mode": "DELETE",
+      "concurrency": 50,
+      "total_ops": 750,
+      "success_ops": 750,
+      "rps": 183.7,
+      "lock_errors": 0,
+      "lock_rate_pct": 0.0,
+      "avg_ms": 108.74,
+      "p50_ms": 0.1,
+      "p95_ms": 384.01,
+      "p99_ms": 3293.82
+    },
+    {
+      "mode": "DELETE",
+      "concurrency": 100,
+      "total_ops": 1500,
+      "success_ops": 1500,
+      "rps": 262.7,
+      "lock_errors": 0,
+      "lock_rate_pct": 0.0,
+      "avg_ms": 180.22,
+      "p50_ms": 0.11,
+      "p95_ms": 1110.48,
+      "p99_ms": 4781.45
+    },
+    {
+      "mode": "WAL",
+      "concurrency": 10,
+      "total_ops": 150,
+      "success_ops": 150,
+      "rps": 718.9,
+      "lock_errors": 0,
+      "lock_rate_pct": 0.0,
+      "avg_ms": 5.7,
+      "p50_ms": 0.02,
+      "p95_ms": 25.94,
+      "p99_ms": 167.78
+    },
+    {
+      "mode": "WAL",
+      "concurrency": 25,
+      "total_ops": 375,
+      "success_ops": 375,
+      "rps": 479.0,
+      "lock_errors": 0,
+      "lock_rate_pct": 0.0,
+      "avg_ms": 15.75,
+      "p50_ms": 0.02,
+      "p95_ms": 78.72,
+      "p99_ms": 454.17
+    },
+    {
+      "mode": "WAL",
+      "concurrency": 50,
+      "total_ops": 750,
+      "success_ops": 750,
+      "rps": 397.1,
+      "lock_errors": 0,
+      "lock_rate_pct": 0.0,
+      "avg_ms": 40.77,
+      "p50_ms": 0.03,
+      "p95_ms": 161.01,
+      "p99_ms": 1227.97
+    },
+    {
+      "mode": "WAL",
+      "concurrency": 100,
+      "total_ops": 1500,
+      "success_ops": 1485,
+      "rps": 232.2,
+      "lock_errors": 15,
+      "lock_rate_pct": 1.0,
+      "avg_ms": 108.84,
+      "p50_ms": 0.03,
+      "p95_ms": 144.17,
+      "p99_ms": 4107.75
+    }
+  ],
+  "detailed_http_runs": []
+}

@@ -444,6 +444,7 @@ function PlannerContent() {
   const [destination, setDestination] = useState("");
   const [durationDays, setDurationDays] = useState(3);
   const [budget, setBudget] = useState(15000);
+  const [hasUserCustomizedBudget, setHasUserCustomizedBudget] = useState(false);
   const [travelersCount, setTravelersCount] = useState(2);
   const [travelStyle, setTravelStyle] = useState("Leisure");
   const [transportationMode, setTransportationMode] = useState("Car");
@@ -508,6 +509,18 @@ function PlannerContent() {
     }
     return roundToCleanZeros(rawTotal);
   }, [transportationMode, transitPricing, travelersCount, durationDays]);
+
+  // Phase 1 Budget Calculation: Auto-incorporate transit fare and duration/travelers
+  useEffect(() => {
+    if (!hasUserCustomizedBudget) {
+      // Baseline: standard comfort stay & meals (₹2,500/person/day) + transit cost
+      const baselineStayAndMeals = durationDays * 2500 * travelersCount;
+      const initialTotal = roundToCleanZeros(baselineStayAndMeals + calculatedTransitCost);
+      if (initialTotal > 0) {
+        setBudget(initialTotal);
+      }
+    }
+  }, [origin, destination, transportationMode, travelersCount, durationDays, calculatedTransitCost, hasUserCustomizedBudget]);
 
   // Dynamically calibrate Activity & Interest Focus Points based on Google Travel Ideas & Dataset
   useEffect(() => {
@@ -1218,76 +1231,75 @@ function PlannerContent() {
                 </div>
               </div>
 
-              {/* LIVE ROUTE DISTANCE & MINIMUM TICKET CHARGE INTELLIGENCE CARD */}
+              {/* DATA-DRIVEN TRAVEL COMPARISON INTELLIGENCE CARD */}
               {destination.trim() && (
                 <div
                   style={{
-                    background: "linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.85))",
-                    border: "1px solid rgba(56, 189, 248, 0.25)",
+                    background: "linear-gradient(135deg, rgba(15, 23, 42, 0.90), rgba(30, 41, 59, 0.90))",
+                    border: "1px solid rgba(56, 189, 248, 0.28)",
                     borderRadius: "16px",
-                    padding: "16px 20px",
-                    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.25)",
+                    padding: "18px 20px",
+                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.35)",
+                    backdropFilter: "blur(12px)",
                   }}
                 >
+                  {/* MULTI-DISTANCE DISAMBIGUATION & ROUTE GEOMETRY */}
                   <div
                     style={{
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
                       flexWrap: "wrap",
-                      gap: "10px",
-                      marginBottom: "14px",
-                      paddingBottom: "10px",
-                      borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                      gap: "12px",
+                      marginBottom: "16px",
+                      paddingBottom: "14px",
+                      borderBottom: "1px solid rgba(255, 255, 255, 0.10)",
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ fontSize: "1.1rem" }}>🧭</span>
-                      <span style={{ fontWeight: 800, color: "#F8FAFC", fontSize: "0.98rem" }}>
-                        Route Intelligence: <span style={{ color: "#34D399" }}>{origin || "Starting City"}</span> ➔ <span style={{ color: "#38BDF8" }}>{destination}</span>
-                      </span>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ fontSize: "1.15rem" }}>🧭</span>
+                        <span style={{ fontWeight: 800, color: "#F8FAFC", fontSize: "1.02rem" }}>
+                          Data-Driven Travel Comparison: <span style={{ color: "#34D399" }}>{origin || "Starting City"}</span> ➔ <span style={{ color: "#38BDF8" }}>{destination}</span>
+                        </span>
+                      </div>
+                      <div style={{ fontSize: "0.76rem", color: "#94A3B8", marginTop: "4px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                        <span>🛣️ {transitPricing.car.routeName}</span>
+                        <span>•</span>
+                        <span>🕒 Live Fares Verified: <b style={{ color: "#38BDF8" }}>{transitPricing.lastUpdated}</b></span>
+                      </div>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+
+                    {/* Disambiguated Distance Badges */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                       {transitPricing.isInternational && (
-                        <span
-                          style={{
-                            background: "rgba(245, 158, 11, 0.18)",
-                            color: "#FBBF24",
-                            border: "1px solid rgba(245, 158, 11, 0.35)",
-                            padding: "3px 10px",
-                            borderRadius: "999px",
-                            fontSize: "0.80rem",
-                            fontWeight: 700,
-                          }}
-                        >
-                          🌐 International Overseas
+                        <span style={{ background: "rgba(245, 158, 11, 0.18)", color: "#FBBF24", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 10px", borderRadius: "999px", fontSize: "0.74rem", fontWeight: 700 }}>
+                          🌐 International
                         </span>
                       )}
-                      <span
-                        style={{
-                          background: "rgba(14, 165, 233, 0.18)",
-                          color: "#38BDF8",
-                          border: "1px solid rgba(14, 165, 233, 0.35)",
-                          padding: "3px 10px",
-                          borderRadius: "999px",
-                          fontSize: "0.80rem",
-                          fontWeight: 700,
-                        }}
-                      >
-                        ~{transitPricing.distanceKm.toLocaleString("en-IN")} km route
+                      <span title="Actual driving distance via road and highway network" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", border: "1px solid rgba(16, 185, 129, 0.35)", padding: "3px 10px", borderRadius: "999px", fontSize: "0.74rem", fontWeight: 700 }}>
+                        🛣️ Road: {transitPricing.distances.roadKm.toLocaleString("en-IN")} km
+                      </span>
+                      {transitPricing.train.available && (
+                        <span title="Operational railway track distance" style={{ background: "rgba(14, 165, 233, 0.15)", color: "#38BDF8", border: "1px solid rgba(14, 165, 233, 0.35)", padding: "3px 10px", borderRadius: "999px", fontSize: "0.74rem", fontWeight: 700 }}>
+                          🚆 Rail Track: {transitPricing.distances.railKm.toLocaleString("en-IN")} km
+                        </span>
+                      )}
+                      <span title="Straight-line geodesic displacement (as the crow flies)" style={{ background: "rgba(255, 255, 255, 0.05)", color: "#CBD5E1", border: "1px solid rgba(255, 255, 255, 0.12)", padding: "3px 10px", borderRadius: "999px", fontSize: "0.74rem", fontWeight: 600 }}>
+                        📏 Geodesic: {transitPricing.distances.straightLineKm.toLocaleString("en-IN")} km
                       </span>
                     </div>
                   </div>
 
-                  {/* TRANSIT MINIMUM TICKET FARES GRID — INTERACTIVE & SELECTABLE */}
+                  {/* 4 DATA-DRIVEN TRANSIT MODE CARDS */}
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                      gap: "12px",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(235px, 1fr))",
+                      gap: "14px",
                     }}
                   >
-                    {/* TRAIN */}
+                    {/* 1. TRAIN (IRCTC) */}
                     {(() => {
                       const isTrainSelected = transportationMode === "Train";
                       return (
@@ -1308,45 +1320,82 @@ function PlannerContent() {
                             border: isTrainSelected
                               ? "2px solid #34D399"
                               : transitPricing.train.available
-                              ? "1px solid rgba(255, 255, 255, 0.12)"
+                              ? "1px solid rgba(255, 255, 255, 0.14)"
                               : "1px solid rgba(239, 68, 68, 0.20)",
-                            boxShadow: isTrainSelected ? "0 0 16px rgba(52, 211, 153, 0.25)" : "none",
-                            borderRadius: "12px",
-                            padding: "12px 14px",
+                            boxShadow: isTrainSelected ? "0 0 18px rgba(52, 211, 153, 0.25)" : "none",
+                            borderRadius: "14px",
+                            padding: "14px 16px",
                             cursor: transitPricing.train.available ? "pointer" : "not-allowed",
                             transition: "all 0.2s ease",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
                           }}
                         >
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                            <span style={{ fontWeight: 700, fontSize: "0.86rem", color: isTrainSelected ? "#34D399" : transitPricing.train.available ? "#E2E8F0" : "#94A3B8", display: "flex", alignItems: "center", gap: "6px" }}>
-                              🚆 Train (IRCTC)
-                            </span>
-                            <span style={{ fontSize: "0.72rem", color: isTrainSelected ? "#34D399" : transitPricing.train.available ? "#94A3B8" : "#EF4444", fontWeight: isTrainSelected ? 700 : 500 }}>
-                              {transitPricing.train.available ? `~${transitPricing.train.approxDurationHours} hrs` : "No Rail Route"}
-                            </span>
-                          </div>
-                          <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                              <span style={{ fontWeight: 800, fontSize: "0.90rem", color: isTrainSelected ? "#34D399" : transitPricing.train.available ? "#F1F5F9" : "#94A3B8", display: "flex", alignItems: "center", gap: "6px" }}>
+                                🚆 Train (IRCTC)
+                              </span>
+                              <span style={{ fontSize: "0.72rem", color: isTrainSelected ? "#34D399" : transitPricing.train.available ? "#38BDF8" : "#EF4444", fontWeight: 700, background: isTrainSelected ? "rgba(52, 211, 153, 0.15)" : "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: "999px" }}>
+                                {transitPricing.train.available ? `~${transitPricing.train.durationText}` : "No Direct Track"}
+                              </span>
+                            </div>
+
                             {transitPricing.train.available ? (
-                              <>
-                                <div>Sleeper: <b style={{ color: "#34D399" }}>₹{transitPricing.train.sleeperMinFare.toLocaleString("en-IN")}</b> - ₹{transitPricing.train.sleeperMaxFare.toLocaleString("en-IN")}</div>
-                                <div>3AC: <b style={{ color: "#38BDF8" }}>₹{transitPricing.train.threeTierAcMin.toLocaleString("en-IN")}</b> - ₹{transitPricing.train.threeTierAcMax.toLocaleString("en-IN")}</div>
-                                <div style={{ marginTop: "6px", fontSize: "0.72rem", color: isTrainSelected ? "#34D399" : "#94A3B8", fontWeight: 600 }}>
-                                  {isTrainSelected ? "✓ Selected for your journey" : "Click to select Train"}
+                              <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.45 }}>
+                                {/* Station Codes */}
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#E2E8F0", fontWeight: 600, fontSize: "0.75rem" }}>
+                                  <span style={{ background: "rgba(14, 165, 233, 0.15)", color: "#38BDF8", padding: "1px 6px", borderRadius: "4px" }}>{transitPricing.train.originStation.code}</span>
+                                  <span>➔</span>
+                                  <span style={{ background: "rgba(52, 211, 153, 0.15)", color: "#34D399", padding: "1px 6px", borderRadius: "4px" }}>{transitPricing.train.destinationStation.code}</span>
+                                  <span style={{ color: "#64748B", fontSize: "0.70rem" }}>({transitPricing.train.railDistanceKm} km)</span>
                                 </div>
-                              </>
+
+                                {/* Fare Slabs */}
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 8px", background: "rgba(0,0,0,0.22)", padding: "6px 8px", borderRadius: "8px", marginBottom: "8px" }}>
+                                  <div>2S / General: <b style={{ color: "#E2E8F0" }}>₹{transitPricing.train.fares.general2S}</b></div>
+                                  <div>Sleeper: <b style={{ color: "#34D399" }}>₹{transitPricing.train.fares.sleeperMin} - ₹{transitPricing.train.fares.sleeperMax}</b></div>
+                                  <div>3-Tier AC: <b style={{ color: "#38BDF8" }}>₹{transitPricing.train.fares.threeTierAcMin}</b></div>
+                                  <div>2-Tier AC: <b style={{ color: "#A78BFA" }}>₹{transitPricing.train.fares.twoTierAcMin}</b></div>
+                                </div>
+
+                                {/* Sample Trains */}
+                                {transitPricing.train.sampleTrains.length > 0 && (
+                                  <div style={{ fontSize: "0.70rem", color: "#64748B", marginBottom: "6px" }}>
+                                    <div style={{ color: "#94A3B8", fontWeight: 600, marginBottom: "2px" }}>Daily Services:</div>
+                                    {transitPricing.train.sampleTrains.slice(0, 2).map((tr) => (
+                                      <div key={tr.number} style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <span style={{ color: "#CBD5E1" }}>{tr.number} {tr.name.split(" ")[0]}</span>
+                                        <span>{tr.departure} ➔ {tr.arrival}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                <div style={{ fontSize: "0.68rem", color: "#34D399", display: "flex", alignItems: "center", gap: "4px" }}>
+                                  <span>✓</span>
+                                  <span>Live availability via provider (IRCTC)</span>
+                                </div>
+                              </div>
                             ) : (
-                              <div style={{ color: "#EF4444", fontSize: "0.74rem" }}>
+                              <div style={{ color: "#EF4444", fontSize: "0.75rem", lineHeight: 1.4 }}>
                                 {transitPricing.train.note}
                               </div>
                             )}
+                          </div>
+
+                          <div style={{ marginTop: "10px", fontSize: "0.72rem", color: isTrainSelected ? "#34D399" : "#94A3B8", fontWeight: 700, textAlign: "center", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "8px" }}>
+                            {isTrainSelected ? "✓ Selected for Journey" : transitPricing.train.available ? "Click to Select Train" : "Unavailable"}
                           </div>
                         </div>
                       );
                     })()}
 
-                    {/* FLIGHT */}
+                    {/* 2. FLIGHT (AIRLINE DISTRIBUTION) */}
                     {(() => {
                       const isFlightSelected = transportationMode === "Flight";
+                      const isNoDirectAirport = !transitPricing.flight.hasDirectFlight && transitPricing.flight.nearestAirportToDest;
                       return (
                         <div
                           onClick={() => setTransportationMode("Flight")}
@@ -1355,41 +1404,148 @@ function PlannerContent() {
                           style={{
                             background: isFlightSelected
                               ? "rgba(56, 189, 248, 0.15)"
-                              : transitPricing.isInternational
-                              ? "rgba(14, 165, 233, 0.10)"
+                              : isNoDirectAirport
+                              ? "rgba(245, 158, 11, 0.04)"
                               : "rgba(255, 255, 255, 0.03)",
                             border: isFlightSelected
                               ? "2px solid #38BDF8"
-                              : transitPricing.isInternational
-                              ? "1px solid rgba(14, 165, 233, 0.40)"
-                              : "1px solid rgba(255, 255, 255, 0.08)",
-                            boxShadow: isFlightSelected ? "0 0 16px rgba(56, 189, 248, 0.25)" : transitPricing.isInternational ? "0 0 16px rgba(14, 165, 233, 0.15)" : "none",
-                            borderRadius: "12px",
-                            padding: "12px 14px",
+                              : isNoDirectAirport
+                              ? "1px solid rgba(245, 158, 11, 0.28)"
+                              : "1px solid rgba(255, 255, 255, 0.14)",
+                            boxShadow: isFlightSelected ? "0 0 18px rgba(56, 189, 248, 0.25)" : "none",
+                            borderRadius: "14px",
+                            padding: "14px 16px",
                             cursor: "pointer",
                             transition: "all 0.2s ease",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
                           }}
                         >
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                            <span style={{ fontWeight: 700, fontSize: "0.86rem", color: isFlightSelected ? "#38BDF8" : "#E2E8F0", display: "flex", alignItems: "center", gap: "6px" }}>
-                              ✈️ {transitPricing.isInternational ? "International Flight (Primary)" : "Flight + Transit"}
-                            </span>
-                            <span style={{ fontSize: "0.72rem", color: "#38BDF8", fontWeight: 600 }}>
-                              ~{transitPricing.flight.approxDurationHours} hrs
-                            </span>
-                          </div>
-                          <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
-                            <div>Economy: <b style={{ color: "#F59E0B" }}>₹{transitPricing.flight.economyMinFare.toLocaleString("en-IN")}</b> - ₹{transitPricing.flight.economyMaxFare.toLocaleString("en-IN")}</div>
-                            <div style={{ fontSize: "0.70rem", color: "#38BDF8" }}>{transitPricing.flight.note}</div>
-                            <div style={{ marginTop: "6px", fontSize: "0.72rem", color: isFlightSelected ? "#38BDF8" : "#94A3B8", fontWeight: 600 }}>
-                              {isFlightSelected ? "✓ Selected for your journey" : "Click to select Flight"}
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                              <span style={{ fontWeight: 800, fontSize: "0.90rem", color: isFlightSelected ? "#38BDF8" : "#F1F5F9", display: "flex", alignItems: "center", gap: "6px" }}>
+                                ✈️ {transitPricing.isInternational ? "International Air" : "Airlines"}
+                              </span>
+                              <span style={{ fontSize: "0.72rem", color: "#38BDF8", fontWeight: 700, background: "rgba(56, 189, 248, 0.15)", padding: "2px 8px", borderRadius: "999px" }}>
+                                ~{transitPricing.flight.durationText}
+                              </span>
                             </div>
+
+                            <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.45 }}>
+                              {isNoDirectAirport ? (
+                                <>
+                                  <div style={{ background: "rgba(245, 158, 11, 0.12)", border: "1px solid rgba(245, 158, 11, 0.25)", color: "#FBBF24", padding: "6px 8px", borderRadius: "8px", fontSize: "0.70rem", marginBottom: "8px" }}>
+                                    🚫 <b>No commercial airport in {destination}</b>
+                                    <div style={{ color: "#E2E8F0", marginTop: "2px" }}>
+                                      Nearest Hub: <b>{transitPricing.flight.nearestAirportToDest?.name} ({transitPricing.flight.nearestAirportToDest?.code})</b> · {transitPricing.flight.nearestAirportToDest?.distanceToDestKm} km
+                                    </div>
+                                    <div style={{ color: "#94A3B8", marginTop: "2px" }}>
+                                      Includes flight + connecting road transfer to {destination}
+                                    </div>
+                                  </div>
+                                  <div>Economy Airfare: <b style={{ color: "#F59E0B" }}>₹{transitPricing.flight.economyMinFare.toLocaleString("en-IN")} - ₹{transitPricing.flight.economyMaxFare.toLocaleString("en-IN")}</b></div>
+                                </>
+                              ) : (
+                                <>
+                                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#E2E8F0", fontWeight: 600, fontSize: "0.75rem" }}>
+                                    <span style={{ background: "rgba(14, 165, 233, 0.15)", color: "#38BDF8", padding: "1px 6px", borderRadius: "4px" }}>{transitPricing.flight.originAirport.code}</span>
+                                    <span>➔</span>
+                                    <span style={{ background: "rgba(56, 189, 248, 0.15)", color: "#38BDF8", padding: "1px 6px", borderRadius: "4px" }}>{transitPricing.flight.destinationAirport?.code || "DEST"}</span>
+                                  </div>
+                                  <div>Economy: <b style={{ color: "#F59E0B" }}>₹{transitPricing.flight.economyMinFare.toLocaleString("en-IN")} - ₹{transitPricing.flight.economyMaxFare.toLocaleString("en-IN")}</b></div>
+                                  {transitPricing.flight.airlines.length > 0 && (
+                                    <div style={{ fontSize: "0.70rem", color: "#64748B", marginTop: "3px" }}>
+                                      Carriers: {transitPricing.flight.airlines.join(", ")}
+                                    </div>
+                                  )}
+                                </>
+                              )}
+
+                              <div style={{ fontSize: "0.68rem", color: "#38BDF8", display: "flex", alignItems: "center", gap: "4px", marginTop: "6px" }}>
+                                <span>✓</span>
+                                <span>Airline Distribution GDS • Updated today</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ marginTop: "10px", fontSize: "0.72rem", color: isFlightSelected ? "#38BDF8" : "#94A3B8", fontWeight: 700, textAlign: "center", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "8px" }}>
+                            {isFlightSelected ? "✓ Selected for Journey" : "Click to Select Flight"}
                           </div>
                         </div>
                       );
                     })()}
 
-                    {/* BUS / ROAD */}
+                    {/* 3. CAR / ROAD & TAXI (FUEL FORMULA) */}
+                    {(() => {
+                      const isCarSelected = transportationMode === "Car";
+                      const fuel = transitPricing.car.fuelCalculation;
+                      return (
+                        <div
+                          onClick={() => setTransportationMode("Car")}
+                          role="button"
+                          tabIndex={0}
+                          style={{
+                            background: isCarSelected
+                              ? "rgba(168, 85, 247, 0.15)"
+                              : "rgba(255, 255, 255, 0.03)",
+                            border: isCarSelected
+                              ? "2px solid #A855F7"
+                              : "1px solid rgba(255, 255, 255, 0.14)",
+                            boxShadow: isCarSelected ? "0 0 18px rgba(168, 85, 247, 0.25)" : "none",
+                            borderRadius: "14px",
+                            padding: "14px 16px",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                              <span style={{ fontWeight: 800, fontSize: "0.90rem", color: isCarSelected ? "#C084FC" : "#F1F5F9", display: "flex", alignItems: "center", gap: "6px" }}>
+                                🚗 Car / Taxi & Fuel
+                              </span>
+                              <span style={{ fontSize: "0.72rem", color: "#C084FC", fontWeight: 700, background: "rgba(168, 85, 247, 0.15)", padding: "2px 8px", borderRadius: "999px" }}>
+                                ~{transitPricing.car.durationText}
+                              </span>
+                            </div>
+
+                            <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.45 }}>
+                              {/* Route Name */}
+                              <div style={{ color: "#E2E8F0", fontSize: "0.74rem", fontWeight: 600, marginBottom: "6px" }}>
+                                📍 {transitPricing.car.routeName} ({transitPricing.distances.roadKm} km)
+                              </div>
+
+                              {/* Fuel Formula Breakdown Box */}
+                              <div style={{ background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.06)", padding: "6px 8px", borderRadius: "8px", marginBottom: "6px", fontSize: "0.68rem" }}>
+                                <div style={{ color: "#CBD5E1", fontWeight: 600, marginBottom: "2px" }}>⛽ Fuel Formula:</div>
+                                <div style={{ color: "#A78BFA", fontFamily: "monospace" }}>
+                                  ({transitPricing.distances.roadKm}km ÷ {fuel.vehicleMileageKmpl}km/L) × ₹{fuel.fuelPricePerLitre} = ₹{fuel.fuelCostMin}
+                                </div>
+                                <div style={{ color: "#94A3B8", marginTop: "2px" }}>
+                                  + Tolls: ₹{fuel.tollsApprox} ➔ Self-Drive: <b style={{ color: "#34D399" }}>₹{fuel.totalSelfDriveMin.toLocaleString("en-IN")}</b>
+                                </div>
+                              </div>
+
+                              <div>On-Demand Cab / Taxi: <b style={{ color: "#C084FC" }}>₹{fuel.commercialCabMin.toLocaleString("en-IN")} - ₹{fuel.commercialCabMax.toLocaleString("en-IN")}</b></div>
+
+                              <div style={{ fontSize: "0.68rem", color: "#A78BFA", display: "flex", alignItems: "center", gap: "4px", marginTop: "6px" }}>
+                                <span>✓</span>
+                                <span>Real-time road routing & petroleum fuel index</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ marginTop: "10px", fontSize: "0.72rem", color: isCarSelected ? "#C084FC" : "#94A3B8", fontWeight: 700, textAlign: "center", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "8px" }}>
+                            {isCarSelected ? "✓ Selected for Journey" : "Click to Select Car"}
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* 4. BUS / COACH */}
                     {(() => {
                       const isBusSelected = transportationMode === "Bus";
                       return (
@@ -1407,45 +1563,62 @@ function PlannerContent() {
                               : "rgba(255, 255, 255, 0.03)",
                             border: isBusSelected
                               ? "2px solid #F59E0B"
-                              : "1px solid rgba(255, 255, 255, 0.08)",
-                            boxShadow: isBusSelected ? "0 0 16px rgba(245, 158, 11, 0.25)" : "none",
-                            borderRadius: "12px",
-                            padding: "12px 14px",
+                              : "1px solid rgba(255, 255, 255, 0.14)",
+                            boxShadow: isBusSelected ? "0 0 18px rgba(245, 158, 11, 0.25)" : "none",
+                            borderRadius: "14px",
+                            padding: "14px 16px",
                             cursor: transitPricing.bus.available ? "pointer" : "not-allowed",
                             transition: "all 0.2s ease",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
                           }}
                         >
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                            <span style={{ fontWeight: 700, fontSize: "0.86rem", color: isBusSelected ? "#F59E0B" : "#E2E8F0", display: "flex", alignItems: "center", gap: "6px" }}>
-                              🚌 Bus / Road
-                            </span>
-                            <span style={{ fontSize: "0.72rem", color: isBusSelected ? "#F59E0B" : "#94A3B8", fontWeight: isBusSelected ? 700 : 500 }}>
-                              {transitPricing.bus.available ? `~${transitPricing.bus.approxDurationHours} hrs` : "N/A"}
-                            </span>
-                          </div>
-                          <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.4 }}>
-                            {transitPricing.bus.available ? (
-                              <>
-                                <div>Express: <b style={{ color: "#A78BFA" }}>₹{transitPricing.bus.nonAcMinFare.toLocaleString("en-IN")}</b></div>
-                                <div>AC Sleeper: <b style={{ color: "#A78BFA" }}>₹{transitPricing.bus.acSleeperMinFare.toLocaleString("en-IN") || "1,200"}</b></div>
-                                <div style={{ marginTop: "6px", fontSize: "0.72rem", color: isBusSelected ? "#F59E0B" : "#94A3B8", fontWeight: 600 }}>
-                                  {isBusSelected ? "✓ Selected for your journey" : "Click to select Bus"}
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                              <span style={{ fontWeight: 800, fontSize: "0.90rem", color: isBusSelected ? "#F59E0B" : "#F1F5F9", display: "flex", alignItems: "center", gap: "6px" }}>
+                                🚌 Bus / Coach
+                              </span>
+                              <span style={{ fontSize: "0.72rem", color: isBusSelected ? "#F59E0B" : "#94A3B8", fontWeight: 700, background: "rgba(245, 158, 11, 0.15)", padding: "2px 8px", borderRadius: "999px" }}>
+                                {transitPricing.bus.available ? `~${transitPricing.bus.durationText}` : "N/A"}
+                              </span>
+                            </div>
+
+                            <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.45 }}>
+                              {transitPricing.bus.available ? (
+                                <>
+                                  <div style={{ marginBottom: "6px" }}>Express / RTC: <b style={{ color: "#A78BFA" }}>₹{transitPricing.bus.nonAcMinFare.toLocaleString("en-IN")}</b></div>
+                                  <div style={{ marginBottom: "6px" }}>AC Sleeper / Multi-Axle: <b style={{ color: "#F59E0B" }}>₹{transitPricing.bus.acSleeperMinFare.toLocaleString("en-IN")}</b></div>
+                                  <div style={{ fontSize: "0.70rem", color: "#64748B", marginBottom: "6px" }}>
+                                    Operators: {transitPricing.bus.operators.join(", ")}
+                                  </div>
+                                  <div style={{ fontSize: "0.68rem", color: "#F59E0B", display: "flex", alignItems: "center", gap: "4px" }}>
+                                    <span>✓</span>
+                                    <span>State RTC & Intercity Fleet Schedules</span>
+                                  </div>
+                                </>
+                              ) : (
+                                <div style={{ color: "#64748B", fontSize: "0.74rem" }}>
+                                  {transitPricing.isInternational ? "No cross-continental bus routes" : "Long distance route; Train or Flight advised"}
                                 </div>
-                              </>
-                            ) : (
-                              <div style={{ color: "#64748B", fontSize: "0.74rem" }}>
-                                {transitPricing.isInternational ? "No cross-continental bus routes" : "Long distance route; Train or Flight advised"}
-                              </div>
-                            )}
+                              )}
+                            </div>
+                          </div>
+
+                          <div style={{ marginTop: "10px", fontSize: "0.72rem", color: isBusSelected ? "#F59E0B" : "#94A3B8", fontWeight: 700, textAlign: "center", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "8px" }}>
+                            {isBusSelected ? "✓ Selected for Journey" : transitPricing.bus.available ? "Click to Select Bus" : "Unavailable"}
                           </div>
                         </div>
                       );
                     })()}
                   </div>
 
-                  <div style={{ marginTop: "10px", fontSize: "0.75rem", color: "#94A3B8", display: "flex", alignItems: "center", gap: "6px" }}>
+                  {/* BOTTOM NOTE */}
+                  <div style={{ marginTop: "12px", fontSize: "0.74rem", color: "#94A3B8", display: "flex", alignItems: "center", gap: "6px", background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: "8px" }}>
                     <span>💡</span>
-                    <span>TripGenius AI factors departure from <b>{origin || "Starting City"}</b> into your Day 1 arrival timing and transportation allocation.</span>
+                    <span>
+                      <b>Data-Driven Travel Calculation:</b> Selected <b>{transportationMode}</b> fare (~₹{calculatedTransitCost.toLocaleString("en-IN")}) is dynamically added to your <b>Step 2 Budget</b> for all {travelersCount} traveler{travelersCount > 1 ? "s" : ""}.
+                    </span>
                   </div>
                 </div>
               )}
@@ -1773,6 +1946,7 @@ function PlannerContent() {
                           setBudget(0);
                           return;
                         }
+                        setHasUserCustomizedBudget(true);
                         const val = parseInt(str);
                         if (!isNaN(val)) {
                           setBudget(Math.max(0, val));
@@ -1814,7 +1988,10 @@ function PlannerContent() {
                         <button
                           key={tier.label}
                           type="button"
-                          onClick={() => setBudget(calculatedTotal)}
+                          onClick={() => {
+                            setHasUserCustomizedBudget(true);
+                            setBudget(calculatedTotal);
+                          }}
                           style={{
                             padding: "12px 16px",
                             borderRadius: "12px",
