@@ -354,31 +354,27 @@ export default function HomePage() {
           </div>
 
           <h1
-            className="animate-blur-fade-up font-luxury-display"
+            className="animate-blur-fade-up font-luxury-display heading-luxury-title"
             style={{
               animationDelay: "300ms",
               fontFamily:
                 "'Cormorant Garamond', 'Bodoni Moda', 'Playfair Display', 'Cinzel', serif",
-              fontSize: "clamp(2.6rem, 5.8vw, 5.0rem)",
+              fontSize: "clamp(2.8rem, 6.2vw, 5.2rem)",
               fontWeight: 600,
-              lineHeight: 1.22,
+              lineHeight: 1.18,
               letterSpacing: "-0.015em",
               maxWidth: "1150px",
               margin: "0 auto 24px auto",
               textAlign: "center",
-              textWrap: "balance",
               color: "#FFFFFF",
               textShadow:
                 "0 4px 28px rgba(0, 0, 0, 0.85), 0 2px 6px rgba(0, 0, 0, 0.95)",
             }}
           >
-            Plan Extraordinary Journeys
+            Plan Extraordinary Journeys with
             <br />
-            <span style={{ fontWeight: 400, opacity: 0.95, fontSize: "0.85em" }}>with </span>
-            <span className="victory-3d-wrapper">
-              <span className="victory-3d-word" data-text="Intelligent">Intelligent</span>
-              <span className="victory-3d-word" data-text="Precision">Precision</span>
-            </span>
+            <span className="text-intelligent-cyan">Intelligent</span>{" "}
+            <span className="text-precision-gold">Precision</span>
           </h1>
 
           <p
