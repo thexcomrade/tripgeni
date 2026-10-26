@@ -333,7 +333,7 @@ export default function HomePage() {
               width: "800px",
               height: "400px",
               background:
-                "radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, rgba(20, 184, 166, 0.05) 40%, transparent 70%)",
+                "radial-gradient(circle, rgba(56, 189, 248, 0.16) 0%, rgba(186, 230, 253, 0.09) 35%, transparent 70%)",
               filter: "blur(60px)",
               pointerEvents: "none",
               zIndex: -1,
