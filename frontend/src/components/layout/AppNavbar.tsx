@@ -27,6 +27,7 @@ export default function AppNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("Traveler");
   const [scrolled, setScrolled] = useState(false);
@@ -65,6 +66,9 @@ export default function AppNavbar() {
       window.removeEventListener("storage", checkAuth);
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousedown", handleClickOutside);
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -221,8 +225,18 @@ export default function AppNavbar() {
           <div
             ref={moreRef}
             style={{ position: "relative" }}
-            onMouseEnter={() => setMoreOpen(true)}
-            onMouseLeave={() => setMoreOpen(false)}
+            onMouseEnter={() => {
+              if (hoverTimeoutRef.current) {
+                clearTimeout(hoverTimeoutRef.current);
+                hoverTimeoutRef.current = null;
+              }
+              setMoreOpen(true);
+            }}
+            onMouseLeave={() => {
+              hoverTimeoutRef.current = setTimeout(() => {
+                setMoreOpen(false);
+              }, 250);
+            }}
           >
             {(() => {
               const isMoreActive = moreNav.some((item) => isActive(item.href));
@@ -232,6 +246,10 @@ export default function AppNavbar() {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (hoverTimeoutRef.current) {
+                        clearTimeout(hoverTimeoutRef.current);
+                        hoverTimeoutRef.current = null;
+                      }
                       setMoreOpen((prev) => !prev);
                     }}
                     aria-expanded={moreOpen}
@@ -272,11 +290,17 @@ export default function AppNavbar() {
                     <div
                       style={{
                         position: "absolute",
-                        top: "calc(100% + 4px)",
+                        top: "100%",
                         right: 0,
                         paddingTop: "6px",
                         zIndex: 9999,
-                        minWidth: "215px",
+                        minWidth: "220px",
+                      }}
+                      onMouseEnter={() => {
+                        if (hoverTimeoutRef.current) {
+                          clearTimeout(hoverTimeoutRef.current);
+                          hoverTimeoutRef.current = null;
+                        }
                       }}
                     >
                       <div
@@ -300,7 +324,11 @@ export default function AppNavbar() {
                             <Link
                               key={item.href}
                               href={item.href}
-                              onClick={() => setMoreOpen(false)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setMoreOpen(false);
+                              }}
+                              className="more-dropdown-link" 
                               style={{
                                 display: "flex",
                                 alignItems: "center",

@@ -333,7 +333,7 @@ export default function HomePage() {
               width: "800px",
               height: "400px",
               background:
-                "radial-gradient(circle, rgba(14, 165, 233, 0.18) 0%, rgba(20, 184, 166, 0.12) 40%, transparent 70%)",
+                "radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, rgba(20, 184, 166, 0.05) 40%, transparent 70%)",
               filter: "blur(60px)",
               pointerEvents: "none",
               zIndex: -1,
@@ -359,25 +359,27 @@ export default function HomePage() {
               animationDelay: "300ms",
               fontFamily:
                 "'Cormorant Garamond', 'Bodoni Moda', 'Playfair Display', 'Cinzel', serif",
-              fontSize: "clamp(2.8rem, 6.2vw, 5.2rem)",
+              fontSize: "clamp(2.6rem, 5.8vw, 5.0rem)",
               fontWeight: 600,
-              lineHeight: 1.12,
+              lineHeight: 1.22,
               letterSpacing: "-0.015em",
               maxWidth: "1150px",
               margin: "0 auto 24px auto",
+              textAlign: "center",
+              textWrap: "balance",
               color: "#FFFFFF",
               textShadow:
-                "0 4px 28px rgba(0, 0, 0, 0.75), 0 2px 6px rgba(0, 0, 0, 0.90)",
+                "0 4px 28px rgba(0, 0, 0, 0.85), 0 2px 6px rgba(0, 0, 0, 0.95)",
             }}
           >
-            Plan Extraordinary Journeys with{" "}
+            Plan Extraordinary Journeys
+            <br />
+            <span style={{ fontWeight: 400, opacity: 0.95 }}>with </span>
             <span
               className="gradient-text-luxury"
               style={{
                 fontFamily: "inherit",
                 fontWeight: 600,
-                textShadow: "none",
-                display: "inline-block",
               }}
             >
               Intelligent Precision

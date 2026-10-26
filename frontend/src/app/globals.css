@@ -599,9 +599,7 @@ h6 {
   position: relative;
   width: 100%;
   overflow: hidden;
-  /* Feather the bottom 45% smoothly into the page deep dark background */
-  mask-image: linear-gradient(to bottom, #000 0%, #000 45%, rgba(0, 0, 0, 0.7) 65%, rgba(0, 0, 0, 0.2) 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, rgba(0, 0, 0, 0.7) 65%, rgba(0, 0, 0, 0.2) 85%, transparent 100%);
+  /* Full-bleed crisp video hero without dark theme mask cut-off */
 }
 
 .cinematic-bg-video {
@@ -621,26 +619,18 @@ h6 {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(3, 7, 18, 0.10) 0%,
-    rgba(3, 7, 18, 0.20) 25%,
-    rgba(3, 7, 18, 0.55) 50%,
-    rgba(3, 7, 18, 0.88) 72%,
-    rgba(3, 7, 18, 0.98) 88%,
-    #030712 100%
+    rgba(3, 7, 18, 0.40) 0%,
+    rgba(3, 7, 18, 0.18) 25%,
+    rgba(3, 7, 18, 0.20) 50%,
+    rgba(3, 7, 18, 0.32) 75%,
+    rgba(3, 7, 18, 0.60) 100%
   );
   pointer-events: none;
   z-index: 1;
 }
 
 .cinematic-blur-overlay {
-  position: absolute;
-  inset: 0;
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  mask-image: linear-gradient(to bottom, transparent 30%, rgba(0, 0, 0, 0.6) 60%, black 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 30%, rgba(0, 0, 0, 0.6) 60%, black 100%);
-  pointer-events: none;
-  z-index: 2;
+  display: none !important;
 }
 
 .hero-scroll-cue {
@@ -673,19 +663,25 @@ h6 {
   font-family: inherit;
   background: linear-gradient(
     135deg,
-    #0284c7 0%,
-    #0ea5e9 16%,
-    #14b8a6 42%,
-    #10b981 58%,
+    #38bdf8 0%,
+    #0ea5e9 20%,
+    #14b8a6 45%,
+    #10b981 60%,
     #84cc16 75%,
-    #eab308 88%,
-    #ca8a04 100%
+    #eab308 90%,
+    #f59e0b 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.92))
-    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.95))
-    drop-shadow(0 0 24px rgba(14, 165, 233, 0.28));
+  display: inline;
+  padding-bottom: 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.more-dropdown-link:hover {
+  background: rgba(14, 165, 233, 0.20) !important;
+  color: #38BDF8 !important;
 }
 
 .hero-subtitle-bright {
