@@ -374,15 +374,10 @@ export default function HomePage() {
           >
             Plan Extraordinary Journeys
             <br />
-            <span style={{ fontWeight: 400, opacity: 0.95 }}>with </span>
-            <span
-              className="gradient-text-luxury"
-              style={{
-                fontFamily: "inherit",
-                fontWeight: 600,
-              }}
-            >
-              Intelligent Precision
+            <span style={{ fontWeight: 400, opacity: 0.95, fontSize: "0.85em" }}>with </span>
+            <span className="victory-3d-wrapper">
+              <span className="victory-3d-word" data-text="Intelligent">Intelligent</span>
+              <span className="victory-3d-word" data-text="Precision">Precision</span>
             </span>
           </h1>
 
@@ -536,19 +531,23 @@ export default function HomePage() {
               key={idx}
               interactive
               style={{
-                padding: "32px 28px",
+                padding: "clamp(24px, 3vw, 34px) clamp(20px, 2.5vw, 30px)",
                 display: "flex",
                 flexDirection: "column",
-                gap: "16px",
+                gap: "18px",
+                borderRadius: "22px",
               }}
             >
               <div
                 style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "14px",
-                  background: "rgba(255, 255, 255, 0.05)",
-                  border: "1px solid rgba(255, 255, 255, 0.10)",
+                  width: "52px",
+                  height: "52px",
+                  borderRadius: "16px",
+                  background:
+                    "linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%)",
+                  border: "1px solid rgba(255, 255, 255, 0.18)",
+                  boxShadow:
+                    "inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 6px 18px rgba(0, 0, 0, 0.3)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -558,18 +557,23 @@ export default function HomePage() {
               </div>
               <h3
                 style={{
-                  fontSize: "1.25rem",
+                  fontSize: "clamp(1.15rem, 1.8vw, 1.35rem)",
                   fontWeight: 700,
                   color: "#FFFFFF",
+                  letterSpacing: "-0.015em",
+                  textShadow: "0 2px 8px rgba(0, 0, 0, 0.5)",
+                  margin: 0,
                 }}
               >
                 {feat.title}
               </h3>
               <p
                 style={{
-                  color: "#94A3B8",
-                  fontSize: "0.95rem",
-                  lineHeight: 1.7,
+                  color: "#CBD5E1",
+                  fontSize: "clamp(0.88rem, 1.1vw, 0.98rem)",
+                  lineHeight: 1.75,
+                  letterSpacing: "0.01em",
+                  margin: 0,
                 }}
               >
                 {feat.description}

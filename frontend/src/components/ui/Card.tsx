@@ -17,16 +17,20 @@ export function GlassCard({
   return (
     <div
       style={{
-        background: "rgba(15, 23, 42, 0.65)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid rgba(255, 255, 255, 0.08)",
-        borderRadius: "20px",
-        padding: "24px",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.35)",
+        background:
+          "linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(15, 23, 42, 0.45) 100%)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        border: "1px solid rgba(255, 255, 255, 0.14)",
+        borderRadius: "22px",
+        padding: "26px",
+        boxShadow:
+          "inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 20px 0 rgba(255, 255, 255, 0.02), 0 16px 36px rgba(0, 0, 0, 0.45)",
         transition: interactive
-          ? "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)"
+          ? "all 0.28s cubic-bezier(0.16, 1, 0.3, 1)"
           : undefined,
+        position: "relative",
+        overflow: "hidden",
         ...style,
       }}
       className={`${interactive ? "glass-card-interactive" : ""} ${className}`}
