@@ -112,21 +112,22 @@
 /* PROPORTIONAL SPEECH BADGE (Cleanly anchored above head, centered) */
 .mascot-speech-badge {
   position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: -14px;
+  right: 6px;
+  left: auto;
+  transform: none;
   z-index: 10;
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 11px;
+  padding: 3px 9px;
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: #f8fafc;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -135,12 +136,13 @@
   cursor: pointer;
   transition: all 0.2s ease;
   animation: badge-appear 0.3s ease-out;
+  max-width: calc(100vw - 36px);
 }
 
 .mascot-speech-badge:hover {
   background: rgba(30, 41, 59, 0.98);
   border-color: rgba(255, 255, 255, 0.35);
-  transform: translateX(-50%) scale(1.04);
+  transform: scale(1.04);
 }
 
 .mascot-live-indicator {
@@ -504,10 +506,13 @@
   }
 
   .mascot-speech-badge {
-    top: -10px;
-    right: -2px;
-    padding: 4px 9px;
-    font-size: 10.5px;
+    top: -12px;
+    right: 4px;
+    left: auto;
+    transform: none;
+    padding: 3px 8px;
+    font-size: 10px;
+    max-width: 80vw;
   }
 
   /* SCREEN TOUCH / CLICK BACKDROP (FADES OFF CHAT WHEN TOUCHED OUTSIDE) */

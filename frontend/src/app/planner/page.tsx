@@ -31,6 +31,7 @@ import { GlassCard, SectionHeader } from "../../components/ui/Card";
 import tripService from "../../services/trip.service";
 import { parseDestinationQuery } from "../../utils/queryParser";
 import { calculateTransitPricing } from "../../utils/transitPricing";
+import LiquidLoadingNav, { SynthesisStage } from "../../components/planner/LiquidLoadingNav";
 
 const POPULAR_ORIGINS = [
   "Ernakulam (Kochi)",
@@ -426,13 +427,56 @@ const DESTINATION_FOCUS_POINTS_MAP: Record<string, string[]> = {
   ],
 };
 
-const AI_GENERATION_STEPS = [
-  "Connecting to TripGenius Neural Synthesizer...",
-  "Querying live OpenWeather microclimate data...",
-  "Scanning 700+ regional tourism points of interest...",
-  "Calibrating morning, afternoon & evening schedule...",
-  "Computing eco-score & carbon footprint matrix...",
-  "Curating authentic regional cuisines & stays...",
+const AI_GENERATION_STEPS: SynthesisStage[] = [
+  {
+    id: 1,
+    label: "Connecting to TripGenius Neural Synthesizer...",
+    shortTag: "Neural Core",
+    iconName: "brain",
+    metric: "Multi-agent cluster synchronized",
+  },
+  {
+    id: 2,
+    label: "Querying live OpenWeather microclimate data...",
+    shortTag: "Microclimate",
+    iconName: "weather",
+    metric: "Precipitation & temp calibrated",
+  },
+  {
+    id: 3,
+    label: "Scanning 700+ regional tourism points of interest...",
+    shortTag: "700+ POIs",
+    iconName: "poi",
+    metric: "Historical footfalls indexed",
+  },
+  {
+    id: 4,
+    label: "Calibrating morning, afternoon & evening schedule...",
+    shortTag: "Schedule",
+    iconName: "schedule",
+    metric: "Optimal visiting windows resolved",
+  },
+  {
+    id: 5,
+    label: "Computing eco-score & carbon footprint matrix...",
+    shortTag: "Eco Score",
+    iconName: "eco",
+    metric: "Transit emission mapped",
+  },
+  {
+    id: 6,
+    label: "Curating authentic regional cuisines & stays...",
+    shortTag: "Dining & Stays",
+    iconName: "dining",
+    metric: "Gastronomy & hotels matched",
+  },
+  {
+    id: 7,
+    label: "Finalizing personalized journey roadmap...",
+    shortTag: "Roadmap",
+    iconName: "rocket",
+    metric: "Bespoke itinerary synthesis ready",
+  },
 ];
 
 function PlannerContent() {
@@ -720,17 +764,18 @@ function PlannerContent() {
         </p>
       </div>
 
-      {/* STEP PROGRESS INDICATOR */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          position: "relative",
-          marginBottom: "40px",
-          padding: "0 10px",
-        }}
-      >
+      {/* STEP PROGRESS INDICATOR (Hidden while synthesizing to keep screen 100% compact and zero-scroll) */}
+      {!loading && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            position: "relative",
+            marginBottom: "32px",
+            padding: "0 10px",
+          }}
+        >
         <div
           style={{
             position: "absolute",
@@ -825,7 +870,8 @@ function PlannerContent() {
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
 
       {/* ERROR ALERT */}
       {error && (
@@ -850,123 +896,11 @@ function PlannerContent() {
 
       {/* AI PROCESSING MODAL / OVERLAY */}
       {loading ? (
-        <GlassCard style={{ padding: "50px 30px", textAlign: "center" }}>
-          <div
-            style={{
-              width: "70px",
-              height: "70px",
-              borderRadius: "20px",
-              background: "linear-gradient(135deg, #0EA5E9, #14B8A6)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 24px auto",
-              boxShadow: "0 0 32px rgba(14, 165, 233, 0.50)",
-            }}
-            className="ai-pulse-glow"
-          >
-            <Sparkles size={34} color="#FFFFFF" />
-          </div>
-
-          <h2
-            style={{
-              fontSize: "1.8rem",
-              fontWeight: 800,
-              color: "#FFFFFF",
-              marginBottom: "10px",
-            }}
-          >
-            Synthesizing Itinerary for {destination}...
-          </h2>
-          <p
-            style={{
-              color: "#94A3B8",
-              fontSize: "0.95rem",
-              maxWidth: "500px",
-              margin: "0 auto 36px auto",
-            }}
-          >
-            Our multi-agent system is parsing meteorological forecasts,
-            historical footfalls, and regional routes.
-          </p>
-
-          <div
-            style={{
-              maxWidth: "480px",
-              margin: "0 auto",
-              display: "flex",
-              flexDirection: "column",
-              gap: "14px",
-              textAlign: "left",
-            }}
-          >
-            {AI_GENERATION_STEPS.map((stepText, idx) => {
-              const isDone = aiProcessingStage > idx;
-              const isCurrent = aiProcessingStage === idx;
-
-              return (
-                <div
-                  key={idx}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    padding: "10px 14px",
-                    borderRadius: "10px",
-                    background: isCurrent
-                      ? "rgba(14, 165, 233, 0.12)"
-                      : "transparent",
-                    border: isCurrent
-                      ? "1px solid rgba(14, 165, 233, 0.25)"
-                      : "1px solid transparent",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "22px",
-                      height: "22px",
-                      borderRadius: "50%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      background: isDone
-                        ? "#10B981"
-                        : isCurrent
-                          ? "#0EA5E9"
-                          : "rgba(255, 255, 255, 0.10)",
-                      color: "#FFFFFF",
-                      fontSize: "0.75rem",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {isDone ? (
-                      <Check size={14} />
-                    ) : isCurrent ? (
-                      <Loader2 size={12} className="ai-spin" />
-                    ) : (
-                      idx + 1
-                    )}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: "0.92rem",
-                      color: isDone
-                        ? "#E2E8F0"
-                        : isCurrent
-                          ? "#38BDF8"
-                          : "#64748B",
-                      fontWeight: isCurrent ? 700 : 500,
-                    }}
-                  >
-                    {stepText}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </GlassCard>
-      ) : (
+        <LiquidLoadingNav
+          currentStage={aiProcessingStage}
+          destination={destination.trim() || "Destination"}
+          stages={AI_GENERATION_STEPS}
+        />) : (
         /* STEP CARD FORM */
         <GlassCard style={{ padding: "30px 24px" }}>
           {/* STEP 1: ROUTE & DESTINATION */}

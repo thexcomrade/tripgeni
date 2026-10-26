@@ -17,7 +17,7 @@ interface ChatMessage {
 const PADAYAPPA_PROMPTS = [
   "Padayappa AI ✨",
   "Namaskaram! 🙏",
-  "Need a plan, macha? 🌴",
+  "Need a plan? 🌴",
   "Ask Padayappa ✈️",
 ];
 
