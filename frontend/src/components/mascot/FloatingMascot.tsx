@@ -30,6 +30,7 @@ export default function FloatingMascot() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [isNearFooter, setIsNearFooter] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -139,16 +140,19 @@ export default function FloatingMascot() {
     };
   }, []);
 
-  // STRICT VISIBILITY:
-  // 1. Home page ("/") is ALWAYS allowed even if not logged in so visitors can see, rotate and interact with 3D Padayappa!
-  // 2. Otherwise allowed on exploratory pages: /dashboard, /explore, /favorites
-  // 3. Removed from /planner, /ai-chat, /trip, auth pages
   const isHomePage = pathname === "/";
-  if (!isHomePage) {
-    const ALLOWED_MASCOT_PATHS = ["/dashboard", "/explore", "/favorites"];
-    const isAllowedPath = ALLOWED_MASCOT_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
-    if (!isAllowedPath) {
-      return null;
+  // STRICT VISIBILITY:
+  // - Logged-out users: ONLY visible on the Home page ("/")
+  // - Logged-in users: visible on Home page and designated pages: /dashboard, /explore, /favorites
+  if (!isLoggedIn) {
+    if (!isHomePage) return null;
+  } else {
+    if (!isHomePage) {
+      const ALLOWED_MASCOT_PATHS = ["/dashboard", "/explore", "/favorites"];
+      const isAllowedPath = ALLOWED_MASCOT_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+      if (!isAllowedPath) {
+        return null;
+      }
     }
   }
 
@@ -283,7 +287,11 @@ export default function FloatingMascot() {
               className="mascot-speech-badge"
               onClick={(e) => {
                 e.stopPropagation();
-                setIsOpen(true);
+                if (!isLoggedIn) {
+                  setShowLoginModal(true);
+                } else {
+                  setIsOpen(true);
+                }
               }}
             >
               <span className="mascot-live-indicator" />
@@ -295,7 +303,13 @@ export default function FloatingMascot() {
 
           <div className="mascot-image-wrapper">
             <Mascot3DCanvas
-              onModelClick={() => setIsOpen((prev) => !prev)}
+              onModelClick={() => {
+                if (!isLoggedIn) {
+                  setShowLoginModal(true);
+                } else {
+                  setIsOpen((prev) => !prev);
+                }
+              }}
               fallback={null}
             />
           </div>
@@ -307,6 +321,132 @@ export default function FloatingMascot() {
         </div>
       </div>
 
+
+      {/* ============================================================
+          PADAYAPPA LOGIN PROMPT MODAL FOR LOGGED-OUT VISITORS
+          ============================================================ */}
+      {showLoginModal && (
+        <>
+          <div
+            className="assistant-backdrop"
+            onClick={() => setShowLoginModal(false)}
+            onTouchStart={() => setShowLoginModal(false)}
+            aria-hidden="true"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Login required to chat with Padayappa"
+            style={{
+              position: "fixed",
+              bottom: "clamp(120px, 18vh, 180px)",
+              right: "clamp(20px, 4vw, 40px)",
+              zIndex: 9999,
+              width: "min(350px, calc(100vw - 40px))",
+              background: "linear-gradient(145deg, rgba(18, 34, 56, 0.96), rgba(10, 23, 39, 0.98))",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(56, 200, 244, 0.35)",
+              borderRadius: "20px",
+              padding: "22px 24px",
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(56, 200, 244, 0.15)",
+              color: "#F8FAFC",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "12px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    background: "rgba(56, 200, 244, 0.15)",
+                    border: "1px solid rgba(56, 200, 244, 0.35)",
+                    display: "grid",
+                    placeItems: "center",
+                    fontSize: "18px",
+                  }}
+                >
+                  🔒
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "#FFFFFF" }}>
+                    Padayappa is waiting for you!
+                  </h3>
+                  <span style={{ fontSize: "11px", color: "#38C8F4", fontWeight: 600 }}>
+                    AI Travel Companion
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowLoginModal(false)}
+                aria-label="Close"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#94A3B8",
+                  fontSize: "22px",
+                  cursor: "pointer",
+                  lineHeight: 1,
+                  padding: "2px 6px",
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <p style={{ margin: "0 0 18px 0", fontSize: "13px", color: "#CBD5E1", lineHeight: 1.5 }}>
+              Log in to unlock me and start planning your next adventure with Trip Geni.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLoginModal(false);
+                  router.push("/login");
+                }}
+                style={{
+                  width: "100%",
+                  padding: "11px 16px",
+                  borderRadius: "12px",
+                  background: "linear-gradient(135deg, #38C8F4, #16C7A0)",
+                  color: "#07111F",
+                  border: "none",
+                  fontWeight: 750,
+                  fontSize: "13px",
+                  cursor: "pointer",
+                  boxShadow: "0 4px 16px rgba(56, 200, 244, 0.25)",
+                }}
+              >
+                Log In
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLoginModal(false);
+                  router.push("/register");
+                }}
+                style={{
+                  width: "100%",
+                  padding: "10px 16px",
+                  borderRadius: "12px",
+                  background: "rgba(255, 255, 255, 0.05)",
+                  color: "#E2E8F0",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  fontWeight: 600,
+                  fontSize: "13px",
+                  cursor: "pointer",
+                }}
+              >
+                Create Account
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* SCREEN TOUCH / CLICK BACKDROP (FADES OFF CHAT WHEN TOUCHED OUTSIDE) */}
       {isOpen && (
