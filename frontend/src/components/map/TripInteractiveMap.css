@@ -293,7 +293,7 @@
   top: 18px;
   left: 20px;
   z-index: 500;
-  max-width: min(340px, calc(100% - 40px));
+  max-width: min(360px, calc(100% - 40px));
   padding: 12px 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 14px;
@@ -353,7 +353,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--map-teal);
+  background: var(--map-cyan);
   display: inline-block;
 }
 
@@ -495,6 +495,20 @@
   scrollbar-color: rgba(56, 200, 244, 0.25) transparent;
 }
 
+.overview-day-divider {
+  padding: 14px 0 6px;
+  margin-top: 4px;
+  border-bottom: 1px solid rgba(56, 200, 244, 0.25);
+}
+
+.overview-day-divider span {
+  font-size: 10.5px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  color: var(--map-cyan);
+  text-transform: uppercase;
+}
+
 .sidebar-stop-card {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr) auto;
@@ -514,10 +528,10 @@
   content: "";
   position: absolute;
   top: 50px;
-  left: 17px;
+  left: 16px;
   bottom: -10px;
   width: 1px;
-  border-left: 1px dashed rgba(56, 200, 244, 0.45);
+  border-left: 1px dashed rgba(56, 200, 244, 0.4);
   pointer-events: none;
 }
 
@@ -526,15 +540,15 @@
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   color: var(--map-cyan);
-  border: 1px solid rgba(56, 200, 244, 0.65);
+  border: 1.5px solid rgba(56, 200, 244, 0.65);
   background: #0c2134;
   font-size: 12px;
   font-weight: 850;
-  box-shadow: 0 0 0 4px rgba(56, 200, 244, 0.05);
+  box-shadow: 0 0 0 3px rgba(56, 200, 244, 0.05);
   transition: all 0.2s ease;
 }
 
@@ -543,6 +557,7 @@
   background: var(--map-teal);
   border-color: var(--map-teal);
   transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(22, 199, 160, 0.5);
 }
 
 .stop-card-info h4 {
@@ -652,7 +667,7 @@
   line-height: 1.4;
 }
 
-/* Bookings Empty Card */
+/* Bookings Tab */
 .sidebar-bookings-tab {
   padding: 24px 20px;
 }
@@ -695,56 +710,61 @@
   text-decoration: none;
 }
 
-/* 4. CUSTOM LEAFLET MAP MARKERS & POPUPS */
-.leaflet-custom-div-icon {
+/* ==============================================================================
+   4. ULTRA-CLEAN APPLE/GOOGLE MAPS STYLE NUMBERED PINS (Strictly 1, 2, 3... NO PILLS)
+============================================================================== */
+.clean-pin-container {
   background: transparent !important;
   border: none !important;
 }
 
-.stop-marker {
-  display: grid;
-  place-items: center;
+.clean-map-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
   width: 34px;
-  height: 34px;
-  color: #08202c;
-  background: #f8fdff;
-  border: 3px solid #19c8a0;
+  height: 42px;
+}
+
+.clean-map-pin:hover,
+.clean-map-pin.active-pin {
+  transform: scale(1.18) translateY(-3px);
+  z-index: 9999 !important;
+}
+
+.pin-bubble {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  font-weight: 900;
-  font-size: 12px;
-  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.35);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-}
-
-.stop-marker.selected,
-.stop-marker:hover {
-  width: 40px;
-  height: 40px;
-  margin: -3px;
-  background: #16c7a0;
-  color: #06211f;
-  border-color: #ffffff;
-  box-shadow: 0 0 0 6px rgba(22, 199, 160, 0.35), 0 8px 24px rgba(0, 0, 0, 0.45);
-}
-
-.start-marker {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  background: #071b2b;
-  color: #38c8f4;
-  border: 2px solid #38c8f4;
-  border-radius: 50% 50% 50% 4px;
-  transform: rotate(-45deg);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-  cursor: pointer;
-}
-
-.start-marker span {
-  transform: rotate(45deg);
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  font-weight: 850;
   font-size: 13px;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  letter-spacing: -0.02em;
+}
+
+.clean-map-pin.active-pin .pin-bubble {
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  border-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.45), 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+.pin-tip {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #ffffff;
+  margin-top: -1px;
 }
 
 /* Map Popups */
@@ -768,7 +788,7 @@
   color: #38c8f4;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   margin-bottom: 4px;
 }
 
@@ -792,151 +812,14 @@
   margin: 0;
 }
 
-/* 5. RESPONSIVE BREAKPOINTS */
-@media (max-width: 1080px) {
-  .master-route-workspace {
-    grid-template-columns: 1fr;
-  }
-  .sidebar-stops-list {
-    max-height: 380px;
-  }
-}
-
-@media (max-width: 680px) {
-  .master-route-header {
-    padding: 16px;
-  }
-  .header-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-  .fit-entire-route-btn {
-    width: 100%;
-    justify-content: center;
-  }
-  .map-canvas-wrapper {
-    height: 380px;
-  }
-  .map-overlay-badge {
-    top: 12px;
-    left: 12px;
-    max-width: calc(100% - 24px);
-  }
-  .map-legend-box {
-    bottom: 12px;
-    right: 12px;
-  }
-  .sidebar-stops-list {
-    padding: 8px 14px 16px;
-  }
-}
-
-
-/* ==============================================================================
-   NUMBERED STOP MARKERS (1, 2, 3, 4) & POINT-TO-POINT DIRECTIONAL STYLES
-   Eliminates backtracking, numbers every stop clearly from 1 to N, and adds
-   directional travel arrows and flowing animated route polyline.
-============================================================================== */
-
-/* 1. Numbered Stop Markers */
-.custom-marker-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  cursor: pointer;
-  z-index: 100;
-}
-
-.custom-marker-wrapper.active-marker {
-  z-index: 9999 !important;
-}
-
-.marker-pill-badge {
-  font-size: 8.5px;
-  font-weight: 800;
-  letter-spacing: 0.6px;
-  padding: 1px 7px;
-  border-radius: 999px;
-  margin-bottom: 2px;
-  white-space: nowrap;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  text-transform: uppercase;
-}
-
-.marker-pill-badge.pill-start {
-  background: #10b981;
-  color: #022c22;
-  border: 1px solid #34d399;
-}
-
-.marker-pill-badge.pill-mid {
-  background: #0ea5e9;
-  color: #082f49;
-  border: 1px solid #38bdf8;
-}
-
-.marker-pill-badge.pill-finish {
-  background: #f59e0b;
-  color: #451a03;
-  border: 1px solid #fbbf24;
-}
-
-.stop-marker-circle {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  font-weight: 900;
-  font-size: 14px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.stop-marker-circle.stop-start {
-  background: #022c22;
-  color: #34d399;
-  border: 3px solid #10b981;
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.65), 0 6px 20px rgba(0, 0, 0, 0.45);
-}
-
-.stop-marker-circle.stop-mid {
-  background: #082f49;
+.popup-next-preview {
+  margin-top: 6px;
+  font-size: 11px;
   color: #38bdf8;
-  border: 3px solid #0ea5e9;
-  box-shadow: 0 0 14px rgba(14, 165, 233, 0.5), 0 6px 20px rgba(0, 0, 0, 0.45);
+  font-weight: 600;
 }
 
-.stop-marker-circle.stop-finish {
-  background: #451a03;
-  color: #fbbf24;
-  border: 3px solid #f59e0b;
-  box-shadow: 0 0 16px rgba(245, 158, 11, 0.65), 0 6px 20px rgba(0, 0, 0, 0.45);
-}
-
-.stop-marker-circle.selected,
-.custom-marker-wrapper:hover .stop-marker-circle {
-  transform: scale(1.18);
-  border-color: #ffffff !important;
-  box-shadow: 0 0 24px rgba(56, 189, 248, 0.8), 0 8px 25px rgba(0, 0, 0, 0.5) !important;
-}
-
-/* 2. Directional Chevrons Along Polyline */
-.route-directional-arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  pointer-events: none;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
-  transition: transform 0.2s ease;
-}
-
-/* 3. Flowing Route Polyline Animation */
+/* Flowing Route Polyline Animation */
 .flowing-route-polyline {
   stroke-dasharray: 12, 10;
   animation: routeDashFlow 1.3s linear infinite;
@@ -951,7 +834,7 @@
   }
 }
 
-/* 4. Sequential Leg Ribbon (Breadcrumb between 1 -> 2 -> 3 -> 4) */
+/* 5. SEQUENTIAL ROUTE FLOW RIBBON */
 .sequential-leg-ribbon {
   background: linear-gradient(135deg, rgba(7, 17, 31, 0.95), rgba(13, 26, 43, 0.95));
   border: 1px solid rgba(56, 189, 248, 0.22);
@@ -1040,42 +923,63 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  font-weight: 900;
+  font-weight: 850;
   font-size: 0.75rem;
+  background: #0ea5e9;
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
 }
 
-.chip-badge-num.start {
+.ribbon-step-chip.selected .chip-badge-num {
   background: #10b981;
   color: #022c22;
-}
-
-.chip-badge-num.mid {
-  background: #0ea5e9;
-  color: #082f49;
-}
-
-.chip-badge-num.finish {
-  background: #f59e0b;
-  color: #451a03;
+  border-color: #ffffff;
 }
 
 .ribbon-flow-connector {
-  display: flex;
-  align-items: center;
-  gap: 4px;
   color: #38bdf8;
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
-.flow-arrow {
-  font-size: 0.95rem;
+/* 6. RESPONSIVE BREAKPOINTS */
+@media (max-width: 1080px) {
+  .master-route-workspace {
+    grid-template-columns: 1fr;
+  }
+  .sidebar-stops-list {
+    max-height: 380px;
+  }
 }
 
-.flow-leg-label {
-  font-size: 0.68rem;
-  color: #94a3b8;
+@media (max-width: 680px) {
+  .master-route-header {
+    padding: 16px;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .fit-entire-route-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .map-canvas-wrapper {
+    height: 380px;
+  }
+  .map-overlay-badge {
+    top: 12px;
+    left: 12px;
+    max-width: calc(100% - 24px);
+  }
+  .map-legend-box {
+    bottom: 12px;
+    right: 12px;
+  }
+  .sidebar-stops-list {
+    padding: 8px 14px 16px;
+  }
 }

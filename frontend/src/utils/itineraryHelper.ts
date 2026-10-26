@@ -21,6 +21,190 @@ interface DestinationSchedule {
 }
 
 const CURATED_DESTINATIONS: Record<string, DestinationSchedule> = {
+  mysore: {
+    themes: [
+      "Royal Heritage, Palaces & Historic Bazaars",
+      "Chamundi Hills, Nature Parks & Ancient Temples",
+      "Srirangapatna Fortress & Brindavan Musical Gardens",
+    ],
+    days: [
+      {
+        theme: "Royal Heritage, Palaces & Historic Bazaars",
+        morning:
+          "9:00 AM • Explore the magnificent Mysore Palace (Amba Vilas), marveling at the stained-glass ceiling, golden howdah, and ornate royal durbar halls.",
+        afternoon:
+          "1:00 PM • Authentic Mysore lunch with piping hot bisibele bath and Mysore pak at Guru Sweets. Tour Jaganmohan Palace Art Gallery featuring original Raja Ravi Varma masterpieces.",
+        evening:
+          "4:30 PM • Wander through the 135-year-old Devaraja Market with its colorful mounds of kumkum, fragrant jasmine garlands, and pure sandalwood oils, followed by a visit to St. Philomena's Neo-Gothic Cathedral.",
+        activities: ["Mysore Palace", "Jaganmohan Palace Art Gallery", "Devaraja Market", "St. Philomena's Cathedral"],
+      },
+      {
+        theme: "Chamundi Hills, Nature Parks & Ancient Temples",
+        morning:
+          "8:00 AM • Scenic drive up Chamundi Hill to darshan at the 12th-century Sri Chamundeshwari Temple and marvel at the 16-foot monolithic black granite Nandi Bull.",
+        afternoon:
+          "1:00 PM • Traditional Karnataka thali lunch, followed by an afternoon tour through Sri Chamarajendra Zoological Gardens (Mysore Zoo), one of Asia's finest conservation parks.",
+        evening:
+          "4:30 PM • Walkway stroll and pedal boating along serene Karanji Lake and its walk-through aviary, enjoying the peaceful sunset overlooking Chamundi ridge.",
+        activities: ["Chamundeshwari Temple", "Nandi Bull Monolith", "Mysore Zoo", "Karanji Lake & Nature Park"],
+      },
+      {
+        theme: "Srirangapatna Fortress & Brindavan Musical Gardens",
+        morning:
+          "8:30 AM • Historic excursion to the Kaveri island fortress of Srirangapatna, visiting Sri Ranganathaswamy Temple, Tipu Sultan's Summer Palace (Dariya Daulat Bagh), and the Gumbaz mausoleum.",
+        afternoon:
+          "1:30 PM • Riverside South Indian meals by the Kaveri, followed by a guided boat safari through Ranganathittu Bird Sanctuary spotting migratory storks, herons, and marsh mugger crocodiles.",
+        evening:
+          "5:30 PM • Evening at the world-famous terraced Brindavan Gardens below Krishna Raja Sagara (KRS) Dam, admiring the illuminated musical fountain show.",
+        activities: ["Srirangapatna Fort", "Tipu Sultan Summer Palace", "Ranganathittu Bird Sanctuary", "Brindavan Gardens Musical Fountains"],
+      },
+    ],
+  },
+  mysuru: {
+    themes: [
+      "Royal Heritage, Palaces & Historic Bazaars",
+      "Chamundi Hills, Nature Parks & Ancient Temples",
+      "Srirangapatna Fortress & Brindavan Musical Gardens",
+    ],
+    days: [
+      {
+        theme: "Royal Heritage, Palaces & Historic Bazaars",
+        morning:
+          "9:00 AM • Explore the magnificent Mysore Palace (Amba Vilas), marveling at the stained-glass ceiling, golden howdah, and ornate royal durbar halls.",
+        afternoon:
+          "1:00 PM • Authentic Mysore lunch with piping hot bisibele bath and Mysore pak at Guru Sweets. Tour Jaganmohan Palace Art Gallery featuring original Raja Ravi Varma masterpieces.",
+        evening:
+          "4:30 PM • Wander through the 135-year-old Devaraja Market with its colorful mounds of kumkum, fragrant jasmine garlands, and pure sandalwood oils, followed by a visit to St. Philomena's Neo-Gothic Cathedral.",
+        activities: ["Mysore Palace", "Jaganmohan Palace Art Gallery", "Devaraja Market", "St. Philomena's Cathedral"],
+      },
+      {
+        theme: "Chamundi Hills, Nature Parks & Ancient Temples",
+        morning:
+          "8:00 AM • Scenic drive up Chamundi Hill to darshan at the 12th-century Sri Chamundeshwari Temple and marvel at the 16-foot monolithic black granite Nandi Bull.",
+        afternoon:
+          "1:00 PM • Traditional Karnataka thali lunch, followed by an afternoon tour through Sri Chamarajendra Zoological Gardens (Mysore Zoo), one of Asia's finest conservation parks.",
+        evening:
+          "4:30 PM • Walkway stroll and pedal boating along serene Karanji Lake and its walk-through aviary, enjoying the peaceful sunset overlooking Chamundi ridge.",
+        activities: ["Chamundeshwari Temple", "Nandi Bull Monolith", "Mysore Zoo", "Karanji Lake & Nature Park"],
+      },
+      {
+        theme: "Srirangapatna Fortress & Brindavan Musical Gardens",
+        morning:
+          "8:30 AM • Historic excursion to the Kaveri island fortress of Srirangapatna, visiting Sri Ranganathaswamy Temple, Tipu Sultan's Summer Palace (Dariya Daulat Bagh), and the Gumbaz mausoleum.",
+        afternoon:
+          "1:30 PM • Riverside South Indian meals by the Kaveri, followed by a guided boat safari through Ranganathittu Bird Sanctuary spotting migratory storks, herons, and marsh mugger crocodiles.",
+        evening:
+          "5:30 PM • Evening at the world-famous terraced Brindavan Gardens below Krishna Raja Sagara (KRS) Dam, admiring the illuminated musical fountain show.",
+        activities: ["Srirangapatna Fort", "Tipu Sultan Summer Palace", "Ranganathittu Bird Sanctuary", "Brindavan Gardens Musical Fountains"],
+      },
+    ],
+  },
+  varanasi: {
+    themes: [
+      "Sacred Ghats, Vishwanath Temple & Ganga Aarti",
+      "Dawn Boat Rides, Historic Temples & Fort Sunset",
+      "Sarnath Buddhist Heritage & Silk Weaving Bazaars",
+    ],
+    days: [
+      {
+        theme: "Sacred Ghats, Vishwanath Temple & Ganga Aarti",
+        morning:
+          "9:00 AM • Heritage walk along the sacred Ghats to Kashi Vishwanath Temple via the modern corridor. Seek blessings at the Jyotirlinga.",
+        afternoon:
+          "1:00 PM • Savor Banarasi kachori jalebi lunch, followed by an exploration of Manikarnika Ghat and the winding ancient gallis.",
+        evening:
+          "5:30 PM • Experience the transcendent Maha Ganga Aarti ceremony from Dashashwamedh Ghat with brass lamps and devotional chants.",
+        activities: ["Kashi Vishwanath Corridor", "Heritage Gallis Walk", "Manikarnika Ghat", "Dashashwamedh Evening Ganga Aarti"],
+      },
+      {
+        theme: "Dawn Boat Rides, Historic Temples & Fort Sunset",
+        morning:
+          "5:30 AM • Subah-e-Banaras morning boat ride on the misty Ganges from Assi Ghat to Panchganga Ghat as sun rises over the river.",
+        afternoon:
+          "1:00 PM • Banarasi thali lunch, then visit Sankat Mochan Hanuman Temple and Bharat Kala Bhavan museum on the BHU campus.",
+        evening:
+          "4:30 PM • Across the river to the 18th-century Ramnagar Fort to admire royal vintage carriages, armory, and panoramic river sunset.",
+        activities: ["Assi Ghat Sunrise Boat Cruise", "Sankat Mochan Temple", "BHU Bharat Kala Bhavan", "Ramnagar Fort Sunset"],
+      },
+      {
+        theme: "Sarnath Buddhist Heritage & Silk Weaving Bazaars",
+        morning:
+          "8:30 AM • Excursion to Sarnath where Lord Buddha delivered his first sermon. Contemplate beside Dhamek Stupa and the tranquil Deer Park.",
+        afternoon:
+          "1:00 PM • Visit the Sarnath Archaeological Museum housing the iconic 3rd-century BC Ashoka Lion Capital (India's national emblem).",
+        evening:
+          "4:30 PM • Return to Godowlia market to explore master Banarasi silk weaving looms, followed by tasting the famed Banarasi paan and malaiyo.",
+        activities: ["Dhamek Stupa & Deer Park", "Sarnath Archaeological Museum", "Banarasi Silk Weaving Quarter", "Godowlia Culinary Walk"],
+      },
+    ],
+  },
+  wayanad: {
+    themes: [
+      "Reservoirs, Adventure Lakes & Tea Valleys",
+      "Prehistoric Caves, Tribal Heritage & Waterfalls",
+      "Chembra Heart Lake & Mist-Covered Viewpoints",
+    ],
+    days: [
+      {
+        theme: "Reservoirs, Adventure Lakes & Tea Valleys",
+        morning:
+          "8:30 AM • Visit Banasura Sagar Dam, India's largest earth dam, with speedboating amidst mist-shrouded submerged hill islands.",
+        afternoon:
+          "1:00 PM • Traditional Malabar lunch with bamboo biryani. Kayak or zipline at Karlad Adventure Lake nestled in evergreen hills.",
+        evening:
+          "4:30 PM • Guided tour through Wayanad Tea Museum and lush tea gardens with freshly brewed mountain tea tasting.",
+        activities: ["Banasura Sagar Dam", "Karlad Lake", "Malabar Bamboo Biryani", "Wayanad Tea Museum"],
+      },
+      {
+        theme: "Prehistoric Caves, Tribal Heritage & Waterfalls",
+        morning:
+          "8:00 AM • Trek up Ambukuthi Mala to Edakkal Caves to marvel at Neolithic rock petroglyphs and Stone Age carvings dating to 6,000 BC.",
+        afternoon:
+          "1:00 PM • Visit the Wayanad Heritage Museum at Ambalavayal displaying tribal artifacts, followed by photo stops at Phantom Rock.",
+        evening:
+          "4:30 PM • Scenic relaxation by Karapuzha Reservoir enjoying the cool mountain breeze and tranquil sunset panorama.",
+        activities: ["Edakkal Caves", "Wayanad Heritage Museum", "Phantom Rock", "Karapuzha Reservoir Sunset"],
+      },
+      {
+        theme: "Chembra Heart Lake & Mist-Covered Viewpoints",
+        morning:
+          "7:30 AM • Early trek through tea estates towards Chembra Peak, hiking to the famed perennial heart-shaped lake (Hridaya Saras).",
+        afternoon:
+          "1:30 PM • Traditional Kerala banana leaf sadhya lunch in Meppadi, followed by a visit to roaring Soochipara (Sentinel Rock) Waterfalls.",
+        evening:
+          "5:00 PM • Peaceful pedal boating on Pookode freshwater lake fringed by evergreen forests, ending with sunset at Lakkidi Viewpoint.",
+        activities: ["Chembra Peak Heart Lake", "Soochipara Waterfalls", "Pookode Lake", "Lakkidi Valley Viewpoint"],
+      },
+    ],
+  },
+  kochi: {
+    themes: [
+      "Colonial Heritage, Chinese Nets & Spice Quarters",
+      "Backwaters Promenade, Palaces & Coastal Sunset",
+    ],
+    days: [
+      {
+        theme: "Colonial Heritage, Chinese Nets & Spice Quarters",
+        morning:
+          "9:00 AM • Walk the Fort Kochi beach promenade, witnessing the iconic 14th-century Chinese fishing nets in action.",
+        afternoon:
+          "1:00 PM • Kerala seafood lunch on Princess Street. Tour Santa Cruz Cathedral Basilica and Mattancherry Dutch Palace with its ancient murals.",
+        evening:
+          "4:30 PM • Stroll through Jew Town and the Paradesi Synagogue, browsing spice warehouses smelling of ginger, cinnamon, and pepper.",
+        activities: ["Chinese Fishing Nets", "Fort Kochi Promenade", "Mattancherry Palace", "Jew Town & Spice Bazaars"],
+      },
+      {
+        theme: "Backwaters Promenade, Palaces & Coastal Sunset",
+        morning:
+          "9:00 AM • Scenic morning walk along Marine Drive and Rainbow Bridge, followed by boat transfer to Bolgatty Palace island.",
+        afternoon:
+          "1:30 PM • Visit Hill Palace Museum in Tripunithura, the administrative seat of the Kochi Rajas, showcasing the royal crown and armory.",
+        evening:
+          "5:00 PM • Relax at Cherai Beach with golden sand and calm waves, watching fishermen cast nets into the Arabian Sea at sunset.",
+        activities: ["Marine Drive Walkway", "Bolgatty Palace", "Hill Palace Museum", "Cherai Beach Sunset"],
+      },
+    ],
+  },
   ooty: {
     themes: [
       "Botanical Wonders & Lake Horizons",
@@ -768,12 +952,12 @@ export function generateRichDayPlans(
         attractions && attractions.length > 0
           ? attractions
           : [
-              `${destClean} Heritage Landmark`,
-              `${destClean} Scenic Viewpoint`,
-              `${destClean} Nature & Botanical Trail`,
-              `${destClean} Artisan Market & Craft Center`,
-              `${destClean} Cultural Museum`,
-              `${destClean} Lake & Sunset Promenade`,
+              `${destClean} Central Plaza & Historic Gateway`,
+              `${destClean} Botanical Sanctuary & Panoramic View`,
+              `${destClean} Regional Heritage & Art Museum`,
+              `${destClean} Artisan Quarter & Spice Market`,
+              `${destClean} Waterfront Walkway & Scenic Pier`,
+              `${destClean} Clifftop Sunset & Cultural Village`,
             ];
 
       const a1 = attrPool[(i * 3 - 3) % attrPool.length];
