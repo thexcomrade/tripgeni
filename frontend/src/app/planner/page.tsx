@@ -1454,10 +1454,6 @@ function PlannerContent() {
 
                               {/* Fuel Formula Breakdown Box */}
                               <div style={{ background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.06)", padding: "6px 8px", borderRadius: "8px", marginBottom: "6px", fontSize: "0.68rem" }}>
-                                <div style={{ color: "#CBD5E1", fontWeight: 600, marginBottom: "2px" }}>⛽ Fuel Formula:</div>
-                                <div style={{ color: "#A78BFA", fontFamily: "monospace" }}>
-                                  ({transitPricing.distances.roadKm}km ÷ {fuel.vehicleMileageKmpl}km/L) × ₹{fuel.fuelPricePerLitre} = ₹{fuel.fuelCostMin}
-                                </div>
                                 <div style={{ color: "#94A3B8", marginTop: "2px" }}>
                                   + Tolls: ₹{fuel.tollsApprox} ➔ Self-Drive: <b style={{ color: "#34D399" }}>₹{fuel.totalSelfDriveMin.toLocaleString("en-IN")}</b>
                                 </div>
