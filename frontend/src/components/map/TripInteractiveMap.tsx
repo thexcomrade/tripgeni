@@ -281,6 +281,50 @@ const DESTINATION_LANDMARKS: Record<string, PresetLandmark[][]> = {
       { name: "Commercial Street & MG Road Promenade", type: "Shopping & Dining", category: "market", lat: 12.9782, lon: 77.6085, time: "05:00 PM", duration: "2.5 hrs", desc: "Vibrant shopping boulevards, silk boutiques, and microbrewery district." },
     ],
   ],
+  thekkady: [
+    [
+      { name: "Periyar Lake Wildlife Boat Safari", type: "National Tiger Reserve", category: "start", lat: 9.6005, lon: 77.1650, time: "06:30 AM", duration: "2.5 hrs", desc: "Early morning boat safari spotting wild elephants, sambar deer, and otters along the lake perimeter." },
+      { name: "Aromatic Spice Plantation Walk", type: "Spice Agriculture", category: "sight", lat: 9.6080, lon: 77.1720, time: "11:00 AM", duration: "1.5 hrs", desc: "Guided fragrant walk discovering cardamom, black pepper, nutmeg, and cinnamon vines." },
+      { name: "Kadathanadan Kalari Martial Arts Centre", type: "Ancient Martial Arts", category: "culture", lat: 9.6060, lon: 77.1690, time: "03:30 PM", duration: "1.5 hrs", desc: "3,000-year-old traditional Kalaripayattu combat techniques performed in an earthen pit." },
+      { name: "Kumily Spice Bazaars & Sunset View", type: "Spice Market", category: "market", lat: 9.6105, lon: 77.1710, time: "05:30 PM", duration: "2 hrs", desc: "Fresh organic spices, artisanal hill chocolates, and misty valley sunset." },
+    ],
+    [
+      { name: "Periyar Bamboo Rafting & Jungle Patrol", type: "Eco-Wilderness Rafting", category: "start", lat: 9.5850, lon: 77.1520, time: "08:00 AM", duration: "3 hrs", desc: "Silent bamboo rafting on mountain waters surrounded by dense evergreen rainforest." },
+      { name: "Chellarkovil Cascades & Viewpoint", type: "Valley Panoramic", category: "sight", lat: 9.6450, lon: 77.2150, time: "12:30 PM", duration: "2 hrs", desc: "Breathtaking cascade dropping over deep precipices toward Tamil Nadu plains." },
+      { name: "Mudra Cultural Kathakali Centre", type: "Classical Dance Drama", category: "culture", lat: 9.6055, lon: 77.1685, time: "04:00 PM", duration: "1.5 hrs", desc: "Elaborate Kathakali makeup rituals and storytelling performances." },
+      { name: "Ottakathalamedu Hilltop Sunset", type: "Panoramic Sunset Ridge", category: "market", lat: 9.6200, lon: 77.1850, time: "05:45 PM", duration: "1.5 hrs", desc: "Golden hour vistas over misty cardamom hills and winding river corridors." },
+    ],
+  ],
+  alleppey: [
+    [
+      { name: "Vembanad Lake Houseboat Cruise Pier", type: "Backwaters Cruise", category: "start", lat: 9.5020, lon: 76.3500, time: "09:30 AM", duration: "3 hrs", desc: "Glide along emerald backwater canals on a traditional thatched kettuvallam houseboat." },
+      { name: "Kuttanad Below-Sea-Level Paddies", type: "Unique Agriculture", category: "sight", lat: 9.4200, lon: 76.4100, time: "01:30 PM", duration: "2 hrs", desc: "Vibrant paddy farming conducted 4 to 10 feet below sea level, flanked by coconut groves." },
+      { name: "Alleppey Striped Lighthouse & Marine Pier", type: "Maritime Heritage", category: "culture", lat: 9.4965, lon: 76.3210, time: "04:00 PM", duration: "1.5 hrs", desc: "Historic 1862 lighthouse offering 360-degree views of the Arabian Sea." },
+      { name: "Marari Golden Sand Beach & Seafood Grill", type: "Arabian Sea Sunset", category: "market", lat: 9.5980, lon: 76.2950, time: "05:30 PM", duration: "2.5 hrs", desc: "Pristine white sand beach, swaying palms, and fresh catch coastal dinner." },
+    ],
+  ],
+  alappuzha: [
+    [
+      { name: "Vembanad Lake Houseboat Cruise Pier", type: "Backwaters Cruise", category: "start", lat: 9.5020, lon: 76.3500, time: "09:30 AM", duration: "3 hrs", desc: "Glide along emerald backwater canals on a traditional thatched kettuvallam houseboat." },
+      { name: "Kuttanad Below-Sea-Level Paddies", type: "Unique Agriculture", category: "sight", lat: 9.4200, lon: 76.4100, time: "01:30 PM", duration: "2 hrs", desc: "Vibrant paddy farming conducted 4 to 10 feet below sea level, flanked by coconut groves." },
+      { name: "Alleppey Striped Lighthouse & Marine Pier", type: "Maritime Heritage", category: "culture", lat: 9.4965, lon: 76.3210, time: "04:00 PM", duration: "1.5 hrs", desc: "Historic 1862 lighthouse offering 360-degree views of the Arabian Sea." },
+      { name: "Marari Golden Sand Beach & Seafood Grill", type: "Arabian Sea Sunset", category: "market", lat: 9.5980, lon: 76.2950, time: "05:30 PM", duration: "2.5 hrs", desc: "Pristine white sand beach, swaying palms, and fresh catch coastal dinner." },
+    ],
+  ],
+  coorg: [
+    [
+      { name: "Aromatic Arabica Coffee & Pepper Estate Walk", type: "Coffee Plantation", category: "start", lat: 12.4350, lon: 75.7250, time: "09:00 AM", duration: "2 hrs", desc: "Walk through fragrant coffee trees, discovering harvesting techniques and birdlife." },
+      { name: "Abbey Cascading Falls Trail", type: "Mountain Waterfalls", category: "sight", lat: 12.4520, lon: 75.7190, time: "11:30 AM", duration: "1.5 hrs", desc: "Lush hanging bridge trail facing thunderous waterfalls in dense cardamom jungle." },
+      { name: "Raja's Seat Sunset Pavilion", type: "Royal Sunset Garden", category: "culture", lat: 12.4170, lon: 75.7350, time: "03:30 PM", duration: "2 hrs", desc: "Historic garden retreat of Kodagu kings overlooking dramatic misty blue ridges." },
+      { name: "Madikeri Heritage Fort & Market", type: "Historic Fort & Bazaars", category: "market", lat: 12.4205, lon: 75.7390, time: "05:30 PM", duration: "2 hrs", desc: "17th-century palace citadel, fresh homemade chocolates, and highland roast coffee." },
+    ],
+    [
+      { name: "Dubare Elephant River Camp", type: "Wildlife Conservation", category: "start", lat: 12.3680, lon: 75.9050, time: "08:30 AM", duration: "2.5 hrs", desc: "Interactive river bathing and feeding sessions on the tranquil banks of the Kaveri River." },
+      { name: "Namdroling Golden Temple (Bylakuppe)", type: "Tibetan Monastery", category: "sight", lat: 12.4300, lon: 75.9680, time: "11:45 AM", duration: "2 hrs", desc: "Three 40-foot gilded Buddha statues inside a vibrant, serene Tibetan Buddhist settlement." },
+      { name: "Kaveri Nisargadhama Bamboo Island", type: "River Forest Park", category: "culture", lat: 12.4450, lon: 75.9320, time: "02:30 PM", duration: "2 hrs", desc: "Hanging rope bridge leading into a lush bamboo-grove island sanctuary with deer park." },
+      { name: "Mandalpatti 4x4 Jeep Sunset Vista", type: "Mountain Ridge Peak", category: "market", lat: 12.5120, lon: 75.7280, time: "05:00 PM", duration: "2.5 hrs", desc: "Thrilling off-road 4x4 safari atop the windy, panoramic highland plateau." },
+    ],
+  ],
 };
 
 export interface MasterMapStop {
@@ -425,6 +469,32 @@ export default function TripInteractiveMap({
       const dayNum = dIdx + 1;
       const plan = dayPlans[dIdx] || {};
 
+      // Determine day-specific city if multi-city tour
+      const dayCityName = (plan.destination || "").trim().toLowerCase();
+      let dayPresetKey: string | null = null;
+      if (dayCityName) {
+        for (const key of Object.keys(DESTINATION_LANDMARKS)) {
+          if (dayCityName.includes(key) || key.includes(dayCityName)) {
+            dayPresetKey = key;
+            break;
+          }
+        }
+      }
+      if (!dayPresetKey) {
+        dayPresetKey = presetCityKey;
+      }
+
+      // Resolve day-specific coordinate center
+      let dayCoords = coords;
+      if (dayCityName) {
+        for (const [key, val] of Object.entries(DESTINATION_COORDS)) {
+          if (dayCityName.includes(key) || key.includes(dayCityName)) {
+            dayCoords = val;
+            break;
+          }
+        }
+      }
+
       const rawActivities: string[] =
         Array.isArray(plan.activities) && plan.activities.length > 0
           ? plan.activities
@@ -464,8 +534,8 @@ export default function TripInteractiveMap({
       let stops: MasterMapStop[] = [];
 
       // A. Verified real landmarks
-      if (presetCityKey && DESTINATION_LANDMARKS[presetCityKey]) {
-        const cityDays = DESTINATION_LANDMARKS[presetCityKey];
+      if (dayPresetKey && DESTINATION_LANDMARKS[dayPresetKey]) {
+        const cityDays = DESTINATION_LANDMARKS[dayPresetKey];
         const dayLandmarks = cityDays[dIdx % cityDays.length] || [];
         if (dayLandmarks.length > 0) {
           const countToTake = Math.min(dynamicCount, dayLandmarks.length);
@@ -514,8 +584,8 @@ export default function TripInteractiveMap({
 
       // B. Intelligent progressive forward arc for unlisted cities (Strictly non-backtracking 1..N stops)
       if (stops.length === 0) {
-        const baseLat = coords.lat;
-        const baseLon = coords.lon;
+        const baseLat = dayCoords.lat;
+        const baseLon = dayCoords.lon;
         const dayAngle = dIdx * 1.35 + 0.35; // Dedicated geometric corridor per day
 
         const times = ["09:00 AM", "11:30 AM", "02:15 PM", "04:45 PM", "06:45 PM", "08:30 PM"];

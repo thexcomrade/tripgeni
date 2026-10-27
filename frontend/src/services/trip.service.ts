@@ -71,6 +71,7 @@ function generateClientPDFBlob(trip: any, userName: string): Blob {
 
 export interface AITripRequest {
   destination: string;
+  destinations?: string[];
   origin?: string;
   duration_days: number;
   from_date?: string;
@@ -86,6 +87,7 @@ export interface AITripRequest {
 export interface TripCreateRequest {
   trip_title: string;
   destination: string;
+  destinations?: string[];
   origin?: string;
   duration_days: number;
   from_date?: string;
@@ -173,13 +175,18 @@ class TripService {
     const travelers = payload.travelers_count || 1;
     const travelStyle = payload.travel_style || "Leisure";
 
+    const multiStops = payload.destinations && payload.destinations.length > 0
+      ? payload.destinations
+      : [];
+
     const dayPlans = generateRichDayPlans(
       dest,
       duration,
       payload.interests || ["Sightseeing"],
       travelStyle,
-      [],
-      budget
+      multiStops,
+      budget,
+      travelers
     );
 
     const stayCost = Math.round(budget * 0.38);
@@ -187,9 +194,14 @@ class TripService {
     const foodCost = Math.round(budget * 0.25);
     const miscCost = Math.round(budget * 0.15);
 
+    const tourTitle = multiStops.length > 1
+      ? `${multiStops.join(" ➔ ")} (${duration} Days Tour)`
+      : `${dest} (${duration} Days ${travelStyle} Escape)`;
+
     const fallbackTrip = {
-      trip_title: `${dest} (${duration} Days ${travelStyle} Escape)`,
+      trip_title: tourTitle,
       destination: dest,
+      destinations: multiStops.length > 0 ? multiStops : undefined,
       origin: payload.origin || "Nearby Hub",
       duration_days: duration,
       budget: budget,

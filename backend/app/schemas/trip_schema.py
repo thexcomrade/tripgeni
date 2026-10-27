@@ -115,7 +115,9 @@ class DayItinerarySchema(BaseModel):
 
 
 class AITripGenerationRequest(BaseModel):
-    destination: str = Field(min_length=2, max_length=200)
+    destination: str = Field(min_length=2, max_length=500)
+
+    destinations: list[str] | None = Field(default=None, description="Multiple stopover destinations / multi-city circuit")
 
     origin: str | None = Field(default=None, max_length=200, description="Starting point / departure city")
 
@@ -158,7 +160,9 @@ class AITripGenerationRequest(BaseModel):
 class TripCreateRequest(BaseModel):
     trip_title: str = Field(min_length=2, max_length=200)
 
-    destination: str = Field(min_length=2, max_length=200)
+    destination: str = Field(min_length=2, max_length=500)
+
+    destinations: list[str] | None = Field(default=None, description="Multiple stopover destinations / multi-city circuit")
 
     origin: str | None = Field(default=None, max_length=200, description="Starting point / departure city")
 
@@ -560,6 +564,8 @@ class AITripGenerationResponse(BaseModel):
     trip_title: str | None = None
 
     destination: str | None = None
+
+    destinations: list[str] | None = Field(default=None, description="Multiple stopover destinations / multi-city circuit")
 
     origin: str | None = None
 

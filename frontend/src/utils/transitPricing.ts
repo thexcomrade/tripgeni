@@ -967,8 +967,24 @@ export function calculateTransitPricing(
     (origLower.includes("trivandrum") || origLower.includes("tvm") || origLower.includes("thiruvananthapuram") || origLower.includes("kerala")) &&
     (destLower.includes("bangalore") || destLower.includes("banglore") || destLower.includes("bengaluru"));
 
+  // Multi-City Tour Circuit Distance (Origin -> Stop 1 -> Stop 2 -> Stop 3)
+  const multiStops = destClean.split(/[,\u2794\->]+|\s+to\s+|\s+via\s+/i).map(s => s.trim()).filter(s => s.length >= 2);
+  let multiCityCumKm = 0;
+  if (multiStops.length > 1) {
+    let prevCoord = origResolved || findCoords(origClean, null);
+    for (const stop of multiStops) {
+      const stopCoord = findCoords(stop, null);
+      if (prevCoord && stopCoord) {
+        multiCityCumKm += calculateHaversineDistance(prevCoord.lat, prevCoord.lng, stopCoord.lat, stopCoord.lng);
+      } else {
+        multiCityCumKm += 120;
+      }
+      if (stopCoord) prevCoord = stopCoord;
+    }
+  }
+
   // 1. Straight-Line Geodesic Distance
-  let straightLineKm = 650;
+  let straightLineKm = multiCityCumKm > 0 ? Math.round(multiCityCumKm) : 650;
   if (origResolved && destResolved) {
     straightLineKm = calculateHaversineDistance(
       origResolved.lat,

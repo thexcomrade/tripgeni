@@ -25,6 +25,9 @@ import {
   Leaf,
   Shield,
   Loader2,
+  Plus,
+  Trash2,
+  Route,
 } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
@@ -33,6 +36,51 @@ import tripService from "../../services/trip.service";
 import { parseDestinationQuery } from "../../utils/queryParser";
 import { calculateTransitPricing } from "../../utils/transitPricing";
 import LiquidLoadingNav, { SynthesisStage } from "../../components/planner/LiquidLoadingNav";
+
+const COLLEGE_CIRCUIT_PRESETS = [
+  {
+    name: "Kerala Student Classic",
+    stops: ["Munnar", "Thekkady", "Alleppey"],
+    desc: "Misty tea hills ➔ Elephant & spice forest ➔ Backwater houseboats",
+    badge: "🎓 College Pick",
+  },
+  {
+    name: "Golden Triangle Circuit",
+    stops: ["Delhi", "Agra", "Jaipur"],
+    desc: "Capital monuments ➔ Taj Mahal sunrise ➔ Pink City palaces",
+    badge: "🏛️ Heritage",
+  },
+  {
+    name: "South India Mountain Tour",
+    stops: ["Bangalore", "Mysore", "Coorg", "Ooty"],
+    desc: "Tech hub ➔ Mysore Palace ➔ Coffee hills ➔ Nilgiri pine peaks",
+    badge: "⛰️ Highlands",
+  },
+  {
+    name: "Himachal Mountain Trails",
+    stops: ["Manali", "Kasol", "Shimla"],
+    desc: "Rohtang snow pass ➔ Parvati Valley trails ➔ Mall Road vistas",
+    badge: "❄️ Adventure",
+  },
+  {
+    name: "Goa Coastal Expedition",
+    stops: ["North Goa", "Panaji", "Palolem"],
+    desc: "Anjuna beach shacks ➔ Latin Quarter ➔ South Goa golden sands",
+    badge: "🏖️ Coastline",
+  },
+  {
+    name: "Euro City Hop",
+    stops: ["Paris", "Brussels", "Amsterdam"],
+    desc: "Eiffel Tower & Louvre ➔ Grand Place & waffles ➔ Canal house ring",
+    badge: "🌐 Euro Tour",
+  },
+  {
+    name: "Japan Golden Corridor",
+    stops: ["Tokyo", "Kyoto", "Osaka"],
+    desc: "Shinjuku neon ➔ Fushimi Inari torii gates ➔ Dotonbori street food",
+    badge: "⛩️ Asia Classic",
+  },
+];
 
 const POPULAR_ORIGINS = [
   "Ernakulam",
@@ -468,6 +516,8 @@ function PlannerContent() {
   const [currentStep, setCurrentStep] = useState(1);
   const [origin, setOrigin] = useState("Ernakulam (Kochi)");
   const [destination, setDestination] = useState("");
+  const [isMultiCity, setIsMultiCity] = useState(false);
+  const [multiStops, setMultiStops] = useState<string[]>(["Munnar", "Thekkady", "Alleppey"]);
   // Date-based duration (From/To calendar)
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
@@ -710,7 +760,13 @@ function PlannerContent() {
     };
     if (paramDest) {
       const parsed = parseDestinationQuery(paramDest);
-      setDestination(parsed.destination || paramDest);
+      const initialDest = parsed.destination || paramDest;
+      setDestination(initialDest);
+      const multi = initialDest.split(/[,➔\->]+|\s+to\s+|\s+via\s+/i).map((s: string) => s.trim()).filter(Boolean);
+      if (multi.length > 1) {
+        setIsMultiCity(true);
+        setMultiStops(multi);
+      }
       if (paramDuration) {
         const d = parseInt(paramDuration);
         if (!isNaN(d) && d > 0) applyDurationDays(d);
@@ -755,8 +811,19 @@ function PlannerContent() {
     }, 1150);
 
     try {
+      const parsedDestinations = isMultiCity && multiStops.length > 0
+        ? multiStops.map(s => s.trim()).filter(Boolean)
+        : destination.includes(",") || destination.includes("➔") || destination.includes("->")
+        ? destination.split(/[,➔\->]+|\s+to\s+|\s+via\s+/i).map((s: string) => s.trim()).filter(Boolean)
+        : [destination.trim()];
+
+      const destString = parsedDestinations.length > 1
+        ? parsedDestinations.join(" ➔ ")
+        : destination.trim();
+
       const response = await tripService.generateAIItinerary({
-        destination: destination.trim(),
+        destination: destString,
+        destinations: parsedDestinations.length > 1 ? parsedDestinations : undefined,
         origin: origin.trim(),
         duration_days: durationDays,
         from_date: fromDate || undefined,
@@ -774,7 +841,8 @@ function PlannerContent() {
 
       // Store authoritative response merged with trip planning parameters
       const fullTripData = {
-        destination: destination.trim(),
+        destination: destString,
+        destinations: parsedDestinations.length > 1 ? parsedDestinations : undefined,
         origin: origin.trim(),
         duration_days: durationDays,
         from_date: fromDate || undefined,
@@ -1124,152 +1192,615 @@ function PlannerContent() {
                   </button>
                 </div>
 
-                {/* 3. DESTINATION */}
+                {/* 3. DESTINATION AREA WITH DUAL-MODE TOUR ARCHITECTURE */}
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                    <label
+                  {/* Mode Switcher Tabs */}
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "8px",
+                      marginBottom: "12px",
+                      background: "rgba(15, 23, 42, 0.65)",
+                      padding: "4px",
+                      borderRadius: "10px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMultiCity(false);
+                        if (multiStops.length > 0 && multiStops[0]) {
+                          setDestination(multiStops[0]);
+                        }
+                      }}
                       style={{
-                        fontSize: "0.88rem",
+                        flex: 1,
+                        padding: "7px 12px",
+                        borderRadius: "7px",
+                        fontSize: "0.82rem",
                         fontWeight: 700,
-                        color: "#38BDF8",
+                        cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
+                        justifyContent: "center",
                         gap: "6px",
+                        background: !isMultiCity ? "rgba(14, 165, 233, 0.22)" : "transparent",
+                        color: !isMultiCity ? "#38BDF8" : "#94A3B8",
+                        border: !isMultiCity ? "1px solid rgba(14, 165, 233, 0.4)" : "1px solid transparent",
+                        transition: "all 0.15s ease",
                       }}
                     >
-                      <MapPin size={14} color="#38BDF8" />
-                      Destination City / Region
-                    </label>
-                    <span style={{ fontSize: "0.75rem", color: "#7DD3FC", background: "rgba(14, 165, 233, 0.12)", padding: "2px 8px", borderRadius: "999px" }}>
-                      Target Destination
-                    </span>
-                  </div>
-                  <div style={{ position: "relative" }}>
-                    <MapPin
-                      size={18}
-                      color="#38BDF8"
-                      style={{
-                        position: "absolute",
-                        left: "14px",
-                        top: "50%",
-                        transform: "translateY(-50%)",
+                      <MapPin size={14} /> Single Destination
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMultiCity(true);
+                        if (multiStops.length === 0 || multiStops.every((s) => !s.trim())) {
+                          const currentClean = destination
+                            .split(/[,➔\->]+|\s+to\s+|\s+via\s+/i)
+                            .map((s) => s.trim())
+                            .filter(Boolean);
+                          if (currentClean.length > 1) {
+                            setMultiStops(currentClean);
+                          } else {
+                            setMultiStops(["Munnar", "Thekkady", "Alleppey"]);
+                            setDestination("Munnar ➔ Thekkady ➔ Alleppey");
+                          }
+                        } else {
+                          setDestination(multiStops.filter(Boolean).join(" ➔ "));
+                        }
                       }}
-                    />
-                    <input
-                      type="text"
-                      value={destination}
-                      onChange={(e) => setDestination(e.target.value)}
-                      placeholder="e.g. Varanasi, Munnar, Goa, Coorg, Ooty..."
-                      className="input-base"
                       style={{
-                        paddingLeft: "42px",
-                        fontSize: "1.02rem",
-                        borderColor: "rgba(14, 165, 233, 0.35)",
+                        flex: 1,
+                        padding: "7px 12px",
+                        borderRadius: "7px",
+                        fontSize: "0.82rem",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        background: isMultiCity
+                          ? "linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.25))"
+                          : "transparent",
+                        color: isMultiCity ? "#C084FC" : "#94A3B8",
+                        border: isMultiCity
+                          ? "1px solid rgba(168, 85, 247, 0.45)"
+                          : "1px solid transparent",
+                        transition: "all 0.15s ease",
                       }}
-                      autoFocus
-                    />
+                    >
+                      <Route size={14} /> Multi-City Circuit / College Tour 🎓
+                    </button>
                   </div>
+
+                  {!isMultiCity ? (
+                    <div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <label
+                          style={{
+                            fontSize: "0.88rem",
+                            fontWeight: 700,
+                            color: "#38BDF8",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                          }}
+                        >
+                          <MapPin size={14} color="#38BDF8" />
+                          Destination City / Region
+                        </label>
+                        <span
+                          style={{
+                            fontSize: "0.75rem",
+                            color: "#7DD3FC",
+                            background: "rgba(14, 165, 233, 0.12)",
+                            padding: "2px 8px",
+                            borderRadius: "999px",
+                          }}
+                        >
+                          Target Destination
+                        </span>
+                      </div>
+                      <div style={{ position: "relative" }}>
+                        <MapPin
+                          size={18}
+                          color="#38BDF8"
+                          style={{
+                            position: "absolute",
+                            left: "14px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                          }}
+                        />
+                        <input
+                          type="text"
+                          value={destination}
+                          onChange={(e) => setDestination(e.target.value)}
+                          placeholder="e.g. Varanasi, Munnar, Goa, Coorg, Ooty, Paris, Tokyo..."
+                          className="input-base"
+                          style={{
+                            paddingLeft: "42px",
+                            fontSize: "1.02rem",
+                            borderColor: "rgba(14, 165, 233, 0.35)",
+                          }}
+                          autoFocus
+                        />
+                      </div>
+
+                      {/* Multi-city auto-detection pill */}
+                      {(destination.includes(",") ||
+                        destination.includes("➔") ||
+                        destination.includes("->")) && (
+                        <div
+                          style={{
+                            marginTop: "8px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            background: "rgba(99, 102, 241, 0.12)",
+                            border: "1px solid rgba(168, 85, 247, 0.3)",
+                            borderRadius: "8px",
+                            padding: "6px 12px",
+                            flexWrap: "wrap",
+                            gap: "6px",
+                          }}
+                        >
+                          <span style={{ fontSize: "0.78rem", color: "#C084FC" }}>
+                            ✨ Multiple cities detected! Switch to Multi-City Tour mode?
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const stops = destination
+                                .split(/[,➔\->]+|\s+to\s+|\s+via\s+/i)
+                                .map((s) => s.trim())
+                                .filter(Boolean);
+                              if (stops.length > 0) setMultiStops(stops);
+                              setIsMultiCity(true);
+                            }}
+                            style={{
+                              fontSize: "0.74rem",
+                              fontWeight: 700,
+                              color: "#FFFFFF",
+                              background: "#7C3AED",
+                              border: "none",
+                              padding: "4px 10px",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Convert to Tour Mode
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <label
+                          style={{
+                            fontSize: "0.88rem",
+                            fontWeight: 700,
+                            color: "#C084FC",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                          }}
+                        >
+                          <Route size={14} color="#C084FC" />
+                          Multi-City Stops Corridor ({multiStops.filter(Boolean).length} Stops)
+                        </label>
+                        <span
+                          style={{
+                            fontSize: "0.75rem",
+                            color: "#E9D5FF",
+                            background: "rgba(168, 85, 247, 0.2)",
+                            padding: "2px 8px",
+                            borderRadius: "999px",
+                            fontWeight: 700,
+                          }}
+                        >
+                          🎓 College & Group Circuit
+                        </span>
+                      </div>
+
+                      {/* Dynamic Stop Inputs */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        {multiStops.map((stop, idx) => (
+                          <div key={idx} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <div
+                              style={{
+                                width: "30px",
+                                height: "30px",
+                                borderRadius: "999px",
+                                background:
+                                  idx === 0
+                                    ? "rgba(14, 165, 233, 0.2)"
+                                    : idx === multiStops.length - 1
+                                    ? "rgba(236, 72, 153, 0.2)"
+                                    : "rgba(168, 85, 247, 0.2)",
+                                border: `1px solid ${
+                                  idx === 0
+                                    ? "#38BDF8"
+                                    : idx === multiStops.length - 1
+                                    ? "#F472B6"
+                                    : "#C084FC"
+                                }`,
+                                color:
+                                  idx === 0
+                                    ? "#38BDF8"
+                                    : idx === multiStops.length - 1
+                                    ? "#F472B6"
+                                    : "#C084FC",
+                                fontSize: "0.78rem",
+                                fontWeight: 800,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexShrink: 0,
+                              }}
+                            >
+                              {idx + 1}
+                            </div>
+                            <div style={{ position: "relative", flex: 1 }}>
+                              <input
+                                type="text"
+                                value={stop}
+                                onChange={(e) => {
+                                  const updated = [...multiStops];
+                                  updated[idx] = e.target.value;
+                                  setMultiStops(updated);
+                                  setDestination(updated.filter(Boolean).join(" ➔ "));
+                                }}
+                                placeholder={
+                                  idx === 0
+                                    ? "Stop 1: e.g. Munnar"
+                                    : idx === 1
+                                    ? "Stop 2: e.g. Thekkady"
+                                    : `Stop ${idx + 1}: e.g. Alleppey`
+                                }
+                                className="input-base"
+                                style={{
+                                  paddingLeft: "14px",
+                                  fontSize: "0.95rem",
+                                  borderColor: "rgba(168, 85, 247, 0.35)",
+                                }}
+                              />
+                            </div>
+                            {multiStops.length > 2 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = multiStops.filter((_, i) => i !== idx);
+                                  setMultiStops(updated);
+                                  setDestination(updated.filter(Boolean).join(" ➔ "));
+                                }}
+                                title="Remove this stop"
+                                style={{
+                                  background: "rgba(239, 68, 68, 0.15)",
+                                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                                  color: "#F87171",
+                                  borderRadius: "8px",
+                                  width: "36px",
+                                  height: "36px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  cursor: "pointer",
+                                  flexShrink: 0,
+                                }}
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+
+                        {multiStops.length < 6 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = [...multiStops, ""];
+                              setMultiStops(updated);
+                            }}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: "6px",
+                              padding: "8px 14px",
+                              borderRadius: "8px",
+                              background: "rgba(168, 85, 247, 0.10)",
+                              border: "1px dashed rgba(168, 85, 247, 0.45)",
+                              color: "#C084FC",
+                              fontSize: "0.84rem",
+                              fontWeight: 700,
+                              cursor: "pointer",
+                              marginTop: "4px",
+                              transition: "all 0.15s ease",
+                            }}
+                          >
+                            <Plus size={15} /> + Add Another Destination Stop
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Active Route Corridor Sequence Ribbon */}
+                      {multiStops.filter(Boolean).length > 1 && (
+                        <div
+                          style={{
+                            marginTop: "12px",
+                            background:
+                              "linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.12))",
+                            border: "1px solid rgba(168, 85, 247, 0.35)",
+                            borderRadius: "10px",
+                            padding: "10px 14px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            flexWrap: "wrap",
+                            gap: "8px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <span style={{ fontSize: "1rem" }}>🚀</span>
+                            <span
+                              style={{
+                                fontSize: "0.82rem",
+                                fontWeight: 700,
+                                color: "#E0E7FF",
+                              }}
+                            >
+                              Tour Corridor:{" "}
+                              <span style={{ color: "#34D399" }}>
+                                {origin || "Starting Hub"}
+                              </span>{" "}
+                              ➔{" "}
+                              {multiStops.filter(Boolean).map((s, i) => (
+                                <span key={i} style={{ color: "#C084FC", fontWeight: 800 }}>
+                                  {s}
+                                  {i < multiStops.filter(Boolean).length - 1 ? " ➔ " : ""}
+                                </span>
+                              ))}
+                            </span>
+                          </div>
+                          <span
+                            style={{
+                              fontSize: "0.72rem",
+                              background: "rgba(168, 85, 247, 0.25)",
+                              color: "#E9D5FF",
+                              padding: "2px 8px",
+                              borderRadius: "999px",
+                              fontWeight: 700,
+                            }}
+                          >
+                            {multiStops.filter(Boolean).length} Destinations • Auto-Paced Days
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* QUICK PICKS GRID */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                {/* Starting City Quick Picks */}
+              {isMultiCity ? (
                 <div>
                   <span
                     style={{
                       fontSize: "0.78rem",
                       fontWeight: 700,
-                      color: "#10B981",
+                      color: "#C084FC",
                       textTransform: "uppercase",
                       letterSpacing: "0.5px",
                       display: "block",
                       marginBottom: "8px",
                     }}
                   >
-                    Starting City Picks
+                    🎓 Popular College & Group Tour Circuits (Click to Load)
                   </span>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                    {POPULAR_ORIGINS.map((city) => (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                      gap: "8px",
+                    }}
+                  >
+                    {COLLEGE_CIRCUIT_PRESETS.map((preset) => (
                       <button
-                        key={city}
+                        key={preset.name}
                         type="button"
-                        onClick={() => setOrigin(city)}
+                        onClick={() => {
+                          setMultiStops([...preset.stops]);
+                          setDestination(preset.stops.join(" ➔ "));
+                          if (travelersCount < 4) setTravelersCount(4);
+                        }}
                         style={{
-                          padding: "5px 12px",
-                          borderRadius: "999px",
-                          background:
-                            origin.toLowerCase() === city.toLowerCase()
-                              ? "rgba(16, 185, 129, 0.25)"
-                              : "rgba(255, 255, 255, 0.04)",
-                          border:
-                            origin.toLowerCase() === city.toLowerCase()
-                              ? "1px solid #10B981"
-                              : "1px solid rgba(255, 255, 255, 0.08)",
-                          color:
-                            origin.toLowerCase() === city.toLowerCase()
-                              ? "#34D399"
-                              : "#94A3B8",
-                          fontSize: "0.80rem",
-                          fontWeight: 600,
+                          textAlign: "left",
+                          padding: "8px 12px",
+                          borderRadius: "10px",
+                          background: "rgba(255, 255, 255, 0.04)",
+                          border: "1px solid rgba(168, 85, 247, 0.25)",
                           cursor: "pointer",
                           transition: "all 0.15s ease",
                         }}
                       >
-                        {city}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            marginBottom: "3px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "0.82rem",
+                              fontWeight: 800,
+                              color: "#E0E7FF",
+                            }}
+                          >
+                            {preset.name}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: "0.68rem",
+                              background: "rgba(168, 85, 247, 0.25)",
+                              color: "#C084FC",
+                              padding: "1px 6px",
+                              borderRadius: "999px",
+                              fontWeight: 700,
+                            }}
+                          >
+                            {preset.badge}
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "0.73rem",
+                            color: "#A5B4FC",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {preset.stops.join(" ➔ ")}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "0.68rem",
+                            color: "#94A3B8",
+                            marginTop: "2px",
+                          }}
+                        >
+                          {preset.desc}
+                        </div>
                       </button>
                     ))}
                   </div>
                 </div>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  {/* Starting City Quick Picks */}
+                  <div>
+                    <span
+                      style={{
+                        fontSize: "0.78rem",
+                        fontWeight: 700,
+                        color: "#10B981",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                        display: "block",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      Starting City Picks
+                    </span>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                      {POPULAR_ORIGINS.map((city) => (
+                        <button
+                          key={city}
+                          type="button"
+                          onClick={() => setOrigin(city)}
+                          style={{
+                            padding: "5px 12px",
+                            borderRadius: "999px",
+                            background:
+                              origin.toLowerCase() === city.toLowerCase()
+                                ? "rgba(16, 185, 129, 0.25)"
+                                : "rgba(255, 255, 255, 0.04)",
+                            border:
+                              origin.toLowerCase() === city.toLowerCase()
+                                ? "1px solid #10B981"
+                                : "1px solid rgba(255, 255, 255, 0.08)",
+                            color:
+                              origin.toLowerCase() === city.toLowerCase()
+                                ? "#34D399"
+                                : "#94A3B8",
+                            fontSize: "0.80rem",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                          }}
+                        >
+                          {city}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                {/* Destination Quick Picks */}
-                <div>
-                  <span
-                    style={{
-                      fontSize: "0.78rem",
-                      fontWeight: 700,
-                      color: "#38BDF8",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.5px",
-                      display: "block",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    Popular Destinations
-                  </span>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                    {POPULAR_DESTINATIONS.map((dest) => (
-                      <button
-                        key={dest}
-                        type="button"
-                        onClick={() => setDestination(dest)}
-                        style={{
-                          padding: "5px 12px",
-                          borderRadius: "999px",
-                          background:
-                            destination.toLowerCase() === dest.toLowerCase()
-                              ? "rgba(14, 165, 233, 0.25)"
-                              : "rgba(255, 255, 255, 0.04)",
-                          border:
-                            destination.toLowerCase() === dest.toLowerCase()
-                              ? "1px solid #38BDF8"
-                              : "1px solid rgba(255, 255, 255, 0.08)",
-                          color:
-                            destination.toLowerCase() === dest.toLowerCase()
-                              ? "#38BDF8"
-                              : "#CBD5E1",
-                          fontSize: "0.80rem",
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          transition: "all 0.15s ease",
-                        }}
-                      >
-                        {dest}
-                      </button>
-                    ))}
+                  {/* Destination Quick Picks */}
+                  <div>
+                    <span
+                      style={{
+                        fontSize: "0.78rem",
+                        fontWeight: 700,
+                        color: "#38BDF8",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                        display: "block",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      Popular Destinations
+                    </span>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                      {POPULAR_DESTINATIONS.map((dest) => (
+                        <button
+                          key={dest}
+                          type="button"
+                          onClick={() => setDestination(dest)}
+                          style={{
+                            padding: "5px 12px",
+                            borderRadius: "999px",
+                            background:
+                              destination.toLowerCase() === dest.toLowerCase()
+                                ? "rgba(14, 165, 233, 0.25)"
+                                : "rgba(255, 255, 255, 0.04)",
+                            border:
+                              destination.toLowerCase() === dest.toLowerCase()
+                                ? "1px solid #38BDF8"
+                                : "1px solid rgba(255, 255, 255, 0.08)",
+                            color:
+                              destination.toLowerCase() === dest.toLowerCase()
+                                ? "#38BDF8"
+                                : "#CBD5E1",
+                            fontSize: "0.80rem",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                          }}
+                        >
+                          {dest}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* DATA-DRIVEN TRAVEL COMPARISON INTELLIGENCE CARD */}
               {destination.trim() && (

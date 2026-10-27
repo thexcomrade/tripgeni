@@ -135,6 +135,7 @@ class AIService:
         origin: str | None = None,
         from_date: str | None = None,
         to_date: str | None = None,
+        destinations: list[str] | None = None,
     ) -> str:
         cost = cost_data or self.estimate_trip_cost(
             budget, duration_days, travelers_count, travel_style
@@ -168,8 +169,47 @@ class AIService:
             else (transportation_mode or "Private Car / Taxi")
         )
         origin_line = f"- Starting Point / Departure City: {origin}" if origin else "- Starting Point: Regional Hub"
-        route_line = f"- Route: From {origin} to {destination}" if origin else f"- Destination: {destination}"
+        circuit_stops = (
+            [d.strip() for d in destinations if d.strip()]
+            if destinations and len(destinations) > 1
+            else [s.strip() for s in re.split(r'[,➔\->]+|\s+to\s+|\s+via\s+', destination) if s.strip()]
+        )
+        is_multi_city = len(circuit_stops) > 1
+        circuit_corridor = " ➔ ".join(circuit_stops) if is_multi_city else destination
+
+        route_line = (
+            f"- Route Corridor: {origin} ➔ {circuit_corridor}"
+            if origin
+            else f"- Destination Circuit: {circuit_corridor}"
+        )
         date_line = f"- Travel Dates: {from_date} to {to_date}" if from_date and to_date else ""
+
+        multi_city_instructions = ""
+        if is_multi_city:
+            multi_city_instructions = f'''
+7. MULTI-DESTINATION CIRCUIT PLANNING ({circuit_corridor}):
+- The traveler is exploring a multi-city circuit: {", ".join(circuit_stops)}.
+- Partition the {duration_days} days sequentially across each destination in order.
+- In 'ai_itinerary', every day MUST have an accurate 'destination' field matching that day's active city.
+- Dedicate moving days to the scenic transfer leg, luggage drop, and new city highlights.
+- In 'attractions', 'recommended_hotels', and 'recommended_restaurants', include authentic recommendations from ACROSS the circuit cities.
+'''
+
+        group_instructions = ""
+        if travelers_count >= 3 or (travel_style or "").lower() in ["group", "friends", "adventure", "college"]:
+            group_instructions = f'''
+8. COLLEGE & GROUP TOUR PERSONA ({travelers_count} Travelers):
+- Calibrate recommendations for a vibrant friends/college group tour.
+- Highlight social viewpoints, group-friendly dining tables, sunset gathering spots, group activities, and budget-conscious shared transit options.
+'''
+
+        pacing_instructions = '''
+9. DYNAMIC WAYPOINTS & UNBIASED PACING (NEVER FORCE 3-4 STOPS PER DAY):
+- Strictly avoid rigid fixed-count templates. Vary waypoints dynamically based on the day's purpose:
+  * Full Sightseeing Days: 4 to 6 diverse, engaging waypoints (scenic sunrise/vantage, historic/heritage core, local lunch, artisan quarter / nature walk, sunset viewpoint, night market / dinner).
+  * Intercity Moving Days: 3 to 4 stops (scenic transit leg, check-in, orientation landmark, dinner).
+  * Arrival & Farewell Days: 2 to 4 unhurried stops tailored for smooth travel logistics.
+'''
 
         return f"""You are Trip Geni AI, an elite travel architect and real-world expense specialist.
 Create an inspiring, highly realistic, and accurate real-money travel and expense plan.
@@ -201,6 +241,9 @@ STRICT REAL MONEY EXPENSE & ACCURACY RULES:
 4. REALISTIC EXPENSE TAGS IN ITINERARY: In 'ai_itinerary', every morning, afternoon, and evening plan MUST state explicit, realistic costs or entry fees where money is spent (e.g. 'Morning: Visit local landmark [Entry fee ~₹345/person]. Afternoon: Regional lunch [~₹250/meal]. Evening: Sunset beach stroll [Free]'). If an activity has no fee, label it '[Free entry]'.
 5. PROPER CASING & FINANCIAL INTEGRITY: Always use Title Case for destination and all named entities. Daily pacing must stay within total budget ₹{budget:,.0f}.
 6. TRANSIT TIME VS EXPLORATION TIME: Clearly distinguish travel days from destination exploration days. For long journeys (e.g. multi-day train, overnight travel, or long road trips), Day 1 should account for departure and arrival logistics without impossible morning sightseeing, and Day {duration_days} should account for return travel. Schedule sightseeing strictly during actual on-ground hours.
+{multi_city_instructions}
+{group_instructions}
+{pacing_instructions}
 
 Return valid JSON ONLY matching this exact schema:
 {{
@@ -398,6 +441,11 @@ Return JSON.
 
         # Gateway city resolution for remote treks where OpenWeather lacks station IDs
         weather_city = dest_clean
+        # Resolve primary hub city if multi-city corridor string
+        if any(sep in dest_clean for sep in ["➔", "->", ",", " to ", " via "]):
+            parts = [s.strip() for s in re.split(r'[,➔\->]+|\s+to\s+|\s+via\s+', dest_clean) if s.strip()]
+            if parts:
+                weather_city = parts[0]
         if any(a in q for a in ["annapurna", "annapoorna", "abc"]):
             weather_city = "Pokhara"
         elif any(e in q for e in ["everest", "ebc"]):
@@ -921,8 +969,150 @@ Return JSON.
         interests: list[str],
         budget: float = 25000.0,
         travelers_count: int = 1,
+        destinations: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         dest_clean = destination.strip()
+
+        # Check for multi-city tour corridor
+        circuit_stops = (
+            [d.strip() for d in destinations if d.strip()]
+            if destinations and len(destinations) > 1
+            else [s.strip() for s in re.split(r'[,➔\->]+|\s+to\s+|\s+via\s+', dest_clean) if s.strip()]
+        )
+
+        days = max(1, duration_days)
+        travelers = max(1, travelers_count)
+        meal_cost = max(120, round((budget * 0.25) / (days * travelers * 3)))
+        meal_bfast = max(80, round(meal_cost * 0.65))
+        transit_cost = max(150, round((budget * 0.20) / days))
+        activity_cost = max(100, round((budget * 0.15) / days))
+
+        if len(circuit_stops) > 1:
+            # Multi-city day allocation
+            allocations = []
+            base = days // len(circuit_stops)
+            rem = days % len(circuit_stops)
+            for i, stop in enumerate(circuit_stops):
+                count = base + (1 if i < rem else 0)
+                allocations.append({"destination": stop, "days": max(1, count)})
+
+            # Expand day-to-city map
+            day_to_city = []
+            for alloc in allocations:
+                for _ in range(alloc["days"]):
+                    day_to_city.append(alloc["destination"])
+            while len(day_to_city) < days:
+                day_to_city.append(circuit_stops[-1])
+            day_to_city = day_to_city[:days]
+
+            # Cache attractions per city
+            city_attractions = {}
+            for stop in circuit_stops:
+                raw_city = self.generate_attractions(stop, interests)
+                clean_city_acts = []
+                for raw in raw_city:
+                    name = raw.split(" — ")[0].strip() if " — " in raw else raw.strip()
+                    name = re.sub(r'\s*\(.*?\)$', '', name).strip()
+                    if name:
+                        clean_city_acts.append(name)
+                if not clean_city_acts:
+                    clean_city_acts = [
+                        f"{stop} Central Panorama",
+                        f"{stop} Cultural Enclave",
+                        f"{stop} Botanical Valley",
+                        f"{stop} Artisan Bazaar",
+                        f"{stop} Sunset Promontory",
+                    ]
+                city_attractions[stop] = clean_city_acts
+
+            itinerary = []
+            for day_idx in range(days):
+                day_num = day_idx + 1
+                curr_city = day_to_city[day_idx]
+                prev_city = day_to_city[day_idx - 1] if day_idx > 0 else None
+                is_moving_day = prev_city is not None and prev_city != curr_city
+                acts_pool = city_attractions.get(curr_city, [f"{curr_city} Highlights"])
+
+                day_plan = {
+                    "day": day_num,
+                    "destination": curr_city,
+                }
+
+                if day_num == 1:
+                    day_plan["title"] = f"Day 1: Arrival in {curr_city} & Tour Commencement"
+                    day_plan["activities"] = acts_pool[:4]
+                    day_plan["morning"] = (
+                        f"8:30 AM • Arrival in {curr_city}, check-in and luggage drop [Transit ~₹{transit_cost:,.0f}]. "
+                        f"Morning orientation stroll around {acts_pool[0]} taking in fresh mountain/regional air."
+                    )
+                    day_plan["afternoon"] = (
+                        f"1:00 PM • Traditional regional lunch (~₹{meal_cost:,.0f}/person). "
+                        f"Afternoon guided exploration at {acts_pool[1] if len(acts_pool) > 1 else curr_city} [Est. entry ~₹{activity_cost:,.0f}]."
+                    )
+                    day_plan["evening"] = (
+                        f"5:30 PM • Sunset vista at {acts_pool[2] if len(acts_pool) > 2 else curr_city}, "
+                        f"followed by tour welcome dinner and local sweet tasting (~₹{meal_cost:,.0f}/person)."
+                    )
+
+                elif is_moving_day:
+                    day_plan["title"] = f"Day {day_num}: Scenic Transit from {prev_city} ➔ {curr_city}"
+                    day_plan["activities"] = [
+                        f"Scenic Transit ({prev_city} to {curr_city})",
+                        acts_pool[0],
+                        acts_pool[1] if len(acts_pool) > 1 else f"{curr_city} Town Square",
+                        f"{curr_city} Evening Panorama",
+                    ]
+                    day_plan["morning"] = (
+                        f"8:00 AM • Scenic transit departure from {prev_city} heading towards {curr_city} via scenic viewpoints and highway photo stops [Transit ~₹{transit_cost:,.0f}]."
+                    )
+                    day_plan["afternoon"] = (
+                        f"1:15 PM • Arrival in {curr_city}, check-in, freshen up, and regional lunch (~₹{meal_cost:,.0f}/person). "
+                        f"Afternoon orientation visit to {acts_pool[0]} [Est. entry ~₹{activity_cost:,.0f}]."
+                    )
+                    day_plan["evening"] = (
+                        f"5:30 PM • Golden hour sunset walk at {acts_pool[1] if len(acts_pool) > 1 else curr_city}. "
+                        f"Evening culinary exploration and dinner tasting signature local delicacies (~₹{meal_cost:,.0f}/person)."
+                    )
+
+                elif day_num == days:
+                    day_plan["title"] = f"Day {day_num}: Final {curr_city} Horizons & Tour Conclusion"
+                    day_plan["activities"] = acts_pool[:3] + ["Onward Departure Transfer"]
+                    day_plan["morning"] = (
+                        f"8:00 AM • Dawn breakfast (~₹{meal_bfast:,.0f}/person) and morning visit to {acts_pool[0]} to capture final panoramic group photos [Entry ~₹{activity_cost:,.0f}]."
+                    )
+                    day_plan["afternoon"] = (
+                        f"12:30 PM • Farewell lunch and last-minute artisan souvenir and regional craft shopping at {acts_pool[1] if len(acts_pool) > 1 else curr_city}."
+                    )
+                    day_plan["evening"] = (
+                        f"4:30 PM • Check-out and onward departure transfer from {curr_city} with incredible memories [Transit ~₹{transit_cost:,.0f}]."
+                    )
+
+                else:
+                    # Core exploration day: 5 to 6 varied stops!
+                    day_plan["title"] = f"Day {day_num}: In-Depth {curr_city} Expedition & Cultural Sights"
+                    offset = (day_num * 2) % max(1, len(acts_pool))
+                    selected_acts = [acts_pool[(offset + k) % len(acts_pool)] for k in range(min(5, len(acts_pool)))]
+                    if len(selected_acts) < 4:
+                        selected_acts.extend([f"{curr_city} Artisan Street", f"{curr_city} Sunset Point"])
+                    day_plan["activities"] = selected_acts
+
+                    day_plan["morning"] = (
+                        f"7:45 AM • Early morning exploration of {selected_acts[0]} before peak tourist arrival [Entry ~₹{activity_cost:,.0f}]. "
+                        f"Proceed along the scenic corridor to {selected_acts[1]}."
+                    )
+                    day_plan["afternoon"] = (
+                        f"1:15 PM • Authentic specialty lunch (~₹{meal_cost:,.0f}/person). Afternoon cultural discovery at {selected_acts[2]}, "
+                        f"marveling at heritage architecture and artisan workshops."
+                    )
+                    day_plan["evening"] = (
+                        f"5:15 PM • Sunset vantage point at {selected_acts[3] if len(selected_acts) > 3 else selected_acts[-1]}. "
+                        f"Conclude with night market walk and group dinner banquet (~₹{meal_cost:,.0f}/person)."
+                    )
+
+                itinerary.append(day_plan)
+
+            return itinerary
+
         raw_attractions = self.generate_attractions(dest_clean, interests)
 
         # Parse attractions into clean dicts of name, location, highlight
@@ -1064,6 +1254,7 @@ Return JSON.
         origin: str | None = None,
         from_date: str | None = None,
         to_date: str | None = None,
+        destinations: list[str] | None = None,
     ) -> dict[str, Any]:
         """
         Full-fidelity structured fallback plan when external AI services are unavailable.
@@ -1079,6 +1270,7 @@ Return JSON.
             transportation_mode=transportation_mode,
             preferred_accommodation=preferred_accommodation,
             origin=origin,
+            destinations=destinations,
         )
         response["generation_mode"] = "curated_offline"
         response["origin"] = origin
@@ -1145,6 +1337,7 @@ Return JSON.
         origin: str | None = None,
         from_date: str | None = None,
         to_date: str | None = None,
+        destinations: list[str] | None = None,
     ) -> dict[str, Any]:
 
         weather = self.get_weather_context(destination)
@@ -1192,7 +1385,7 @@ Return JSON.
         eco_recommendations = self.generate_eco_recommendations()
 
         itinerary = self.generate_day_wise_itinerary(
-            destination, duration_days, interests, budget, travelers_count
+            destination, duration_days, interests, budget, travelers_count, destinations
         )
 
         destination_profile = recommendation_context.get("destination_profile")
@@ -1244,6 +1437,7 @@ Return JSON.
         origin: str | None = None,
         from_date: str | None = None,
         to_date: str | None = None,
+        destinations: list[str] | None = None,
     ) -> dict[str, Any]:
 
         self.validate_trip_input(destination, duration_days, budget)
@@ -1282,6 +1476,7 @@ Return JSON.
                 cost_data=cost_data,
                 from_date=from_date,
                 to_date=to_date,
+                destinations=destinations,
             )
 
             ai_response = self._generate_content(prompt)
@@ -1298,6 +1493,7 @@ Return JSON.
                 travel_style=travel_style,
                 transportation_mode=transportation_mode,
                 preferred_accommodation=preferred_accommodation,
+                destinations=destinations,
             )
 
             if parsed_ai_response and isinstance(parsed_ai_response, dict):
@@ -1347,6 +1543,7 @@ Return JSON.
                 travel_style=travel_style,
                 transportation_mode=transportation_mode,
                 preferred_accommodation=preferred_accommodation,
+                destinations=destinations,
             )
 
             fallback["error"] = None

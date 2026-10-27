@@ -85,6 +85,7 @@ interface RentalDetails {
 interface TripData {
   id?: string;
   destination: string;
+  destinations?: string[];
   origin?: string;
   duration_days: number;
   budget: number;
@@ -881,6 +882,26 @@ export default function GeneratedTripPage() {
                 {trip.sustainability_score}/100 Eco Score
               </Badge>
             )}
+            {trip.destinations && trip.destinations.length > 1 && (
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "rgba(168, 85, 247, 0.20)",
+                  backdropFilter: "blur(12px)",
+                  border: "1px solid rgba(168, 85, 247, 0.45)",
+                  color: "#E9D5FF",
+                  padding: "6px 14px",
+                  borderRadius: "999px",
+                  fontSize: "0.82rem",
+                  fontWeight: 700,
+                }}
+              >
+                <span>🎓</span>
+                <span>{trip.destinations.length}-City Tour Circuit</span>
+              </div>
+            )}
             <div
               style={{
                 display: "inline-flex",
@@ -1281,8 +1302,9 @@ export default function GeneratedTripPage() {
                     trip.duration_days,
                     trip.interests,
                     trip.travel_style,
-                    trip.attractions,
-                    trip.budget
+                    trip.destinations || [],
+                    trip.budget,
+                    trip.travelers_count || 1
                   );
 
             return (
@@ -1317,10 +1339,29 @@ export default function GeneratedTripPage() {
                           fontSize: "1.3rem",
                           fontWeight: 800,
                           color: "#FFFFFF",
+                          flex: 1,
                         }}
                       >
                         {day.title || day.theme || `Explore ${trip.destination}`}
                       </h3>
+                      {day.destination && (
+                        <span
+                          style={{
+                            fontSize: "0.76rem",
+                            fontWeight: 700,
+                            color: "#38BDF8",
+                            background: "rgba(14, 165, 233, 0.15)",
+                            border: "1px solid rgba(14, 165, 233, 0.35)",
+                            padding: "4px 10px",
+                            borderRadius: "999px",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "5px",
+                          }}
+                        >
+                          <MapPin size={12} /> {day.destination}
+                        </span>
+                      )}
                     </div>
 
                     <div

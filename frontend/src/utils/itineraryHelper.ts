@@ -2,6 +2,7 @@ export interface DayPlan {
   day: number;
   title?: string;
   theme?: string;
+  destination?: string;
   morning?: string;
   afternoon?: string;
   evening?: string;
@@ -1744,10 +1745,432 @@ const CURATED_DESTINATIONS: Record<string, DestinationSchedule> = {
       },
     ],
   },
+  thekkady: {
+    themes: [
+      "Periyar Wildlife Sanctuary, Lake Safari & Spice Plantations",
+      "Bamboo Rafting, Forest Patrol & Ancient Martial Arts",
+      "Chellarkovil Cascades, Cardamom Hills & Tribal Culture",
+    ],
+    days: [
+      {
+        theme: "Periyar Wildlife Sanctuary, Lake Safari & Spice Plantations",
+        morning:
+          "6:30 AM • Early morning guided boat safari on Periyar Lake inside the Periyar Tiger Reserve, spotting wild elephant herds, sambar deer, and otters along the water\'s edge.",
+        afternoon:
+          "1:00 PM • Traditional Kerala banana leaf lunch, followed by an aromatic guided spice plantation walk discovering cardamom, black pepper, nutmeg, and vanilla vines.",
+        evening:
+          "5:30 PM • Watch the breathtaking Kadathanadan Kalari Centre show witnessing 3,000-year-old Kalaripayattu martial arts, followed by browsing Kumily\'s fresh spice emporiums.",
+        activities: [
+          "Periyar Lake Wildlife Boat Safari",
+          "Aromatic Spice Plantation Tour",
+          "Kadathanadan Kalari Martial Arts",
+          "Kumily Spice & Chocolate Market",
+          "Authentic Kerala Sadya Dinner",
+        ],
+      },
+      {
+        theme: "Bamboo Rafting, Forest Patrol & Ancient Martial Arts",
+        morning:
+          "7:30 AM • Full-day eco-tourism bamboo rafting and jungle trek along the Periyar wilderness corridors led by tribal community guides.",
+        afternoon:
+          "1:30 PM • Packed forest picnic lunch beside tranquil river banks, observing hornbills and Nilgiri langurs in the evergreen canopy.",
+        evening:
+          "5:30 PM • Return to Kumily town. Evening Kathakali dance drama show at Mudra Cultural Centre with live face-painting demonstration.",
+        activities: [
+          "Periyar Bamboo Rafting Safari",
+          "Evergreen Rainforest Canopy Walk",
+          "Mudra Cultural Centre Kathakali Show",
+          "Campfire & Tribal Heritage Dinner",
+        ],
+      },
+      {
+        theme: "Chellarkovil Cascades, Cardamom Hills & Tribal Culture",
+        morning:
+          "9:00 AM • Scenic drive to Chellarkovil Viewpoint, overlooking the dramatic coconut-grove plains of neighboring Tamil Nadu and misty waterfalls.",
+        afternoon:
+          "1:00 PM • Farm-to-table lunch at an organic hill farm, followed by a visit to the local elephant junction for cruelty-free interaction and bathing observation.",
+        evening:
+          "5:00 PM • Sunset walk through the cardamom ridges of Ottakathalamedu, followed by warm tea and fresh banana fritters at a scenic hill cafe.",
+        activities: [
+          "Chellarkovil Waterfall Viewpoint",
+          "Ottakathalamedu Hilltop Sunset",
+          "Elephant Care & Interaction Center",
+          "Organic Farm-to-Table Banquet",
+        ],
+      },
+    ],
+  },
+  alleppey: {
+    themes: [
+      "Vembanad Lake Houseboat Cruise & Backwater Canals",
+      "Kuttanad Below-Sea-Level Paddies & Village Canoeing",
+      "Alleppey Lighthouse, Marari Beach Sunset & Fresh Seafood",
+    ],
+    days: [
+      {
+        theme: "Vembanad Lake Houseboat Cruise & Backwater Canals",
+        morning:
+          "11:30 AM • Board a traditional handcrafted Kettuvallam (luxury cedar houseboat) at Punnamada Jetty. Cruise gently through the tranquil palm-fringed canals of Vembanad Lake.",
+        afternoon:
+          "1:30 PM • Savor freshly prepared hot Kerala lunch on board featuring Karimeen Pollichathu (pearl spot in banana leaf) and organic red rice.",
+        evening:
+          "5:00 PM • Sunset tea and banana fritters on the sundeck as the boat anchors along a quiet village bank. Candlelit dinner under the stars with gentle water reflections.",
+        activities: [
+          "Punnamada Jetty Houseboat Boarding",
+          "Vembanad Lake Scenic Cruise",
+          "Karimeen Pollichathu Lunch on Board",
+          "Sunset Tea on Houseboat Sundeck",
+          "Backwater Night Village Mooring",
+        ],
+      },
+      {
+        theme: "Kuttanad Below-Sea-Level Paddies & Village Canoeing",
+        morning:
+          "8:30 AM • Disembark after breakfast. Board a traditional silent wooden shikara canoe to glide through the narrow labyrinthine village canals of Kuttanad.",
+        afternoon:
+          "1:00 PM • Authentic duck roast and appam lunch at a local toddy shop / heritage restaurant. Visit the historic Champakulam Kalloorkad St. Mary\'s Forane Church (built 427 AD).",
+        evening:
+          "5:00 PM • Stroll along the scenic Pathiramanal Island nature sanctuary spotting migratory kingfishers and cormorants at golden hour.",
+        activities: [
+          "Kuttanad Village Canoe Safari",
+          "Champakulam Ancient Church (427 AD)",
+          "Traditional Duck Roast & Toddy Shop Lunch",
+          "Pathiramanal Island Bird Sanctuary",
+        ],
+      },
+      {
+        theme: "Alleppey Lighthouse, Marari Beach Sunset & Fresh Seafood",
+        morning:
+          "9:30 AM • Climb the historic striped Alleppey Lighthouse (built 1862) for 360° views over the Arabian Sea and coconut forest canopy.",
+        afternoon:
+          "1:00 PM • Beachside lunch featuring tiger prawns and coastal fish curry, followed by a walk through the historic pier ruins of Alappuzha Beach.",
+        evening:
+          "4:30 PM • Transfer north to pristine Marari Beach. Stroll along the soft golden sands, swim in the warm Arabian Sea, and witness an unforgettable fiery sunset.",
+        activities: [
+          "Alleppey Lighthouse & Marine Museum",
+          "Historic Sea Pier Ruins",
+          "Marari Golden Sand Beach Sunset",
+          "Coastal Seafood Grill Dinner",
+        ],
+      },
+    ],
+  },
+  alappuzha: {
+    themes: [
+      "Vembanad Lake Houseboat Cruise & Backwater Canals",
+      "Kuttanad Below-Sea-Level Paddies & Village Canoeing",
+      "Alleppey Lighthouse, Marari Beach Sunset & Fresh Seafood",
+    ],
+    days: [
+      {
+        theme: "Vembanad Lake Houseboat Cruise & Backwater Canals",
+        morning:
+          "11:30 AM • Board a traditional handcrafted Kettuvallam (luxury cedar houseboat) at Punnamada Jetty. Cruise gently through the tranquil palm-fringed canals of Vembanad Lake.",
+        afternoon:
+          "1:30 PM • Savor freshly prepared hot Kerala lunch on board featuring Karimeen Pollichathu (pearl spot in banana leaf) and organic red rice.",
+        evening:
+          "5:00 PM • Sunset tea and banana fritters on the sundeck as the boat anchors along a quiet village bank. Candlelit dinner under the stars with gentle water reflections.",
+        activities: [
+          "Punnamada Jetty Houseboat Boarding",
+          "Vembanad Lake Scenic Cruise",
+          "Karimeen Pollichathu Lunch on Board",
+          "Sunset Tea on Houseboat Sundeck",
+          "Backwater Night Village Mooring",
+        ],
+      },
+      {
+        theme: "Kuttanad Below-Sea-Level Paddies & Village Canoeing",
+        morning:
+          "8:30 AM • Disembark after breakfast. Board a traditional silent wooden shikara canoe to glide through the narrow labyrinthine village canals of Kuttanad.",
+        afternoon:
+          "1:00 PM • Authentic duck roast and appam lunch at a local toddy shop / heritage restaurant. Visit the historic Champakulam Kalloorkad St. Mary\'s Forane Church (built 427 AD).",
+        evening:
+          "5:00 PM • Stroll along the scenic Pathiramanal Island nature sanctuary spotting migratory kingfishers and cormorants at golden hour.",
+        activities: [
+          "Kuttanad Village Canoe Safari",
+          "Champakulam Ancient Church (427 AD)",
+          "Traditional Duck Roast & Toddy Shop Lunch",
+          "Pathiramanal Island Bird Sanctuary",
+        ],
+      },
+      {
+        theme: "Alleppey Lighthouse, Marari Beach Sunset & Fresh Seafood",
+        morning:
+          "9:30 AM • Climb the historic striped Alleppey Lighthouse (built 1862) for 360° views over the Arabian Sea and coconut forest canopy.",
+        afternoon:
+          "1:00 PM • Beachside lunch featuring tiger prawns and coastal fish curry, followed by a walk through the historic pier ruins of Alappuzha Beach.",
+        evening:
+          "4:30 PM • Transfer north to pristine Marari Beach. Stroll along the soft golden sands, swim in the warm Arabian Sea, and witness an unforgettable fiery sunset.",
+        activities: [
+          "Alleppey Lighthouse & Marine Museum",
+          "Historic Sea Pier Ruins",
+          "Marari Golden Sand Beach Sunset",
+          "Coastal Seafood Grill Dinner",
+        ],
+      },
+    ],
+  },
+  coorg: {
+    themes: [
+      "Coffee Plantations, Abbey Falls & Raja's Seat Sunset",
+      "Dubare Elephant Camp & Namdroling Golden Temple",
+      "Mandalpatti 4x4 Jeep Safari & Highland Peaks",
+    ],
+    days: [
+      {
+        theme: "Coffee Plantations, Abbey Falls & Raja's Seat Sunset",
+        morning:
+          "9:00 AM • Guided walking tour through lush Arabica and Robusta coffee estates, picking fresh coffee berries and smelling blooming white blossoms.",
+        afternoon:
+          "1:00 PM • Traditional Kodava lunch featuring authentic Pandi Curry (or bamboo shoot curry) with Akki Roti. Tour cascading Abbey Falls in the cardamom hills.",
+        evening:
+          "5:00 PM • Watch the sunset from Raja\'s Seat, the seasonal garden retreat of the Kings of Kodagu overlooking misty valley ridges and distant Aravalli hills.",
+        activities: [
+          "Aromatic Coffee & Pepper Estate Walk",
+          "Abbey Falls Nature Trail",
+          "Authentic Kodava Pandi Curry Lunch",
+          "Raja\'s Seat Sunset Vista",
+          "Madikeri Fort Heritage Walk",
+        ],
+      },
+      {
+        theme: "Dubare Elephant Camp & Namdroling Golden Temple",
+        morning:
+          "8:30 AM • Morning excursion to Dubare Elephant Camp along the Kaveri River. Watch and participate in elephant bathing and feeding sessions.",
+        afternoon:
+          "1:00 PM • Tibetan lunch in Bylakuppe, followed by visiting Namdroling Monastery (The Golden Temple), marveling at the three 40-foot gilded Buddha statues.",
+        evening:
+          "4:30 PM • Peaceful walk along Nisargadhama bamboo island forest via hanging rope bridge, feeding friendly spotted deer in the teak canopy.",
+        activities: [
+          "Dubare Elephant River Camp",
+          "Namdroling Golden Temple Bylakuppe",
+          "Tibetan Momos & Thukpa Lunch",
+          "Nisargadhama Bamboo Island & Deer Park",
+        ],
+      },
+      {
+        theme: "Mandalpatti 4x4 Jeep Safari & Highland Peaks",
+        morning:
+          "8:00 AM • Thrilling 4x4 off-road jeep safari up the rugged slopes of Mandalpatti (Mugilu-Peth) peak, driving through rolling mist and tea plantations.",
+        afternoon:
+          "1:00 PM • Picnic lunch on the panoramic plateau, followed by a visit to Talakaveri, the sacred mountain origin of the holy Kaveri River in the Brahmagiri hills.",
+        evening:
+          "5:30 PM • Return to Madikeri. Sample fresh Coorg homemade chocolates, pure wild honey, and freshly roasted coffee beans at the town market.",
+        activities: [
+          "Mandalpatti 4x4 Jeep Ridge Safari",
+          "Talakaveri Sacred Kaveri River Source",
+          "Brahmagiri Peak Viewpoint",
+          "Coorg Homemade Chocolate & Coffee Market",
+        ],
+      },
+    ],
+  },
 };
 
 /**
- * Synthesizes a structured DayPlan array for any destination and duration.
+ * Parses multiple destinations from a query or circuit string:
+ * e.g. "Munnar, Thekkady, Alleppey" -> ["Munnar", "Thekkady", "Alleppey"]
+ * e.g. "Delhi -> Agra -> Jaipur" -> ["Delhi", "Agra", "Jaipur"]
+ */
+export function parseMultiDestinations(input?: string): string[] {
+  if (!input) return [];
+  const parts = input.split(/[,➔\->]+|\s+to\s+|\s+via\s+|\s+—\s+/i);
+  const cleaned = parts
+    .map((p) => p.trim())
+    .filter((p) => p.length >= 2)
+    .map((p) => p.charAt(0).toUpperCase() + p.slice(1));
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const c of cleaned) {
+    if (!seen.has(c.toLowerCase())) {
+      seen.add(c.toLowerCase());
+      result.push(c);
+    }
+  }
+  return result;
+}
+
+/**
+ * Classifies any city worldwide into its core geographic archetype:
+ * mountain | coastal | heritage_capital | wildlife_nature | metropolis | desert_citadel
+ */
+export function classifyWorldwideArchetype(destination: string): {
+  type: "mountain" | "coastal" | "heritage_capital" | "wildlife_nature" | "metropolis" | "desert_citadel";
+  morningIcon: string;
+  themeDescriptors: string[];
+  sampleSpots: string[];
+} {
+  const clean = destination.toLowerCase().trim();
+
+  // 1. Coastal / Beach / Island
+  if (
+    clean.includes("beach") || clean.includes("coast") || clean.includes("island") ||
+    clean.includes("goa") || clean.includes("varkala") || clean.includes("bali") ||
+    clean.includes("phuket") || clean.includes("maldives") || clean.includes("hawaii") ||
+    clean.includes("santorini") || clean.includes("amalfi") || clean.includes("marari") ||
+    clean.includes("pondicherry") || clean.includes("kovalam") || clean.includes("gokarna") ||
+    clean.includes("miami") || clean.includes("cancun") || clean.includes("ibiza")
+  ) {
+    return {
+      type: "coastal",
+      morningIcon: "🏖️",
+      themeDescriptors: [
+        "Coastal Cliffs, Sandy Shores & Seaside Promenade",
+        "Marine Sanctuary, Catamaran Cruise & Coral Reefs",
+        "Lighthouse Vistas, Surfing Waves & Fresh Seafood Shacks",
+        "Hidden Coves, Lagoon Kayaking & Sunset Cocktails",
+        "Golden Hour Beachcombing & Night Beach Bazaars",
+      ],
+      sampleSpots: [
+        `${destination} Coastal Cliffwalk & Panoramic Bay`,
+        `${destination} Golden Sand Shoreline & Water Sports Harbor`,
+        `${destination} Oceanfront Lighthouse & Marine Lookout`,
+        `${destination} Coconut Palm Grove & Lagoon Estuary`,
+        `${destination} Historic Sea Fort & Rampart Sunset Overlook`,
+        `${destination} Beachside Seafood Shacks & Sunset Cafe`,
+        `${destination} Island Coral Reef & Catamaran Jetty`,
+        `${destination} Night Beach Market & Artisan Shell Crafts`,
+      ],
+    };
+  }
+
+  // 2. Mountain / Hill Station / Alpine
+  if (
+    clean.includes("hill") || clean.includes("mountain") || clean.includes("valley") ||
+    clean.includes("alp") || clean.includes("himalaya") || clean.includes("munnar") ||
+    clean.includes("manali") || clean.includes("ooty") || clean.includes("kodaikanal") ||
+    clean.includes("coorg") || clean.includes("shimla") || clean.includes("kasol") ||
+    clean.includes("kashmir") || clean.includes("leh") || clean.includes("ladakh") ||
+    clean.includes("zermatt") || clean.includes("banff") || clean.includes("queenstown") ||
+    clean.includes("aspen") || clean.includes("darjeeling") || clean.includes("gangtok")
+  ) {
+    return {
+      type: "mountain",
+      morningIcon: "⛰️",
+      themeDescriptors: [
+        "Misty Mountain Ridges, Pine Forest Trails & Sunrise Overlook",
+        "Highland Cable Car, Alpine Lakes & Waterfall Cascades",
+        "Cedar Woods, Highland Tea Terraces & Panoramic Valley",
+        "Scenic Pass Road Trip, Mountain Streams & Campfire Haven",
+        "Glacial Vistas, Forest Treks & Cozy Mountain Cafes",
+      ],
+      sampleSpots: [
+        `${destination} Sunrise Point & Panoramic Valley Ridge`,
+        `${destination} High-Altitude Pine Trail & Waterfall Cascades`,
+        `${destination} Alpine Cable Car / Ropeway Lookout`,
+        `${destination} Tea & Spice Highland Terraces`,
+        `${destination} Historic Cedar Wood Monastery / Shrine`,
+        `${destination} Mountain River Bank Walk & Rustic Cafe`,
+        `${destination} High Mountain Pass & Scenic Overlook`,
+        `${destination} Evening Campfire & Stargazing Viewpoint`,
+      ],
+    };
+  }
+
+  // 3. Wildlife / Jungle / Rainforest / Backwaters
+  if (
+    clean.includes("wildlife") || clean.includes("safari") || clean.includes("jungle") ||
+    clean.includes("forest") || clean.includes("thekkady") || clean.includes("wayanad") ||
+    clean.includes("alleppey") || clean.includes("alappuzha") || clean.includes("periyar") ||
+    clean.includes("serengeti") || clean.includes("amazon") || clean.includes("borneo") ||
+    clean.includes("kaziranga") || clean.includes("ranthambore") || clean.includes("jim corbett")
+  ) {
+    return {
+      type: "wildlife_nature",
+      morningIcon: "🌿",
+      themeDescriptors: [
+        "National Park Wildlife Safari & Birding Corridors",
+        "Bamboo Rafting, Forest River Trails & Ancient Shrines",
+        "Spice Plantation Walks, Canopy Bridges & Hidden Waterfalls",
+        "Tranquil Backwater Canals, Eco-Lodges & Night Jungle Calls",
+      ],
+      sampleSpots: [
+        `${destination} National Park & Wildlife Sanctuary Trail`,
+        `${destination} Lake Boat Safari & Animal Waterhole`,
+        `${destination} Spice Forest Plantation & Botanical Canopy`,
+        `${destination} Bamboo River Rafting & Forest Watchtower`,
+        `${destination} Tribal Craft Village & Eco-Exhibition`,
+        `${destination} Backwater Canal Cruise & Sunset Mooring`,
+      ],
+    };
+  }
+
+  // 4. Desert / Oasis / Citadel
+  if (
+    clean.includes("desert") || clean.includes("dune") || clean.includes("jaisalmer") ||
+    clean.includes("bikaner") || clean.includes("jodhpur") || clean.includes("cairo") ||
+    clean.includes("marrakech") || clean.includes("petra") || clean.includes("wadi")
+  ) {
+    return {
+      type: "desert_citadel",
+      morningIcon: "🏜️",
+      themeDescriptors: [
+        "Golden Sand Dunes, Camel Caravan & Oasis Springs",
+        "Ancient Desert Fortresses, Sandstone Haveli Carvings",
+        "Sunken Stepwells, Desert Astronomy & Bedouin Banquets",
+      ],
+      sampleSpots: [
+        `${destination} Golden Sand Dune Sunrise & Camel Safari`,
+        `${destination} Ancient Sandstone Fortress Ramparts`,
+        `${destination} Ornate Haveli Courtyard & Carved Jharokhas`,
+        `${destination} Desert Oasis Springs & Date Palm Groves`,
+        `${destination} Evening Folk Music, Campfire & Star Gazing`,
+      ],
+    };
+  }
+
+  // 5. Global Modern Metropolis
+  if (
+    clean.includes("tokyo") || clean.includes("singapore") || clean.includes("dubai") ||
+    clean.includes("new york") || clean.includes("london") || clean.includes("hong kong") ||
+    clean.includes("seoul") || clean.includes("shanghai") || clean.includes("sydney") ||
+    clean.includes("toronto") || clean.includes("bangalore") || clean.includes("mumbai")
+  ) {
+    return {
+      type: "metropolis",
+      morningIcon: "🏙️",
+      themeDescriptors: [
+        "Skyscraper Skyline Vistas, Modern Art & Botanical Domes",
+        "High-Tech Districts, Designer Streets & Iconic Waterfront",
+        "Futuristic Architecture, Gourmet Food Halls & Night Skydeck",
+      ],
+      sampleSpots: [
+        `${destination} Skyscraper Observatory & 360° Skydeck`,
+        `${destination} Contemporary Art Museum & Waterfront Promenade`,
+        `${destination} High-Tech Innovation Quarter & Futuristic Transit`,
+        `${destination} Designer Shopping Avenue & Artisan Espresso Bar`,
+        `${destination} Illuminated Harbor Lights & Rooftop Lounge`,
+      ],
+    };
+  }
+
+  // 6. Default: Historic & Cultural Capital
+  return {
+    type: "heritage_capital",
+    morningIcon: "🏛️",
+    themeDescriptors: [
+      "Royal Architectural Wonders, Grand Palaces & Historic Gates",
+      "Ancient Courtyards, UNESCO Heritage Sanctuaries & Art Galleries",
+      "Traditional Artisan Quarters, Fragrant Spice Bazaars & Sunset Vistas",
+      "Sacred Shrines, Living Folk Traditions & Regional Gastronomy",
+      "Riverfront Ghats, Historic Alleys & Night Culinary Safaris",
+    ],
+    sampleSpots: [
+      `${destination} Historic Old Quarter & Grand Heritage Citadel`,
+      `${destination} Imperial Royal Palace & Dynastic Museum`,
+      `${destination} UNESCO Architectural Wonder & Stained-Glass Hall`,
+      `${destination} Artisan Craft Quarter, Spice & Silk Bazaars`,
+      `${destination} Sacred Temple / Cathedral & Holy Waterside`,
+      `${destination} Sunset Promenade & Panoramic Golden Hour Overlook`,
+      `${destination} Traditional Street Food Safari & Cultural Performance`,
+    ],
+  };
+}
+
+/**
+ * Synthesizes a structured DayPlan array for any destination and duration,
+ * supporting single destinations, multi-city tours (college/group circuits),
+ * and universal worldwide destinations with NO FORCED 3-4 STOP RESTRICTIONS.
  */
 export function generateRichDayPlans(
   destination: string,
@@ -1755,31 +2178,155 @@ export function generateRichDayPlans(
   interests: string[] = ["Sightseeing"],
   travel_style: string = "Balanced",
   attractions: string[] = [],
-  budget: number = 25000
+  budget: number = 25000,
+  travelers_count: number = 1,
+  destinations?: string[]
 ): DayPlan[] {
   const destClean = (destination || "").trim();
-  const destLower = destClean.toLowerCase();
   const daysCount = Math.max(1, duration_days);
+  const dailyCost = Math.round(budget / daysCount);
 
-  // Look up curated destination presets safely
+  // 1. Resolve Multi-City Circuits (College / Group Tours)
+  const destList = destinations && destinations.length > 0
+    ? destinations
+    : parseMultiDestinations(destClean);
+
+  const isMultiCity = destList.length > 1;
+
+  // 2. Multi-City Circuit Partitioning
+  if (isMultiCity) {
+    const numDests = destList.length;
+    // Divide daysCount proportionally across destinations
+    const baseDays = Math.floor(daysCount / numDests);
+    const remainder = daysCount % numDests;
+    const dayAllocations = destList.map((_, idx) => Math.max(1, baseDays + (idx < remainder ? 1 : 0)));
+
+    const result: DayPlan[] = [];
+    let globalDayIndex = 1;
+
+    destList.forEach((city, cityIdx) => {
+      const cityDays = dayAllocations[cityIdx];
+      const cityClean = city.trim();
+      const cityLower = cityClean.toLowerCase();
+      const isFirstCity = cityIdx === 0;
+      const prevCity = isFirstCity ? null : destList[cityIdx - 1].trim();
+
+      // Check if city exists in curated presets
+      const curatedKey = Object.keys(CURATED_DESTINATIONS).find(
+        (k) => k === cityLower || cityLower.includes(k) || k.includes(cityLower)
+      );
+      const curated = curatedKey ? CURATED_DESTINATIONS[curatedKey] : null;
+      const archetype = classifyWorldwideArchetype(cityClean);
+
+      for (let dInCity = 1; dInCity <= cityDays; dInCity++) {
+        const currentOverallDay = globalDayIndex;
+        const isTransferDay = !isFirstCity && dInCity === 1;
+        const isLastDayOfTrip = currentOverallDay === daysCount;
+
+        let theme = "";
+        let morning = "";
+        let afternoon = "";
+        let evening = "";
+        let activities: string[] = [];
+
+        // Check if curated schedule is available
+        if (curated && curated.days[dInCity - 1]) {
+          const cDay = curated.days[dInCity - 1];
+          theme = cDay.theme;
+          morning = cDay.morning;
+          afternoon = cDay.afternoon;
+          evening = cDay.evening;
+          activities = [...cDay.activities];
+
+          // If transfer day into this city, prepend intercity transfer in the morning
+          if (isTransferDay && prevCity) {
+            theme = `Scenic Transit: ${prevCity} ➔ ${cityClean} & New Horizons`;
+            morning = `08:00 AM • Scenic road trip / transit from ${prevCity} to ${cityClean} through beautiful countryside corridors. Enjoy a picturesque midpoint tea break and check into your stay in ${cityClean}.`;
+            activities.unshift(`Scenic Transit from ${prevCity} to ${cityClean}`);
+          }
+        } else {
+          // Dynamic generation for this city
+          if (isTransferDay && prevCity) {
+            theme = `Transit Leg: ${prevCity} ➔ ${cityClean} Arrival & Orientation`;
+            const act1 = `${cityClean} Panoramic Viewpoint & Orientation`;
+            const act2 = `${cityClean} Traditional Dining & Artisan Stroll`;
+            const act3 = `${cityClean} Evening Sunset & Campfire Gathering`;
+            activities = [
+              `Scenic Road Trip: ${prevCity} to ${cityClean}`,
+              act1,
+              act2,
+              act3,
+            ];
+            morning = `08:00 AM • Scenic morning transit from ${prevCity} to ${cityClean}. Enjoy mountain / countryside vistas, check into your hotel/resort in ${cityClean}, and freshen up.`;
+            afternoon = `01:30 PM • Authentic local lunch in ${cityClean}, followed by an afternoon orientation visit to ${act1} capturing signature vistas.`;
+            evening = `05:30 PM • Sunset viewpoint at ${act2}, followed by a relaxed group dinner at ${act3} with authentic regional delicacies.`;
+          } else if (isLastDayOfTrip) {
+            theme = `Final ${cityClean} Highlights & Memorable Farewell`;
+            const act1 = `${cityClean} Morning Scenic Photo Stop`;
+            const act2 = `${cityClean} Artisan Spice & Souvenir Bazaars`;
+            const act3 = `Farewell Regional Feast & Departure Transfer`;
+            activities = [act1, act2, act3];
+            morning = `08:00 AM • Morning walk at ${act1} for final photographs in the soft dawn light.`;
+            afternoon = `12:30 PM • Farewell regional lunch followed by handicraft and souvenir shopping at ${act2}.`;
+            evening = `04:30 PM • Hotel check-out, luggage collection, and onward departure transfer from ${cityClean}.`;
+          } else {
+            // Full exploration day in this city (5 to 6 varied stops!)
+            const dayThemeIdx = (dInCity - 1) % archetype.themeDescriptors.length;
+            theme = `${cityClean}: ${archetype.themeDescriptors[dayThemeIdx]}`;
+            const spots = archetype.sampleSpots;
+            const offset = (dInCity - 1) * 3;
+            const s1 = spots[offset % spots.length];
+            const s2 = spots[(offset + 1) % spots.length];
+            const s3 = spots[(offset + 2) % spots.length];
+            const s4 = spots[(offset + 3) % spots.length];
+            const s5 = spots[(offset + 4) % spots.length];
+
+            activities = [s1, s2, s3, s4, s5];
+            morning = `07:45 AM • Crisp morning excursion to ${s1}. Enjoy pristine photography and tranquil sightseeing, followed by ${s2}.`;
+            afternoon = `01:00 PM • Traditional regional lunch at a celebrated local dining spot. Afternoon cultural exploration at ${s3}, immersing in local history and artisan traditions.`;
+            evening = `05:15 PM • Golden hour sunset vista at ${s4}. Follow with an evening stroll and dinner at ${s5} enjoying vibrant regional flavors.`;
+          }
+        }
+
+        result.push({
+          day: currentOverallDay,
+          destination: cityClean,
+          title: `Day ${currentOverallDay}: ${theme}`,
+          theme: theme,
+          morning: morning,
+          afternoon: afternoon,
+          evening: evening,
+          activities: activities,
+          estimated_daily_cost: dailyCost,
+        });
+
+        globalDayIndex++;
+      }
+    });
+
+    return result;
+  }
+
+  // 3. Single Destination Itinerary Generation (Universal Worldwide)
+  const singleDestLower = destClean.toLowerCase();
   const curatedKey = Object.keys(CURATED_DESTINATIONS).find((k) => {
-    if (k === destLower) return true;
-    if (destLower.includes(k)) return true;
-    if (k === "annapurna" && (destLower.includes("abc") || destLower.includes("annapoorna") || destLower.includes("base camp"))) return true;
+    if (k === singleDestLower) return true;
+    if (singleDestLower.includes(k) || k.includes(singleDestLower)) return true;
+    if (k === "annapurna" && (singleDestLower.includes("abc") || singleDestLower.includes("annapoorna") || singleDestLower.includes("base camp"))) return true;
     return false;
   });
 
   const curated = curatedKey ? CURATED_DESTINATIONS[curatedKey] : null;
-
+  const archetype = classifyWorldwideArchetype(destClean);
   const result: DayPlan[] = [];
-  const dailyCost = Math.round(budget / daysCount);
 
   for (let i = 1; i <= daysCount; i++) {
     if (curated && curated.days[i - 1]) {
       const cDay = curated.days[i - 1];
       result.push({
         day: i,
-        title: cDay.theme,
+        destination: destClean,
+        title: `Day ${i}: ${cDay.theme}`,
         theme: cDay.theme,
         morning: cDay.morning,
         afternoon: cDay.afternoon,
@@ -1788,66 +2335,66 @@ export function generateRichDayPlans(
         estimated_daily_cost: dailyCost,
       });
     } else {
-      // Intelligent Dynamic Multi-Stop Generator (4-6 authentic distinct stops per day with NO repeats and realistic timings)
-      const dayThemes = [
-        `Arrival, Architectural Orientation & Welcome Dining`,
-        `Signature UNESCO Wonders & Royal Historic Heritage`,
-        `Nature Reserves, Panoramic Ridge & Sunset Golden Hour`,
-        `Ancient Shrines, Living Traditions & Artisan Bazaars`,
-        `Scenic Countryside Valley & Culinary Tasting Trail`,
-        `Hidden Overlooks, Folk Art Quarters & Riverfront Stroll`,
-        `Botanical Sanctuaries, Clifftop Vistas & Night Markets`,
-        `Regional Folklore, Craft Cooperatives & Tea Gardens`,
-        `Offbeat Heritage Corridors & Authentic Street Gastronomy`,
-        `Memorable Farewell Panoramic Vistas & Souvenir Trails`,
-      ];
+      // Dynamic Unforced Worldwide Pacing:
+      // Day 1: 3-4 stops (arrival & welcome)
+      // Mid days: 5-6 diverse stops (core exploration)
+      // Final day: 2-3 stops (farewell & departure)
+      const isFirstDay = i === 1;
+      const isFinalDay = i === daysCount;
 
-      const dayTheme = dayThemes[(i - 1) % dayThemes.length];
+      let dayTheme = "";
+      let morning = "";
+      let afternoon = "";
+      let evening = "";
+      let activities: string[] = [];
 
-      // Build rich destination-specific activity anchors
-      const pool = attractions && attractions.length >= 6
+      const spots = attractions && attractions.length >= 6
         ? attractions
-        : [
-            `${destClean} Historic Old Quarter & Grand Heritage Gateway`,
-            `${destClean} Royal Palace & Dynastic Museum`,
-            `${destClean} Panoramic Mountain Ridge & Skywalk Viewpoint`,
-            `${destClean} Botanical Nature Sanctuary & Forest Trail`,
-            `${destClean} 14th-Century Stone Fort & Lookout Towers`,
-            `${destClean} Traditional Spice, Tea & Silk Market`,
-            `${destClean} Sacred Riverfront Ghats & Ancient Shrines`,
-            `${destClean} Artisan Handcraft Workshop & Pottery Studio`,
-            `${destClean} Lakeside Promenade & Golden Hour Boat Cruise`,
-            `${destClean} Heritage Street Food Safari & Night Market`,
-            `${destClean} High-Altitude Scenic Pass & Alpine Meadows`,
-            `${destClean} Folk Art Museum & Living Heritage Village`,
-          ];
+        : archetype.sampleSpots;
 
-      // Dynamic stop count: Day 1 (4 stops for arrival pacing), Days 2-3 (5-6 stops), other days (4-5 stops)
-      const stopCount = i === 1 ? 4 : (i % 2 === 0 ? 5 : 6);
-      const dayOffset = (i - 1) * 3;
-      const dayActs: string[] = [];
-      for (let s = 0; s < stopCount; s++) {
-        dayActs.push(pool[(dayOffset + s) % pool.length]);
+      if (isFirstDay) {
+        dayTheme = `Arrival, ${destClean} Historic Orientation & Welcome Dining`;
+        const a1 = spots[0];
+        const a2 = spots[1] || `${destClean} Heritage Walkway`;
+        const a3 = spots[2] || `${destClean} Welcome Sunset Vista`;
+        activities = [a1, a2, a3];
+        morning = `08:30 AM • Arrival in ${destClean}, hotel check-in and luggage drop. Morning orientation stroll through ${a1} taking in the fresh atmosphere and early architecture.`;
+        afternoon = `01:15 PM • Authentic regional lunch at a celebrated local dining spot. Afternoon visit to ${a2} with cultural immersion and heritage photography.`;
+        evening = `05:30 PM • Sunset promenade at ${a3}, followed by a welcome dinner featuring signature ${destClean} delicacies.`;
+      } else if (isFinalDay) {
+        dayTheme = `Final ${destClean} Horizons, Artisan Bazaars & Departure`;
+        const a1 = spots[(i * 2) % spots.length];
+        const a2 = spots[(i * 2 + 1) % spots.length];
+        activities = [a1, a2, `Departure Transfer from ${destClean}`];
+        morning = `08:00 AM • Morning excursion to ${a1} to enjoy tranquil dawn vistas and capture final trip memories.`;
+        afternoon = `12:30 PM • Farewell regional lunch followed by last-minute handicraft and specialty shopping at ${a2}.`;
+        evening = `04:30 PM • Hotel check-out, luggage collection, and onward departure transfer with cherished memories of ${destClean}.`;
+      } else {
+        // Core exploration days: 5 to 6 varied stops!
+        const themeIndex = (i - 1) % archetype.themeDescriptors.length;
+        dayTheme = archetype.themeDescriptors[themeIndex];
+        const offset = (i - 1) * 3;
+        const a1 = spots[offset % spots.length];
+        const a2 = spots[(offset + 1) % spots.length];
+        const a3 = spots[(offset + 2) % spots.length];
+        const a4 = spots[(offset + 3) % spots.length];
+        const a5 = spots[(offset + 4) % spots.length];
+
+        activities = [a1, a2, a3, a4, a5];
+        morning = `07:45 AM • Crisp early morning visit to ${a1} before peak crowds. Continue to ${a2} along the scenic corridor.`;
+        afternoon = `01:00 PM • Traditional regional dining experience. Afternoon exploration at ${a3}, admiring architecture, artisan crafts, and local culture.`;
+        evening = `05:15 PM • Golden hour sunset vantage point at ${a4}. Conclude with an evening street food safari and dinner at ${a5}.`;
       }
-
-      const morningText = i === 1
-        ? `8:30 AM • Arrival in ${destClean}, seamless check-in and briefing. Morning orientation walk through ${dayActs[0]} to admire early architecture and morning street vibrancy.`
-        : `7:45 AM • Crisp early morning excursion to ${dayActs[0]}. Capture pristine photography before peak crowds, followed by a guided walking circuit through ${dayActs[1] || dayActs[0]}.`;
-
-      const afternoonText = `1:15 PM • Authentic regional lunch at a celebrated local dining spot. Afternoon cultural exploration at ${dayActs[2] || dayActs[1]}, immersing in local craftsmanship, heritage artifacts, and traditional customs.`;
-
-      const eveningText = i === daysCount
-        ? `5:30 PM • Sunset viewing at ${dayActs[dayActs.length - 1]}, followed by souvenir shopping for authentic ${destClean} handicrafts and a festive farewell dinner banquet.`
-        : `5:15 PM • Golden hour promenade along ${dayActs[dayActs.length - 2] || dayActs[dayActs.length - 1]} with panoramic sunset vistas. Evening street food safari and dinner at ${dayActs[dayActs.length - 1]}.`;
 
       result.push({
         day: i,
+        destination: destClean,
         title: `Day ${i}: ${dayTheme}`,
         theme: dayTheme,
-        morning: morningText,
-        afternoon: afternoonText,
-        evening: eveningText,
-        activities: dayActs,
+        morning: morning,
+        afternoon: afternoon,
+        evening: evening,
+        activities: activities,
         estimated_daily_cost: dailyCost,
       });
     }

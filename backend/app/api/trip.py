@@ -233,6 +233,7 @@ def generate_ai_itinerary(
 
         result = ai_service.generate_trip_plan(
             destination=payload.destination,
+            destinations=payload.destinations,
             origin=payload.origin,
             duration_days=payload.duration_days,
             from_date=payload.from_date,
@@ -246,6 +247,7 @@ def generate_ai_itinerary(
         )
 
         result["destination"] = result.get("destination") or payload.destination
+        result["destinations"] = payload.destinations
         result["origin"] = payload.origin
         result["duration_days"] = payload.duration_days
         result["from_date"] = payload.from_date
@@ -278,6 +280,7 @@ def generate_ai_itinerary(
             ai_service = get_ai_service()
             fallback = ai_service.generate_offline_trip_plan(
                 destination=payload.destination,
+                destinations=payload.destinations,
                 duration_days=payload.duration_days,
                 budget=payload.budget,
                 interests=payload.interests,
