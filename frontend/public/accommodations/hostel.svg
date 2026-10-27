@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="hl-border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="50%" stop-color="#EC4899"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="hl-sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B"/>
+      <stop offset="40%" stop-color="#4C1D95"/>
+      <stop offset="75%" stop-color="#BE185D"/>
+      <stop offset="100%" stop-color="#FDE047"/>
+    </linearGradient>
+    <clipPath id="hl-clip">
+      <rect x="28" y="28" width="456" height="456" rx="104" ry="104"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#hl-clip)">
+    <!-- Vibrant Social Sunset Sky -->
+    <rect x="28" y="28" width="456" height="456" fill="url(#hl-sky)"/>
+
+    <!-- Dusk Glow Moon & Stars -->
+    <circle cx="380" cy="110" r="24" fill="#FEF08A" opacity="0.95"/>
+    <circle cx="388" cy="106" r="22" fill="#2E1065"/>
+
+    <!-- Distant Mountain Ridge -->
+    <path d="M28 260 L120 200 L210 245 L320 185 L420 250 L484 215 L484 484 L28 484 Z" fill="#2E1065" opacity="0.8"/>
+
+    <!-- SOCIAL HOSTEL LODGE BUILDING -->
+    <!-- Pitched Roof -->
+    <polygon points="120,195 256,120 392,195" fill="#B91C1C"/>
+    <polygon points="132,195 256,128 380,195" fill="#DC2626"/>
+
+    <!-- Hostel Main Lodge Structure -->
+    <rect x="140" y="195" width="232" height="130" fill="#FEF3C7"/>
+
+    <!-- Attic Circular Window with warm glow -->
+    <circle cx="256" cy="165" r="15" fill="#FDE047" stroke="#78350F" stroke-width="2"/>
+    <line x1="256" y1="150" x2="256" y2="180" stroke="#78350F" stroke-width="1.5"/>
+    <line x1="241" y1="165" x2="271" y2="165" stroke="#78350F" stroke-width="1.5"/>
+
+    <!-- Upper Windows with Colorful Hostel Curtains -->
+    <g transform="translate(162, 210)">
+      <rect x="0" y="0" width="34" height="38" rx="2" fill="#FEF08A" stroke="#78350F" stroke-width="2"/>
+      <polygon points="0,0 12,0 0,38" fill="#EC4899"/>
+      <polygon points="34,0 22,0 34,38" fill="#EC4899"/>
+    </g>
+    <g transform="translate(316, 210)">
+      <rect x="0" y="0" width="34" height="38" rx="2" fill="#FEF08A" stroke="#78350F" stroke-width="2"/>
+      <polygon points="0,0 12,0 0,38" fill="#06B6D4"/>
+      <polygon points="34,0 22,0 34,38" fill="#06B6D4"/>
+    </g>
+
+    <!-- Hostel Front Veranda & Cafe Double Doors -->
+    <rect x="230" y="240" width="52" height="85" fill="#78350F"/>
+    <rect x="235" y="245" width="42" height="42" rx="2" fill="#FDE047"/>
+    <line x1="256" y1="240" x2="256" y2="325" stroke="#451A03" stroke-width="2"/>
+
+    <!-- FESTIVE PENNANT BUNTING FLAGS (Strings across roofline) -->
+    <!-- String curve -->
+    <path d="M120 195 Q256 220 392 195" stroke="#F8FAFC" stroke-width="1.8" fill="none"/>
+    <!-- Triangular Pennants -->
+    <polygon points="135,198 145,199 140,215" fill="#38BDF8"/>
+    <polygon points="160,202 170,204 165,220" fill="#FACC15"/>
+    <polygon points="185,206 195,208 190,224" fill="#EC4899"/>
+    <polygon points="210,209 220,210 215,226" fill="#10B981"/>
+    <polygon points="235,211 245,211 240,227" fill="#F97316"/>
+    <polygon points="267,211 277,211 272,227" fill="#8B5CF6"/>
+    <polygon points="292,209 302,208 297,225" fill="#38BDF8"/>
+    <polygon points="317,206 327,204 322,221" fill="#FACC15"/>
+    <polygon points="342,202 352,200 347,217" fill="#EC4899"/>
+    <polygon points="367,198 377,196 372,213" fill="#10B981"/>
+
+    <!-- Glowing Fairy String Lights along Veranda Eaves -->
+    <g fill="#FEF08A">
+      <circle cx="150" cy="202" r="3"/>
+      <circle cx="180" cy="207" r="3"/>
+      <circle cx="210" cy="210" r="3"/>
+      <circle cx="240" cy="212" r="3"/>
+      <circle cx="272" cy="212" r="3"/>
+      <circle cx="302" cy="210" r="3"/>
+      <circle cx="332" cy="207" r="3"/>
+      <circle cx="362" cy="202" r="3"/>
+    </g>
+
+    <!-- Social Outdoor Cafe Terrace & Lawn -->
+    <rect x="28" y="325" width="456" height="159" fill="#15803D"/>
+    <!-- Terrace Pavers Area -->
+    <polygon points="100,325 412,325 440,410 72,410" fill="#475569"/>
+
+    <!-- Outdoor Traveler Picnic Table with Bench -->
+    <g transform="translate(120, 345)">
+      <!-- Table top -->
+      <polygon points="10,20 70,20 65,30 5,30" fill="#78350F"/>
+      <!-- Table legs -->
+      <line x1="18" y1="30" x2="12" y2="52" stroke="#451A03" stroke-width="3"/>
+      <line x1="58" y1="30" x2="64" y2="52" stroke="#451A03" stroke-width="3"/>
+      <!-- Benches -->
+      <rect x="0" y="35" width="76" height="6" rx="2" fill="#9A3412"/>
+      <!-- Travel mugs / thermos on table -->
+      <rect x="25" y="14" width="6" height="8" rx="1.5" fill="#38BDF8"/>
+      <rect x="42" y="12" width="7" height="10" rx="1.5" fill="#FACC15"/>
+    </g>
+
+    <!-- Backpacker's Trail Backpack on Lawn -->
+    <g transform="translate(325, 340)">
+      <!-- Main pack body -->
+      <rect x="10" y="15" width="36" height="52" rx="8" fill="#0284C7"/>
+      <!-- Front zip pocket -->
+      <rect x="16" y="30" width="24" height="24" rx="4" fill="#0369A1"/>
+      <!-- Sleeping mat roll strapped to top -->
+      <rect x="6" y="6" width="44" height="11" rx="4" fill="#F97316"/>
+      <!-- Yellow straps and buckles -->
+      <line x1="18" y1="17" x2="18" y2="58" stroke="#FACC15" stroke-width="2"/>
+      <line x1="38" y1="17" x2="38" y2="58" stroke="#FACC15" stroke-width="2"/>
+      <!-- Side water bottle in mesh -->
+      <rect x="44" y="36" width="8" height="20" rx="2" fill="#22D3EE"/>
+    </g>
+
+    <!-- Social Campfire / Cozy Glow in Foreground -->
+    <g transform="translate(236, 400)">
+      <!-- Campfire stones ring -->
+      <ellipse cx="20" cy="30" rx="24" ry="10" fill="#334155"/>
+      <!-- Burning wood logs -->
+      <line x1="5" y1="32" x2="35" y2="24" stroke="#78350F" stroke-width="4" stroke-linecap="round"/>
+      <line x1="7" y1="24" x2="33" y2="32" stroke="#78350F" stroke-width="4" stroke-linecap="round"/>
+      <!-- Dancing Fire Flames -->
+      <path d="M12 28 Q20 8 20 5 Q24 16 28 28 Z" fill="#EF4444"/>
+      <path d="M15 28 Q20 14 20 12 Q23 20 25 28 Z" fill="#F97316"/>
+      <path d="M18 28 Q20 20 20 18 Q21 24 22 28 Z" fill="#FEF08A"/>
+    </g>
+
+    <!-- Social Backpack Emblem (Upper Left) -->
+    <g transform="translate(64, 64)">
+      <circle cx="28" cy="28" r="24" fill="rgba(15, 23, 42, 0.75)" stroke="#F59E0B" stroke-width="2"/>
+      <!-- Mini Backpack -->
+      <rect x="18" y="18" width="20" height="24" rx="4" fill="#F59E0B"/>
+      <rect x="22" y="24" width="12" height="12" rx="2" fill="#D97706"/>
+      <rect x="16" y="14" width="24" height="5" rx="2" fill="#EC4899"/>
+    </g>
+
+    <rect x="28" y="28" width="456" height="456" rx="104" ry="104" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.5"/>
+  </g>
+
+  <rect x="28" y="28" width="456" height="456" rx="104" ry="104" fill="none" stroke="url(#hl-border)" stroke-width="7"/>
+</svg>

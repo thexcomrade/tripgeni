@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="ht-border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="50%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#C084FC"/>
+    </linearGradient>
+    <linearGradient id="ht-sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="40%" stop-color="#0F172A"/>
+      <stop offset="75%" stop-color="#1E1B4B"/>
+      <stop offset="100%" stop-color="#312E81"/>
+    </linearGradient>
+    <linearGradient id="ht-tower" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="50%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="ht-tower-side" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="ht-glass-glow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <clipPath id="ht-clip">
+      <rect x="28" y="28" width="456" height="456" rx="104" ry="104"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#ht-clip)">
+    <!-- Twilight Sky -->
+    <rect x="28" y="28" width="456" height="456" fill="url(#ht-sky)"/>
+
+    <!-- Stars & Crescent Moon -->
+    <circle cx="395" cy="115" r="22" fill="#FDE047" opacity="0.95"/>
+    <circle cx="403" cy="110" r="20" fill="#0B132B"/>
+    <g fill="#F8FAFC" opacity="0.65">
+      <circle cx="95" cy="85" r="1.8"/>
+      <circle cx="150" cy="120" r="1.5"/>
+      <circle cx="210" cy="80" r="2"/>
+      <circle cx="340" cy="75" r="1.6"/>
+      <circle cx="110" cy="160" r="1.4"/>
+    </g>
+
+    <!-- Distant City Skyline Silhouettes -->
+    <path d="M28 360 L70 360 L70 310 L110 310 L110 360 L145 360 L145 330 L180 330 L180 360 L330 360 L330 315 L365 315 L365 360 L410 360 L410 300 L445 300 L445 360 L484 360 L484 484 L28 484 Z" fill="#090D1A" opacity="0.8"/>
+
+    <!-- CENTRAL COMFORT HOTEL TOWER -->
+    <!-- Tower Main Mass -->
+    <rect x="160" y="140" width="192" height="270" rx="6" fill="url(#ht-tower)"/>
+    <!-- Left architectural accent column -->
+    <rect x="146" y="170" width="22" height="240" rx="4" fill="url(#ht-tower-side)"/>
+    <!-- Right architectural accent column -->
+    <rect x="344" y="170" width="22" height="240" rx="4" fill="url(#ht-tower-side)"/>
+
+    <!-- Rooftop Crown & Terrace Lounge -->
+    <path d="M152 140 L166 115 L346 115 L360 140 Z" fill="#475569"/>
+    <!-- Rooftop glowing architectural spire -->
+    <line x1="256" y1="115" x2="256" y2="76" stroke="#38BDF8" stroke-width="3"/>
+    <circle cx="256" cy="74" r="5" fill="#38BDF8"/>
+    <!-- Rooftop garden foliage -->
+    <rect x="175" y="108" width="40" height="7" rx="3.5" fill="#10B981"/>
+    <rect x="297" y="108" width="40" height="7" rx="3.5" fill="#10B981"/>
+
+    <!-- Hotel Illuminated Matrix Windows (4 rows x 5 columns) -->
+    <!-- Row 1 -->
+    <rect x="180" y="156" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+    <rect x="212" y="156" width="22" height="28" rx="3" fill="#38BDF8" opacity="0.9"/>
+    <rect x="245" y="156" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+    <rect x="278" y="156" width="22" height="28" rx="3" fill="#0F172A"/>
+    <rect x="310" y="156" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+
+    <!-- Row 2 -->
+    <rect x="180" y="196" width="22" height="28" rx="3" fill="#38BDF8" opacity="0.85"/>
+    <rect x="212" y="196" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+    <rect x="245" y="196" width="22" height="28" rx="3" fill="#0F172A"/>
+    <rect x="278" y="196" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+    <rect x="310" y="196" width="22" height="28" rx="3" fill="#38BDF8" opacity="0.9"/>
+
+    <!-- Row 3 -->
+    <rect x="180" y="236" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+    <rect x="212" y="236" width="22" height="28" rx="3" fill="#0F172A"/>
+    <rect x="245" y="236" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+    <rect x="278" y="236" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+    <rect x="310" y="236" width="22" height="28" rx="3" fill="#0F172A"/>
+
+    <!-- Row 4 -->
+    <rect x="180" y="276" width="22" height="28" rx="3" fill="#38BDF8" opacity="0.9"/>
+    <rect x="212" y="276" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+    <rect x="245" y="276" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+    <rect x="278" y="276" width="22" height="28" rx="3" fill="#0F172A"/>
+    <rect x="310" y="276" width="22" height="28" rx="3" fill="url(#ht-glass-glow)"/>
+
+    <!-- Grand Hotel Canopy Awning Entrance -->
+    <polygon points="170,336 342,336 360,358 152,358" fill="#0284C7"/>
+    <polygon points="170,336 342,336 340,340 172,340" fill="#38BDF8"/>
+    <!-- Canopy warm illumination glow -->
+    <path d="M152 358 L360 358 L375 410 L137 410 Z" fill="#FEF08A" opacity="0.25"/>
+
+    <!-- Warm Glowing Double Glass Entrance Doors -->
+    <rect x="228" y="358" width="56" height="52" rx="4" fill="#FEF3C7"/>
+    <rect x="232" y="362" width="22" height="48" rx="2" fill="#FDE047" stroke="#92400E" stroke-width="1.5"/>
+    <rect x="258" y="362" width="22" height="48" rx="2" fill="#FDE047" stroke="#92400E" stroke-width="1.5"/>
+    <line x1="256" y1="358" x2="256" y2="410" stroke="#78350F" stroke-width="2"/>
+
+    <!-- Red Carpet Entrance Runner -->
+    <polygon points="230,410 282,410 295,484 217,484" fill="#DC2626"/>
+
+    <!-- Foreground Paved Street & Pavement -->
+    <rect x="28" y="410" width="456" height="74" fill="#0F172A"/>
+    <line x1="28" y1="410" x2="484" y2="410" stroke="#475569" stroke-width="3"/>
+
+    <!-- Ornamental Planter Trees flanking hotel -->
+    <g transform="translate(100, 340)">
+      <rect x="14" y="55" width="20" height="18" rx="3" fill="#475569"/>
+      <circle cx="24" cy="40" r="24" fill="#059669"/>
+      <circle cx="24" cy="38" r="18" fill="#10B981"/>
+    </g>
+    <g transform="translate(364, 340)">
+      <rect x="14" y="55" width="20" height="18" rx="3" fill="#475569"/>
+      <circle cx="24" cy="40" r="24" fill="#059669"/>
+      <circle cx="24" cy="38" r="18" fill="#10B981"/>
+    </g>
+
+    <!-- Luxury 4-Star Service Emblem (Upper Left) -->
+    <g transform="translate(64, 64)">
+      <circle cx="28" cy="28" r="24" fill="rgba(15, 23, 42, 0.75)" stroke="#818CF8" stroke-width="2"/>
+      <!-- 4 Golden Stars -->
+      <g fill="#FACC15">
+        <polygon points="28,14 30,19 35,19 31,22 33,27 28,24 23,27 25,22 21,19 26,19" transform="scale(0.7) translate(12, 4)"/>
+        <polygon points="28,14 30,19 35,19 31,22 33,27 28,24 23,27 25,22 21,19 26,19" transform="scale(0.7) translate(-2, 14)"/>
+        <polygon points="28,14 30,19 35,19 31,22 33,27 28,24 23,27 25,22 21,19 26,19" transform="scale(0.7) translate(26, 14)"/>
+        <polygon points="28,14 30,19 35,19 31,22 33,27 28,24 23,27 25,22 21,19 26,19" transform="scale(0.7) translate(12, 24)"/>
+      </g>
+    </g>
+
+    <!-- Internal Ambient Border -->
+    <rect x="28" y="28" width="456" height="456" rx="104" ry="104" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.5"/>
+  </g>
+
+  <!-- OUTER SQUIRCLE FRAME -->
+  <rect x="28" y="28" width="456" height="456" rx="104" ry="104" fill="none" stroke="url(#ht-border)" stroke-width="7"/>
+</svg>

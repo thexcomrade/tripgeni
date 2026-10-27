@@ -1075,54 +1075,52 @@ textarea:focus {
    "Intelligent" in vibrant electric cyan, "Precision" in radiant sunny gold
    ============================================================ */
 .heading-luxury-title {
-  font-family: 'Cormorant Garamond', 'Bodoni Moda', 'Playfair Display', 'Cinzel', serif;
+  font-family: 'Playfair Display', 'Cormorant Garamond', 'Bodoni Moda', 'Cinzel', Georgia, serif;
   font-size: clamp(2.8rem, 6.2vw, 5.2rem);
-  font-weight: 600;
-  line-height: 1.18;
-  letter-spacing: -0.015em;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   max-width: 1150px;
   margin: 0 auto 24px auto;
   text-align: center;
   color: #FFFFFF;
-  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.85), 0 2px 6px rgba(0, 0, 0, 0.95);
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.95);
 }
 
 .text-intelligent-cyan {
   font-family: inherit;
-  font-weight: 600;
+  font-weight: 700;
   background: linear-gradient(
     135deg,
-    #E0F2FE 0%,
-    #7DD3FC 22%,
-    #38BDF8 48%,
-    #0EA5E9 75%,
-    #06B6D4 100%
+    #FFFFFF 0%,
+    #BAE6FD 18%,
+    #38BDF8 50%,
+    #00F0FF 80%,
+    #0284C7 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
   vertical-align: baseline;
-  padding-bottom: 0.10em;
-  filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.60))
-    drop-shadow(0 0 30px rgba(56, 189, 248, 0.40));
+  padding-bottom: 0.05em;
+  filter: none;
 }
 
 .text-precision-gold {
   font-family: inherit;
-  font-weight: 600;
+  font-weight: 700;
   background: linear-gradient(
     135deg,
-    #FEF9C3 0%,
-    #FDE047 22%,
-    #FACC15 48%,
-    #EAB308 75%,
-    #F59E0B 100%
+    #FFFFFF 0%,
+    #FEF08A 18%,
+    #FBBF24 50%,
+    #F59E0B 80%,
+    #D97706 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
   vertical-align: baseline;
-  padding-bottom: 0.10em;
-  filter: drop-shadow(0 0 20px rgba(234, 179, 8, 0.60))
-    drop-shadow(0 0 30px rgba(56, 189, 248, 0.40));
+  padding-bottom: 0.05em;
+  filter: none;
 }
