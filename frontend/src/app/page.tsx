@@ -381,7 +381,7 @@ export default function HomePage() {
                 textShadow: "none",
               }}
             >
-              Intelligent Precision
+              <b>Intelligent Precision</b>
             </span>
           </h1>
 
