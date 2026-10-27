@@ -2918,7 +2918,7 @@ function PlannerContent() {
                       type="text"
                       value={customInterestInput}
                       onChange={(e) => setCustomInterestInput(e.target.value)}
-                      placeholder="Add your own ideas (e.g. Campfire, Scuba, Stargazing)..."
+                      placeholder="Add your own ideas.."
                       style={{
                         background: "transparent",
                         border: "none",
