@@ -481,26 +481,6 @@ function PlannerContent() {
     return 3;
   }, [fromDate, toDate]);
 
-  // Intelligent Travel Duration vs Exploration Calculation
-  const oneWayTravelHours = useMemo(() => {
-    if (transportationMode === "Train") return transitPricing.train.approxDurationHours || 4;
-    if (transportationMode === "Flight" || transportationMode === "Airline") return transitPricing.flight.approxDurationHours || 2;
-    if (transportationMode === "Car") return transitPricing.car.drivingHours || 3;
-    if (transportationMode === "Bike") return transitPricing.bike.ridingHours || 4;
-    if (transportationMode === "Bicycle" || transportationMode === "Cycling") return transitPricing.cycling.cyclingHours || 6;
-    return 4;
-  }, [transportationMode, transitPricing]);
-
-  const travelDaysDeduction = useMemo(() => {
-    if (oneWayTravelHours >= 24) return 2; // multi-day journey (e.g. 2 days train)
-    if (oneWayTravelHours >= 12) return 1; // overnight journey (~1 day each way)
-    return 0; // single day hop allows on-ground sightseeing
-  }, [oneWayTravelHours]);
-
-  const explorationDays = useMemo(() => {
-    const transitDaysTotal = travelDaysDeduction * 2;
-    return Math.max(1, durationDays - transitDaysTotal);
-  }, [durationDays, travelDaysDeduction]);
   const [budget, setBudget] = useState(15000);
   const [hasUserCustomizedBudget, setHasUserCustomizedBudget] = useState(false);
   const [travelersCount, setTravelersCount] = useState(2);
@@ -566,6 +546,27 @@ function PlannerContent() {
   const transitPricing = useMemo(() => {
     return calculateTransitPricing(origin, destination);
   }, [origin, destination]);
+
+  // Intelligent Travel Duration vs Exploration Calculation
+  const oneWayTravelHours = useMemo(() => {
+    if (transportationMode === "Train") return transitPricing.train.approxDurationHours || 4;
+    if (transportationMode === "Flight" || transportationMode === "Airline") return transitPricing.flight.approxDurationHours || 2;
+    if (transportationMode === "Car") return transitPricing.car.drivingHours || 3;
+    if (transportationMode === "Bike") return transitPricing.bike.ridingHours || 4;
+    if (transportationMode === "Bicycle" || transportationMode === "Cycling") return transitPricing.bicycle.cyclingHours || 6;
+    return 4;
+  }, [transportationMode, transitPricing]);
+
+  const travelDaysDeduction = useMemo(() => {
+    if (oneWayTravelHours >= 24) return 2; // multi-day journey (e.g. 2 days train)
+    if (oneWayTravelHours >= 12) return 1; // overnight journey (~1 day each way)
+    return 0; // single day hop allows on-ground sightseeing
+  }, [oneWayTravelHours]);
+
+  const explorationDays = useMemo(() => {
+    const transitDaysTotal = travelDaysDeduction * 2;
+    return Math.max(1, durationDays - transitDaysTotal);
+  }, [durationDays, travelDaysDeduction]);
 
   // Clean figure rounding: takes average price range and rounds to clean zeros (e.g. 14324 -> 14400 or 14500)
   const roundToCleanZeros = (val: number): number => {
