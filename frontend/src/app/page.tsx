@@ -353,31 +353,29 @@ export default function HomePage() {
             </Badge>
           </div>
 
-<h1
-  style={{
-    fontFamily: "inherit",
-    fontWeight: 600,
-    textAlign: "center",
-    textShadow: "0 4px 12px rgba(0, 0, 0, 0.35)",
-  }}
->
-  Plan Extraordinary Journeys with
-  <br />
-  <span
-    style={{
-      fontFamily: "inherit",
-      fontWeight: 600,
-      background: "linear-gradient(90deg, #00BFFF 0%, #00C9A7 50%, #A3E635 80%, #FACC15 100%)",
-      WebkitBackgroundClip: "text",
-      backgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      display: "inline-block",
-      textShadow: "none",
-    }}
-  >
-    Intelligent Precision
-  </span>
-</h1>
+          <h1
+            className="animate-blur-fade-up font-luxury-display heading-luxury-title"
+            style={{
+              animationDelay: "300ms",
+              fontFamily:
+                "'Cormorant Garamond', 'Bodoni Moda', 'Playfair Display', 'Cinzel', serif",
+              fontSize: "clamp(2.6rem, 5.8vw, 5.0rem)",
+              fontWeight: 600,
+              lineHeight: 1.18,
+              letterSpacing: "-0.015em",
+              maxWidth: "1150px",
+              margin: "0 auto 24px auto",
+              textAlign: "center",
+              color: "#FFFFFF",
+              textShadow:
+                "0 4px 28px rgba(0, 0, 0, 0.85), 0 2px 6px rgba(0, 0, 0, 0.95)",
+            }}
+          >
+            Plan Extraordinary Journeys with
+            <br />
+            <span className="text-intelligent-cyan">Intelligent</span>{" "}
+            <span className="text-precision-gold">Precision</span>
+          </h1>
 
           <p
             className="animate-blur-fade-up hero-subtitle-bright"

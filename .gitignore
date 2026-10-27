@@ -64,6 +64,7 @@ test_*.pdf
 
 # Cache & Logs
 .cache/
+.npm-cache/
 .parcel-cache/
 logs/
 
