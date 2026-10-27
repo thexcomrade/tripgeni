@@ -618,25 +618,34 @@ export default function TripInteractiveMap({
       if (isCancelled || !mapContainerRef.current) return;
 
       // Initialize map instance if not existing
-      if (!leafletMapRef.current) {
-        const map = L.map(mapContainerRef.current, {
-          zoomControl: false,
-          scrollWheelZoom: true,
-          fadeAnimation: true,
-        }).setView([coords.lat, coords.lon], coords.zoom || 12);
+if (!leafletMapRef.current) {
+  const map = L.map(mapContainerRef.current, {
+    zoomControl: false,
+    scrollWheelZoom: true,
+    fadeAnimation: true,
+  }).setView([coords.lat, coords.lon], coords.zoom || 12);
 
-        L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-          maxZoom: 19,
-          subdomains: "abcd",
-          attribution:
-            '&copy; <a href="https://carto.com/" target="_blank" rel="noreferrer">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
-        }).addTo(map);
+  // CARTO API key from environment variables
+  const cartoApiKey = process.env.NEXT_PUBLIC_CARTO_API_KEY;
 
-        L.control.zoom({ position: "bottomright" }).addTo(map);
-        leafletMapRef.current = map;
-      }
+  // CARTO Voyager raster map tiles
+  const tileUrl = cartoApiKey
+    ? `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${cartoApiKey}`
+    : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
 
-      const map = leafletMapRef.current;
+  L.tileLayer(tileUrl, {
+    maxZoom: 19,
+    subdomains: "abcd",
+    attribution:
+      '&copy; <a href="https://carto.com/" target="_blank" rel="noreferrer">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
+  }).addTo(map);
+
+  L.control.zoom({ position: "bottomright" }).addTo(map);
+
+  leafletMapRef.current = map;
+}
+
+const map = leafletMapRef.current;
 
       // Clear existing layers
       activeLayersRef.current.lines.forEach((l) => map.removeLayer(l));
