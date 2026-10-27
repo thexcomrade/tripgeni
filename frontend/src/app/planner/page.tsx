@@ -1439,7 +1439,7 @@ function PlannerContent() {
                           <div>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
                               <span style={{ fontWeight: 800, fontSize: "0.90rem", color: isCarSelected ? "#C084FC" : "#F1F5F9", display: "flex", alignItems: "center", gap: "6px" }}>
-                                🚗 Car / Taxi & Fuel
+                                2/4 wheeler
                               </span>
                               <span style={{ fontSize: "0.72rem", color: "#C084FC", fontWeight: 700, background: "rgba(168, 85, 247, 0.15)", padding: "2px 8px", borderRadius: "999px" }}>
                                 ~{transitPricing.car.durationText}
