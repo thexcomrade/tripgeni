@@ -73,6 +73,8 @@ export interface AITripRequest {
   destination: string;
   origin?: string;
   duration_days: number;
+  from_date?: string;
+  to_date?: string;
   budget: number;
   travelers_count: number;
   travel_style?: string;
@@ -86,6 +88,8 @@ export interface TripCreateRequest {
   destination: string;
   origin?: string;
   duration_days: number;
+  from_date?: string;
+  to_date?: string;
   budget: number;
   travelers_count: number;
   travel_style?: string;

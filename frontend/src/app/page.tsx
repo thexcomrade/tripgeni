@@ -382,11 +382,11 @@ export default function HomePage() {
             style={{
               animationDelay: "450ms",
               fontSize: "clamp(1.05rem, 2.1vw, 1.28rem)",
-              color: "#F8FAFC",
-              maxWidth: "780px",
+              color: "#8ec4f9",
+              maxWidth: "700px",
               margin: "0 auto 40px auto",
               lineHeight: 1.75,
-              fontWeight: 300,
+              fontWeight: 250,
               fontFamily: "'Inter', sans-serif",
               letterSpacing: "0.015em",
               textShadow:
@@ -454,7 +454,7 @@ export default function HomePage() {
               justifyContent: "center",
               gap: "clamp(16px, 3vw, 30px)",
               flexWrap: "wrap",
-              color: "#E2E8F0",
+              color: "#8ec4f9",
               fontSize: "clamp(0.85rem, 1.2vw, 0.95rem)",
               textShadow: "0 2px 14px rgba(0, 0, 0, 0.85)",
             }}
@@ -565,7 +565,7 @@ export default function HomePage() {
               </h3>
               <p
                 style={{
-                  color: "#CBD5E1",
+                  color: "#8ec4f9",
                   fontSize: "clamp(0.88rem, 1.1vw, 0.98rem)",
                   lineHeight: 1.75,
                   letterSpacing: "0.01em",
@@ -702,7 +702,7 @@ export default function HomePage() {
                   >
                     {dest.name}
                   </h3>
-                  <p style={{ color: "#CBD5E1", fontSize: "0.85rem" }}>
+                  <p style={{ color: "#8ec4f9", fontSize: "0.85rem" }}>
                     {dest.state} • {dest.category}
                   </p>
                 </div>
@@ -786,7 +786,7 @@ export default function HomePage() {
             </h2>
             <p
               style={{
-                color: "#94A3B8",
+                color: "#8ec4f9",
                 fontSize: "0.95rem",
                 marginTop: "4px",
               }}
@@ -820,7 +820,7 @@ export default function HomePage() {
             >
               4.9/5
             </span>
-            <span style={{ fontSize: "0.82rem", color: "#94A3B8" }}>
+            <span style={{ fontSize: "0.82rem", color: "#8ec4f9" }}>
               ({prioritySortedReviews.length} verified reviews)
             </span>
           </div>

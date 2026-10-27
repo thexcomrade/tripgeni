@@ -35,10 +35,9 @@ import { calculateTransitPricing } from "../../utils/transitPricing";
 import LiquidLoadingNav, { SynthesisStage } from "../../components/planner/LiquidLoadingNav";
 
 const POPULAR_ORIGINS = [
-  "Ernakulam (Kochi)",
+  "Ernakulam",
   "Trivandrum",
   "Bangalore",
-  "Chennai",
   "Delhi",
   "Mumbai",
   "Calicut",
@@ -47,13 +46,9 @@ const POPULAR_ORIGINS = [
 const POPULAR_DESTINATIONS = [
   "Varanasi",
   "Munnar",
-  "Coorg",
   "Ooty",
   "Varkala",
-  "Wayanad",
-  "Kodaikanal",
   "Mysore",
-  "Alleppey",
   "Goa",
 ];
 
@@ -175,12 +170,6 @@ const ACCOMMODATIONS = [
     label: "Authentic Homestay",
     desc: "Warm hospitality & regional cooking",
     imageUrl: "/accommodations/homestay.png",
-  },
-  {
-    id: "Eco-Lodge",
-    label: "Eco Lodge / Farmstay",
-    desc: "Solar powered & tranquil nature immersion",
-    imageUrl: "/accommodations/eco_lodge.png",
   },
   {
     id: "Hostel",
@@ -479,7 +468,39 @@ function PlannerContent() {
   const [currentStep, setCurrentStep] = useState(1);
   const [origin, setOrigin] = useState("Ernakulam (Kochi)");
   const [destination, setDestination] = useState("");
-  const [durationDays, setDurationDays] = useState(3);
+  // Date-based duration (From/To calendar)
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+  const durationDays = useMemo(() => {
+    if (fromDate && toDate) {
+      const from = new Date(fromDate);
+      const to = new Date(toDate);
+      const diffMs = to.getTime() - from.getTime();
+      return Math.max(1, Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1);
+    }
+    return 3;
+  }, [fromDate, toDate]);
+
+  // Intelligent Travel Duration vs Exploration Calculation
+  const oneWayTravelHours = useMemo(() => {
+    if (transportationMode === "Train") return transitPricing.train.approxDurationHours || 4;
+    if (transportationMode === "Flight" || transportationMode === "Airline") return transitPricing.flight.approxDurationHours || 2;
+    if (transportationMode === "Car") return transitPricing.car.drivingHours || 3;
+    if (transportationMode === "Bike") return transitPricing.bike.ridingHours || 4;
+    if (transportationMode === "Bicycle" || transportationMode === "Cycling") return transitPricing.cycling.cyclingHours || 6;
+    return 4;
+  }, [transportationMode, transitPricing]);
+
+  const travelDaysDeduction = useMemo(() => {
+    if (oneWayTravelHours >= 24) return 2; // multi-day journey (e.g. 2 days train)
+    if (oneWayTravelHours >= 12) return 1; // overnight journey (~1 day each way)
+    return 0; // single day hop allows on-ground sightseeing
+  }, [oneWayTravelHours]);
+
+  const explorationDays = useMemo(() => {
+    const transitDaysTotal = travelDaysDeduction * 2;
+    return Math.max(1, durationDays - transitDaysTotal);
+  }, [durationDays, travelDaysDeduction]);
   const [budget, setBudget] = useState(15000);
   const [hasUserCustomizedBudget, setHasUserCustomizedBudget] = useState(false);
   const [travelersCount, setTravelersCount] = useState(2);
@@ -670,18 +691,27 @@ function PlannerContent() {
     const paramDest = searchParams?.get("destination");
     const paramDuration = searchParams?.get("duration");
 
+    const applyDurationDays = (days: number) => {
+      const today = new Date();
+      const fromD = today.toISOString().split("T")[0];
+      const toD = new Date(today);
+      toD.setDate(toD.getDate() + days - 1);
+      const toStr = toD.toISOString().split("T")[0];
+      setFromDate(fromD);
+      setToDate(toStr);
+    };
     if (paramDest) {
       const parsed = parseDestinationQuery(paramDest);
       setDestination(parsed.destination || paramDest);
       if (paramDuration) {
         const d = parseInt(paramDuration);
-        if (!isNaN(d) && d > 0) setDurationDays(d);
+        if (!isNaN(d) && d > 0) applyDurationDays(d);
       } else if (parsed.isCustomDuration) {
-        setDurationDays(parsed.duration);
+        applyDurationDays(parsed.duration);
       }
     } else if (paramDuration) {
       const d = parseInt(paramDuration);
-      if (!isNaN(d) && d > 0) setDurationDays(d);
+      if (!isNaN(d) && d > 0) applyDurationDays(d);
     }
   }, [router, searchParams]);
 
@@ -721,6 +751,8 @@ function PlannerContent() {
         destination: destination.trim(),
         origin: origin.trim(),
         duration_days: durationDays,
+        from_date: fromDate || undefined,
+        to_date: toDate || undefined,
         budget: budget,
         travelers_count: travelersCount,
         travel_style: travelStyle,
@@ -737,6 +769,8 @@ function PlannerContent() {
         destination: destination.trim(),
         origin: origin.trim(),
         duration_days: durationDays,
+        from_date: fromDate || undefined,
+        to_date: toDate || undefined,
         budget: budget,
         travelers_count: travelersCount,
         travel_style: travelStyle,
@@ -1694,7 +1728,7 @@ function PlannerContent() {
                   gap: "24px",
                 }}
               >
-                {/* DURATION (DAYS) */}
+                {/* TRIP DATES */}
                 <div>
                   <div
                     style={{
@@ -1711,102 +1745,118 @@ function PlannerContent() {
                         color: "#E2E8F0",
                       }}
                     >
-                      Duration (Days)
+                      Trip Dates
                     </label>
-                    <span style={{ fontSize: "0.82rem", color: "#38BDF8", fontWeight: 700 }}>
-                      {durationDays} Day{durationDays > 1 ? "s" : ""} Selected
-                    </span>
+                    {fromDate && toDate && (
+                      <span style={{ fontSize: "0.82rem", color: "#38BDF8", fontWeight: 700 }}>
+                        {durationDays} Day{durationDays > 1 ? "s" : ""} Selected
+                      </span>
+                    )}
                   </div>
-
                   <div
                     style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "10px",
-                      alignItems: "center",
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: "12px",
                     }}
                   >
-                    {[
-                      { label: "3 Days (Weekend)", days: 3 },
-                      { label: "5 Days (Standard)", days: 5 },
-                      { label: "7 Days (Week)", days: 7 },
-                    ].map((item) => {
-                      const isSelected = durationDays === item.days;
-                      return (
-                        <button
-                          key={item.days}
-                          type="button"
-                          onClick={() => setDurationDays(item.days)}
-                          style={{
-                            padding: "9px 16px",
-                            borderRadius: "10px",
-                            background: isSelected
-                              ? "rgba(14, 165, 233, 0.22)"
-                              : "rgba(255, 255, 255, 0.05)",
-                            border: isSelected
-                              ? "1px solid #38BDF8"
-                              : "1px solid rgba(255, 255, 255, 0.12)",
-                            color: isSelected ? "#38BDF8" : "#94A3B8",
-                            fontSize: "0.85rem",
-                            fontWeight: isSelected ? 700 : 500,
-                            cursor: "pointer",
-                            transition: "all 0.18s ease",
-                          }}
-                        >
-                          {item.label}
-                        </button>
-                      );
-                    })}
-
-                    {/* Custom Days Input without +/- icons */}
-                    <div
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        background: "rgba(255, 255, 255, 0.04)",
-                        border: "1px solid rgba(255, 255, 255, 0.12)",
-                        borderRadius: "10px",
-                        padding: "4px 10px",
-                      }}
-                    >
-                      <span style={{ fontSize: "0.78rem", color: "#94A3B8" }}>Custom:</span>
-                      <input
-                        type="number"
-                        min="1"
-                        max="30"
-                        value={durationDays === 0 ? "" : durationDays}
-                        onFocus={(e) => e.target.select()}
-                        onChange={(e) => {
-                          const str = e.target.value;
-                          if (!str) {
-                            setDurationDays(0);
-                            return;
-                          }
-                          const val = parseInt(str);
-                          if (!isNaN(val)) {
-                            setDurationDays(Math.max(1, Math.min(30, val)));
-                          }
+                    <div>
+                      <label
+                        style={{
+                          display: "block",
+                          fontSize: "0.76rem",
+                          fontWeight: 500,
+                          color: "#64748B",
+                          marginBottom: "6px",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
                         }}
-                        onBlur={() => {
-                          if (!durationDays || durationDays < 1) {
-                            setDurationDays(1);
+                      >
+                        From
+                      </label>
+                      <input
+                        type="date"
+                        value={fromDate}
+                        min={new Date().toISOString().split("T")[0]}
+                        onChange={(e) => {
+                          setFromDate(e.target.value);
+                          if (toDate && e.target.value > toDate) {
+                            setToDate(e.target.value);
                           }
                         }}
                         style={{
-                          width: "55px",
-                          textAlign: "center",
-                          fontSize: "0.95rem",
-                          fontWeight: 700,
-                          background: "transparent",
-                          border: "none",
-                          color: "#FFFFFF",
+                          width: "100%",
+                          padding: "10px 12px",
+                          borderRadius: "10px",
+                          background: "rgba(255,255,255,0.06)",
+                          border: "1px solid rgba(255,255,255,0.14)",
+                          color: fromDate ? "#FFFFFF" : "#64748B",
+                          fontSize: "0.92rem",
+                          fontWeight: 500,
                           outline: "none",
+                          cursor: "pointer",
+                          colorScheme: "dark",
                         }}
                       />
-                      <span style={{ fontSize: "0.78rem", color: "#64748B" }}>days</span>
+                    </div>
+                    <div>
+                      <label
+                        style={{
+                          display: "block",
+                          fontSize: "0.76rem",
+                          fontWeight: 500,
+                          color: "#64748B",
+                          marginBottom: "6px",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                        }}
+                      >
+                        To
+                      </label>
+                      <input
+                        type="date"
+                        value={toDate}
+                        min={fromDate || new Date().toISOString().split("T")[0]}
+                        onChange={(e) => setToDate(e.target.value)}
+                        style={{
+                          width: "100%",
+                          padding: "10px 12px",
+                          borderRadius: "10px",
+                          background: "rgba(255,255,255,0.06)",
+                          border: "1px solid rgba(255,255,255,0.14)",
+                          color: toDate ? "#FFFFFF" : "#64748B",
+                          fontSize: "0.92rem",
+                          fontWeight: 500,
+                          outline: "none",
+                          cursor: "pointer",
+                          colorScheme: "dark",
+                        }}
+                      />
                     </div>
                   </div>
+                  {fromDate && toDate && (
+                    <div style={{ marginTop: "8px" }}>
+                      <p style={{ margin: "0 0 6px 0", fontSize: "0.78rem", color: "#64748B" }}>
+                        {new Date(fromDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                        {" to "}
+                        {new Date(toDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                        {" · "}<span style={{ color: "#38BDF8", fontWeight: 600 }}>{durationDays} Calendar Days</span>
+                      </p>
+                      {travelDaysDeduction > 0 && (
+                        <div style={{
+                          padding: "8px 12px",
+                          borderRadius: "8px",
+                          background: "rgba(56, 189, 248, 0.08)",
+                          border: "1px solid rgba(56, 189, 248, 0.20)",
+                          fontSize: "0.76rem",
+                          color: "#CBD5E1",
+                        }}>
+                          <span style={{ color: "#38BDF8", fontWeight: 700 }}>Intelligent Transit Pacing: </span>
+                          ~{oneWayTravelHours.toFixed(1)} hrs one-way {transportationMode} transit reserves {travelDaysDeduction * 2} transit days total, yielding <b style={{ color: "#34D399" }}>{explorationDays} pure exploration days</b> at {destination || "destination"}.
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* TRAVELERS COUNT */}
@@ -1876,54 +1926,44 @@ function PlannerContent() {
                       );
                     })}
 
-                    {/* Custom Travelers Input without +/- icons */}
-                    <div
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        background: "rgba(255, 255, 255, 0.04)",
-                        border: "1px solid rgba(255, 255, 255, 0.12)",
-                        borderRadius: "10px",
-                        padding: "4px 10px",
+                    {/* Custom Travelers Input */}
+                    <input
+                      type="number"
+                      min="1"
+                      max="500"
+                      placeholder="Custom"
+                      value={travelersCount === 0 ? "" : travelersCount}
+                      onFocus={(e) => e.target.select()}
+                      onChange={(e) => {
+                        const str = e.target.value;
+                        if (!str) {
+                          setTravelersCount(0);
+                          return;
+                        }
+                        const val = parseInt(str);
+                        if (!isNaN(val)) {
+                          setTravelersCount(Math.max(1, Math.min(500, val)));
+                        }
                       }}
-                    >
-                      <span style={{ fontSize: "0.78rem", color: "#94A3B8" }}>Custom:</span>
-                      <input
-                        type="number"
-                        min="1"
-                        max="500"
-                        value={travelersCount === 0 ? "" : travelersCount}
-                        onFocus={(e) => e.target.select()}
-                        onChange={(e) => {
-                          const str = e.target.value;
-                          if (!str) {
-                            setTravelersCount(0);
-                            return;
-                          }
-                          const val = parseInt(str);
-                          if (!isNaN(val)) {
-                            setTravelersCount(Math.max(1, Math.min(500, val)));
-                          }
-                        }}
-                        onBlur={() => {
-                          if (!travelersCount || travelersCount < 1) {
-                            setTravelersCount(1);
-                          }
-                        }}
-                        style={{
-                          width: "55px",
-                          textAlign: "center",
-                          fontSize: "0.95rem",
-                          fontWeight: 700,
-                          background: "transparent",
-                          border: "none",
-                          color: "#FFFFFF",
-                          outline: "none",
-                        }}
-                      />
-                      <span style={{ fontSize: "0.78rem", color: "#64748B" }}>people</span>
-                    </div>
+                      onBlur={() => {
+                        if (!travelersCount || travelersCount < 1) {
+                          setTravelersCount(1);
+                        }
+                      }}
+                      style={{
+                        width: "75px",
+                        padding: "8px 10px",
+                        borderRadius: "8px",
+                        background: "rgba(255, 255, 255, 0.05)",
+                        border: "1px solid rgba(255, 255, 255, 0.14)",
+                        color: "#FFFFFF",
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                        textAlign: "center",
+                        outline: "none",
+                      }}
+                      title="Custom traveler count"
+                    />
                   </div>
 
                   {travelersCount >= 30 && (
@@ -2058,14 +2098,12 @@ function PlannerContent() {
 
                     <div
                       style={{
-                        position: "relative",
                         display: "flex",
                         alignItems: "center",
-                        background: "rgba(15, 23, 42, 0.90)",
-                        border: "1.5px solid rgba(56, 189, 248, 0.40)",
-                        boxShadow: "0 0 16px rgba(56, 189, 248, 0.18)",
-                        borderRadius: "12px",
-                        padding: "0 14px",
+                        background: "rgba(255, 255, 255, 0.05)",
+                        border: "1px solid rgba(56, 189, 248, 0.35)",
+                        borderRadius: "8px",
+                        padding: "6px 12px",
                       }}
                     >
                       <span style={{ color: "#38BDF8", fontWeight: 800, fontSize: "1.15rem", marginRight: "6px" }}>₹</span>
@@ -2216,18 +2254,7 @@ function PlannerContent() {
                         {/* CARD TOP ROW */}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <div
-                              style={{
-                                width: "40px",
-                                height: "40px",
-                                borderRadius: "10px",
-                                background: `${tier.accent}18`,
-                                border: `1px solid ${tier.accent}40`,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                               {tier.svgIcon}
                             </div>
                             <div>
@@ -2296,18 +2323,7 @@ function PlannerContent() {
                           ))}
                         </div>
 
-                        {/* FOOTER INCLUSIONS CHIP */}
-                        <div
-                          style={{
-                            background: "rgba(0, 0, 0, 0.25)",
-                            border: "1px solid rgba(255, 255, 255, 0.06)",
-                            borderRadius: "8px",
-                            padding: "6px 10px",
-                            fontSize: "0.68rem",
-                            color: "#38BDF8",
-                            fontWeight: 600,
-                          }}
-                        >
+                        <div style={{ fontSize: "0.72rem", color: "#38BDF8", fontWeight: 600, marginTop: "6px" }}>
                           Includes ~₹{calculatedTransitCost.toLocaleString("en-IN")} travel tickets + stay & meals
                         </div>
                       </div>
@@ -2325,25 +2341,10 @@ function PlannerContent() {
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <img
-                        src={
-                          transportationMode === "Train"
-                            ? "/logo/train.png"
-                            : transportationMode === "Flight" || transportationMode === "Airline"
-                            ? "/logo/plane.png"
-                            : transportationMode === "Bike"
-                            ? "/logo/bike.png"
-                            : transportationMode === "Bicycle" || transportationMode === "Cycling"
-                            ? "/logo/bicycle.png"
-                            : "/logo/car.png"
-                        }
-                        alt={transportationMode}
-                        style={{ width: "22px", height: "22px", objectFit: "contain" }}
-                      />
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <div>
                         <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>
-                          Vehicle & Transit Integration: {transportationMode}
+                          Transit Integration: {transportationMode}
                         </span>
                         <span style={{ fontSize: "0.74rem", color: "#64748B", marginLeft: "8px" }}>
                           ({origin || "Starting City"} ➔ {destination || "Destination"})
@@ -3016,7 +3017,7 @@ function PlannerContent() {
                             style={{
                               width: "100%",
                               height: "100%",
-                              objectFit: "contain",
+                              objectFit: "cover",
                               display: "block",
                               filter: isSelected
                                 ? "drop-shadow(0 4px 10px rgba(56, 189, 248, 0.40))"

@@ -621,7 +621,7 @@ export default function TripInteractiveMap({
 if (!leafletMapRef.current) {
   const map = L.map(mapContainerRef.current, {
     zoomControl: false,
-    scrollWheelZoom: true,
+    scrollWheelZoom: false,
     fadeAnimation: true,
   }).setView([coords.lat, coords.lon], coords.zoom || 12);
 

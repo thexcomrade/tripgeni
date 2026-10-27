@@ -121,6 +121,11 @@ class AITripGenerationRequest(BaseModel):
 
     duration_days: int = Field(ge=1, le=30)
 
+    # Optional explicit travel dates; duration_days is the authoritative count
+    from_date: str | None = Field(default=None, description="ISO date YYYY-MM-DD for trip start")
+
+    to_date: str | None = Field(default=None, description="ISO date YYYY-MM-DD for trip end")
+
     budget: float = Field(gt=0)
 
     travelers_count: int = Field(default=1, ge=1, le=500)
@@ -158,6 +163,11 @@ class TripCreateRequest(BaseModel):
     origin: str | None = Field(default=None, max_length=200, description="Starting point / departure city")
 
     duration_days: int = Field(ge=1, le=30)
+
+    # Optional explicit travel dates; duration_days is the authoritative count
+    from_date: str | None = Field(default=None, description="ISO date YYYY-MM-DD for trip start")
+
+    to_date: str | None = Field(default=None, description="ISO date YYYY-MM-DD for trip end")
 
     budget: float = Field(gt=0)
 
@@ -554,6 +564,10 @@ class AITripGenerationResponse(BaseModel):
     origin: str | None = None
 
     duration_days: int | None = None
+
+    from_date: str | None = None
+
+    to_date: str | None = None
 
     budget: float | None = None
 

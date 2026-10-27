@@ -117,6 +117,8 @@ class AIService:
         preferred_accommodation: str | None = None,
         cost_data: dict[str, float] | None = None,
         origin: str | None = None,
+        from_date: str | None = None,
+        to_date: str | None = None,
     ) -> str:
         cost = cost_data or self.estimate_trip_cost(
             budget, duration_days, travelers_count, travel_style
@@ -151,6 +153,7 @@ class AIService:
         )
         origin_line = f"- Starting Point / Departure City: {origin}" if origin else "- Starting Point: Regional Hub"
         route_line = f"- Route: From {origin} to {destination}" if origin else f"- Destination: {destination}"
+        date_line = f"- Travel Dates: {from_date} to {to_date}" if from_date and to_date else ""
 
         return f"""You are Trip Geni AI, an elite travel architect and real-world expense specialist.
 Create an inspiring, highly realistic, and accurate real-money travel and expense plan.
@@ -159,6 +162,7 @@ DESTINATION & TRAVEL DETAILS:
 {origin_line}
 - Destination: {destination}
 {route_line}
+{date_line}
 - Duration: {duration_days} Days ({nights} Nights)
 - Travelers: {travelers_count} Traveler(s)
 - Travel Style: {travel_style or "Leisure"}
@@ -180,6 +184,7 @@ STRICT REAL MONEY EXPENSE & ACCURACY RULES:
 3. REALISTIC DINING SPOTS & GOOGLE RATINGS: In 'recommended_restaurants', provide 3 REAL, authentically existing restaurants/cafes in {destination} with their authentic Google star rating matching ~₹{food_per_meal:,.0f}/meal. Format each string as: 'Restaurant Name (★ 4.X Google, ~₹XXX/person) — signature dish'.
 4. REALISTIC EXPENSE TAGS IN ITINERARY: In 'ai_itinerary', every morning, afternoon, and evening plan MUST state explicit, realistic costs or entry fees where money is spent (e.g. 'Morning: Visit local landmark [Entry fee ~₹345/person]. Afternoon: Regional lunch [~₹250/meal]. Evening: Sunset beach stroll [Free]'). If an activity has no fee, label it '[Free entry]'.
 5. PROPER CASING & FINANCIAL INTEGRITY: Always use Title Case for destination and all named entities. Daily pacing must stay within total budget ₹{budget:,.0f}.
+6. TRANSIT TIME VS EXPLORATION TIME: Clearly distinguish travel days from destination exploration days. For long journeys (e.g. multi-day train, overnight travel, or long road trips), Day 1 should account for departure and arrival logistics without impossible morning sightseeing, and Day {duration_days} should account for return travel. Schedule sightseeing strictly during actual on-ground hours.
 
 Return valid JSON ONLY matching this exact schema:
 {{
@@ -1013,6 +1018,8 @@ Return JSON.
         transportation_mode: str | None = None,
         preferred_accommodation: str | None = None,
         origin: str | None = None,
+        from_date: str | None = None,
+        to_date: str | None = None,
     ) -> dict[str, Any]:
         """
         Full-fidelity structured fallback plan when external AI services are unavailable.
@@ -1092,6 +1099,8 @@ Return JSON.
         transportation_mode: str | None = None,
         preferred_accommodation: str | None = None,
         origin: str | None = None,
+        from_date: str | None = None,
+        to_date: str | None = None,
     ) -> dict[str, Any]:
 
         weather = self.get_weather_context(destination)
@@ -1189,6 +1198,8 @@ Return JSON.
         transportation_mode: str | None = None,
         preferred_accommodation: str | None = None,
         origin: str | None = None,
+        from_date: str | None = None,
+        to_date: str | None = None,
     ) -> dict[str, Any]:
 
         self.validate_trip_input(destination, duration_days, budget)
@@ -1225,6 +1236,8 @@ Return JSON.
                 transportation_mode=transportation_mode,
                 preferred_accommodation=preferred_accommodation,
                 cost_data=cost_data,
+                from_date=from_date,
+                to_date=to_date,
             )
 
             ai_response = self._generate_content(prompt)
