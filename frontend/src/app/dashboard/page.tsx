@@ -174,7 +174,7 @@ const CITY_WEATHER_PROFILES: Record<string, {
 };
 
 const POPULAR_WEATHER_CITIES = [
-  { name: "Trivandrum", label: "Trivandrum (Home)" },
+  { name: "Trivandrum", label: "Trivandrum" },
   { name: "Ooty", label: "Ooty" },
   { name: "Munnar", label: "Munnar" },
   { name: "Varkala", label: "Varkala" },
