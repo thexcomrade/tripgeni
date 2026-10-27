@@ -7,13 +7,13 @@ import Image from "next/image";
 import { Mail, Phone, Check, Copy, Leaf, Sparkles, Activity } from "lucide-react";
 
 /** Pages where the footer should be hidden (e.g. full-height chat UI). */
-const FOOTER_HIDDEN_PATHS = ["/ai-chat"];
+const FOOTER_HIDDEN_PATHS = ["/ai-chat", "/planner"];
 
 export default function AppFooter() {
   const pathname = usePathname();
   const [copiedEmail, setCopiedEmail] = useState(false);
 
-  if (FOOTER_HIDDEN_PATHS.includes(pathname)) return null;
+  if (FOOTER_HIDDEN_PATHS.includes(pathname) || (pathname && pathname.startsWith("/planner"))) return null;
 
   const copyEmail = (e: React.MouseEvent) => {
     e.preventDefault();

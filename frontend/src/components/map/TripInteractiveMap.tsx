@@ -625,13 +625,8 @@ if (!leafletMapRef.current) {
     fadeAnimation: true,
   }).setView([coords.lat, coords.lon], coords.zoom || 12);
 
-  // CARTO API key from environment variables
-  const cartoApiKey = process.env.NEXT_PUBLIC_CARTO_API_KEY;
-
-  // CARTO Voyager raster map tiles
-  const tileUrl = cartoApiKey
-    ? `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${cartoApiKey}`
-    : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+  // Clean, high-performance CARTO Voyager raster map tiles (public free tier, zero watermark)
+  const tileUrl = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
 
   L.tileLayer(tileUrl, {
     maxZoom: 19,
@@ -1098,6 +1093,34 @@ const map = leafletMapRef.current;
                   ? `Stops 1 to ${currentStops.length} • Single unbroken line Day 1 to Day ${durationDays}`
                   : `${currentStops.length} stops • Progressive 1 ➔ 2 ➔ 3 ➔ 4 route`}
               </span>
+            </div>
+
+            {/* DISCRETE ZOOM CONTROLS (Top Right) */}
+            <div className="map-zoom-controls" style={{ position: "absolute", top: "18px", right: "18px", zIndex: 500, display: "flex", flexDirection: "column", gap: "6px" }}>
+              <button
+                type="button"
+                onClick={() => leafletMapRef.current?.zoomIn()}
+                style={{ width: "34px", height: "34px", borderRadius: "8px", background: "rgba(15, 23, 42, 0.90)", border: "1px solid rgba(255, 255, 255, 0.2)", color: "#FFFFFF", fontSize: "16px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
+                title="Zoom In"
+              >
+                +
+              </button>
+              <button
+                type="button"
+                onClick={() => leafletMapRef.current?.zoomOut()}
+                style={{ width: "34px", height: "34px", borderRadius: "8px", background: "rgba(15, 23, 42, 0.90)", border: "1px solid rgba(255, 255, 255, 0.2)", color: "#FFFFFF", fontSize: "16px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
+                title="Zoom Out"
+              >
+                −
+              </button>
+              <button
+                type="button"
+                onClick={handleFitEntireRoute}
+                style={{ width: "34px", height: "34px", borderRadius: "8px", background: "rgba(15, 23, 42, 0.90)", border: "1px solid rgba(255, 255, 255, 0.2)", color: "#38BDF8", fontSize: "14px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
+                title="Reset Route View"
+              >
+                ⌖
+              </button>
             </div>
 
             {/* MAP LEGEND (Bottom Right) */}

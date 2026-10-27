@@ -1208,17 +1208,68 @@ export default function GeneratedTripPage() {
             subtitle="Optimized schedule factoring travel transit, attraction visiting hours, and peak scenery windows."
           />
 
-          {/* Embedded Interactive Route Map & Waypoints Preview */}
-          <TripInteractiveMap
-            destination={trip.destination}
-            origin={trip.origin}
-            durationDays={trip.duration_days}
-            dayPlans={trip.ai_itinerary}
-            recommendedHotels={trip.recommended_hotels}
-            travelStyle={trip.travel_style}
-            budget={trip.estimated_trip_cost || trip.budget}
-            currencyCode={selectedCurrency}
-          />
+          {/* Compact Route Map Access Banner (Zero forced page scroll) */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "12px",
+              padding: "14px 18px",
+              borderRadius: "14px",
+              background: "linear-gradient(135deg, rgba(14, 165, 233, 0.10) 0%, rgba(20, 184, 166, 0.06) 100%)",
+              border: "1px solid rgba(56, 189, 248, 0.22)",
+              marginBottom: "8px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "10px",
+                  background: "rgba(14, 165, 233, 0.20)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#38BDF8",
+                }}
+              >
+                <MapPin size={18} />
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: "0.92rem", color: "#F8FAFC" }}>
+                  Full Interactive Route Map Ready
+                </div>
+                <div style={{ fontSize: "0.78rem", color: "#94A3B8" }}>
+                  Track progressive day-by-day stops, hotel clusters, and continuous corridor paths.
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveTab("map")}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "8px 16px",
+                borderRadius: "10px",
+                background: "linear-gradient(135deg, #0EA5E9, #14B8A6)",
+                color: "#FFFFFF",
+                fontSize: "0.82rem",
+                fontWeight: 700,
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(14, 165, 233, 0.25)",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <Navigation size={13} />
+              <span>Explore Interactive Map</span>
+            </button>
+          </div>
 
           {(() => {
             const itineraryDays =
