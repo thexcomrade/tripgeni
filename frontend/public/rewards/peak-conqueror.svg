@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="pc-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="pc-flag" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+    <linearGradient id="pc-rock" x1="20" y1="30" x2="48" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#94A3B8"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+    <filter id="pc-glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0284C7" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- Background Badge -->
+  <circle cx="32" cy="32" r="30" fill="url(#pc-bg)" filter="url(#pc-glow)"/>
+  <circle cx="32" cy="32" r="27.5" stroke="#38BDF8" stroke-width="1.5" opacity="0.5"/>
+  <!-- Rocky Mountain Crag -->
+  <path d="M10 54 L32 28 L54 54 Z" fill="url(#pc-rock)" stroke="#0F172A" stroke-width="1.5"/>
+  <!-- Snow Pinnacle Cap -->
+  <path d="M32 28 L27 34 L29 36 L32 33 L35 36 L37 34 Z" fill="#F8FAFC" stroke="#0F172A" stroke-width="1"/>
+  <!-- Mountain Shadow Facet -->
+  <path d="M32 28 L54 54 L32 54 Z" fill="#334155" opacity="0.4"/>
+  <!-- Victor Flagpole -->
+  <path d="M32 28 L32 10" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="32" cy="9.5" r="1.8" fill="#FDE047" stroke="#0F172A" stroke-width="0.8"/>
+  <!-- Red Triangular Summit Flag -->
+  <path d="M32 11 L45 16 L32 21 Z" fill="url(#pc-flag)" stroke="#0F172A" stroke-width="1.2" stroke-linejoin="round"/>
+  <!-- Puffy Clouds below Summit -->
+  <path d="M8 48 C 12 44, 18 45, 22 47 C 26 44, 32 45, 36 47 C 40 44, 46 45, 52 48" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+  <!-- Winner Golden Star -->
+  <path d="M48 10 L49 12 L52 13 L49 14 L48 17 L47 14 L44 13 L47 12 Z" fill="#FDE047"/>
+  <circle cx="16" cy="20" r="1.5" fill="#BAE6FD"/>
+</svg>\n

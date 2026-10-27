@@ -21,6 +21,7 @@ import {
 import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
 import { GlassCard, SectionHeader } from "../../components/ui/Card";
+import RewardBadgeIcon from "../../components/rewards/RewardBadgeIcon";
 
 interface AchievementItem {
   id: number;
@@ -42,7 +43,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 1,
     title: "Pioneer Traveler",
     description: "Generate your first bespoke travel itinerary with TripGenius AI Engine.",
-    icon: "✈️",
+    icon: "/rewards/pioneer-traveler.svg",
     tier: "Bronze",
     category: "General",
     unlocked: true,
@@ -55,7 +56,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 2,
     title: "Green Pathfinder",
     description: "Synthesize an itinerary with a sustainability eco score above 85/100.",
-    icon: "🌱",
+    icon: "/rewards/green-pathfinder.svg",
     tier: "Gold",
     category: "Eco",
     unlocked: true,
@@ -68,7 +69,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 3,
     title: "Western Ghats Connoisseur",
     description: "Plan trips to Munnar, Coorg, or Ooty with high scenic rating.",
-    icon: "⛰️",
+    icon: "/rewards/western-ghats.svg",
     tier: "Silver",
     category: "Exploration",
     unlocked: true,
@@ -81,7 +82,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 4,
     title: "Bucket List Collector",
     description: "Save 3 or more curated sanctuaries to your personal bucket list.",
-    icon: "❤️",
+    icon: "/rewards/bucket-list.svg",
     tier: "Bronze",
     category: "General",
     unlocked: true,
@@ -94,7 +95,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 5,
     title: "Frugal Nomad",
     description: "Plan 2 comprehensive trips with an estimated cost under ₹15,000.",
-    icon: "💰",
+    icon: "/rewards/frugal-nomad.svg",
     tier: "Silver",
     category: "Budget",
     unlocked: false,
@@ -107,7 +108,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 6,
     title: "Carbon Reducer",
     description: "Select low-emission transit (Scenic Train, Bus, or EV) across 3 journeys.",
-    icon: "🍃",
+    icon: "/rewards/carbon-reducer.svg",
     tier: "Gold",
     category: "Eco",
     unlocked: false,
@@ -120,7 +121,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 7,
     title: "Spiritual & Heritage Seeker",
     description: "Explore sacred ghats, temple corridors, and ancient civilizations like Varanasi or Hampi.",
-    icon: "🛕",
+    icon: "/rewards/heritage-seeker.svg",
     tier: "Gold",
     category: "Culture",
     unlocked: false,
@@ -133,7 +134,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 8,
     title: "Sacred Ganga Dawn Pilgrim",
     description: "Witness the Subah-e-Banaras dawn rowboat cruise and Dashashwamedh Aarti in Varanasi.",
-    icon: "🛶",
+    icon: "/rewards/ganga-pilgrim.svg",
     tier: "Gold",
     category: "Culture",
     unlocked: false,
@@ -146,7 +147,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 9,
     title: "Courtallam Waterfalls Chaser",
     description: "Plan a rejuvenating waterfall trip to Thenkasi & Courtallam during peak Saaral season.",
-    icon: "🌊",
+    icon: "/rewards/waterfalls-chaser.svg",
     tier: "Silver",
     category: "Exploration",
     unlocked: false,
@@ -159,7 +160,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 10,
     title: "Culinary Trailblazer",
     description: "Savor or bookmark 4 verified regional food trails (Border Parotta, Banarasi Chaat, Malabar Thali, Kodava Curry).",
-    icon: "🍲",
+    icon: "/rewards/culinary-trailblazer.svg",
     tier: "Gold",
     category: "Culture",
     unlocked: false,
@@ -172,7 +173,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 11,
     title: "Highland Peak Conqueror",
     description: "Summit cloud viewpoints above 2,000m (Kolukkumalai, Doddabetta, or Tadiandamol).",
-    icon: "🧗‍♂️",
+    icon: "/rewards/peak-conqueror.svg",
     tier: "Silver",
     category: "Exploration",
     unlocked: false,
@@ -185,7 +186,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 12,
     title: "Zero Carbon Champion",
     description: "Complete 5 zero-emission trips using trains, EV mobility, or walking eco-trails.",
-    icon: "⚡",
+    icon: "/rewards/zero-carbon.svg",
     tier: "Platinum",
     category: "Eco",
     unlocked: false,
@@ -198,7 +199,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 13,
     title: "Grand Heritage Maven",
     description: "Synthesize itineraries across 3 UNESCO World Heritage architectural marvels.",
-    icon: "🏛️",
+    icon: "/rewards/grand-heritage.svg",
     tier: "Platinum",
     category: "Exploration",
     unlocked: false,
@@ -211,7 +212,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 14,
     title: "Solo Wanderer",
     description: "Plan a solo adventure itinerary tailored with offbeat walking trails and quiet homestays.",
-    icon: "🎒",
+    icon: "/rewards/solo-wanderer.svg",
     tier: "Bronze",
     category: "General",
     unlocked: false,
@@ -224,7 +225,7 @@ const INITIAL_ACHIEVEMENTS: AchievementItem[] = [
     id: 15,
     title: "Master Explorer Crest",
     description: "Earn 10 total milestones to claim the ultimate Platinum Explorer Crest and VIP traveler rank.",
-    icon: "👑",
+    icon: "/rewards/master-explorer.svg",
     tier: "Diamond",
     category: "General",
     unlocked: false,
@@ -651,47 +652,55 @@ export default function AchievementsPage() {
               >
                 <div
                   style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "14px",
+                    width: "56px",
+                    height: "56px",
+                    borderRadius: "16px",
                     background: item.unlocked
-                      ? "linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(20, 184, 166, 0.25))"
+                      ? "linear-gradient(135deg, rgba(14, 165, 233, 0.20), rgba(20, 184, 166, 0.15))"
                       : item.progress > 0
-                      ? "rgba(245, 158, 11, 0.15)"
-                      : "rgba(255, 255, 255, 0.04)",
+                      ? "rgba(245, 158, 11, 0.12)"
+                      : "rgba(255, 255, 255, 0.03)",
                     border: item.unlocked
-                      ? "1px solid rgba(14, 165, 233, 0.45)"
+                      ? "1px solid rgba(14, 165, 233, 0.40)"
                       : item.progress > 0
-                      ? "1px solid rgba(245, 158, 11, 0.35)"
-                      : "1px solid rgba(255, 255, 255, 0.10)",
+                      ? "1px solid rgba(245, 158, 11, 0.30)"
+                      : "1px solid rgba(255, 255, 255, 0.08)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "1.7rem",
                     boxShadow: item.unlocked
-                      ? "0 0 16px rgba(14, 165, 233, 0.25)"
+                      ? "0 0 20px rgba(14, 165, 233, 0.25)"
                       : "none",
                     position: "relative",
+                    padding: "4px",
                   }}
                 >
-                  {item.icon}
+                  <RewardBadgeIcon
+                    id={item.id}
+                    icon={item.icon}
+                    title={item.title}
+                    size={46}
+                    unlocked={item.unlocked}
+                    inProgress={item.progress > 0}
+                  />
                   {!item.unlocked && item.progress === 0 && (
                     <div
                       style={{
                         position: "absolute",
                         bottom: "-4px",
                         right: "-4px",
-                        width: "18px",
-                        height: "18px",
+                        width: "20px",
+                        height: "20px",
                         borderRadius: "50%",
                         background: "#0F172A",
-                        border: "1px solid rgba(245, 158, 11, 0.6)",
+                        border: "1.5px solid rgba(245, 158, 11, 0.75)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.6)",
                       }}
                     >
-                      <Lock size={10} color="#FBBF24" />
+                      <Lock size={11} color="#FBBF24" />
                     </div>
                   )}
                 </div>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="zc-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="50%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#1E1B4B"/>
+    </linearGradient>
+    <linearGradient id="zc-bolt" x1="20" y1="12" x2="44" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="50%" stop-color="#FACC15"/>
+      <stop offset="100%" stop-color="#EAB308"/>
+    </linearGradient>
+    <filter id="zc-glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#059669" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Background Badge -->
+  <circle cx="32" cy="32" r="30" fill="url(#zc-bg)" filter="url(#zc-glow)"/>
+  <circle cx="32" cy="32" r="27.5" stroke="#34D399" stroke-width="1.5" opacity="0.5"/>
+  <!-- Energy Ring Orbit -->
+  <ellipse cx="32" cy="32" rx="20" ry="10" transform="rotate(-25 32 32)" stroke="#6EE7B7" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.8"/>
+  <!-- Chunky Cartoon Lightning Bolt -->
+  <path d="M35 12 L21 32 L31 32 L27 50 L43 28 L33 28 Z" fill="url(#zc-bolt)" stroke="#0F172A" stroke-width="1.8" stroke-linejoin="round"/>
+  <!-- Bolt Highlight -->
+  <path d="M34 16 L25 30 L31 30" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Laurel Eco Leaf Pair on base -->
+  <g fill="#10B981" stroke="#0F172A" stroke-width="1">
+    <path d="M22 46 C 16 46, 17 40, 22 41 C 24 43, 24 46, 22 46 Z"/>
+    <path d="M42 46 C 48 46, 47 40, 42 41 C 40 43, 40 46, 42 46 Z"/>
+  </g>
+  <!-- Neon Energy Sparks -->
+  <circle cx="16" cy="22" r="2" fill="#38BDF8"/>
+  <circle cx="48" cy="40" r="2" fill="#34D399"/>
+  <path d="M48 16 L49 18 L51 19 L49 20 L48 22 L47 20 L45 19 L47 18 Z" fill="#FEF08A"/>
+</svg>\n

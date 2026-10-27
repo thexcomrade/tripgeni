@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="ct-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="60%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#7C2D12"/>
+    </linearGradient>
+    <linearGradient id="ct-pot" x1="16" y1="28" x2="48" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#B45309"/>
+      <stop offset="100%" stop-color="#78350F"/>
+    </linearGradient>
+    <linearGradient id="ct-soup" x1="20" y1="32" x2="44" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+    <filter id="ct-glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#7C2D12" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- Background Badge -->
+  <circle cx="32" cy="32" r="30" fill="url(#ct-bg)" filter="url(#ct-glow)"/>
+  <circle cx="32" cy="32" r="27.5" stroke="#FDBA74" stroke-width="1.5" opacity="0.6"/>
+  <!-- Steam Curves -->
+  <path d="M26 24 C 24 20, 27 16, 25 12" stroke="#FED7AA" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <path d="M32 23 C 30 19, 34 15, 32 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+  <path d="M38 24 C 36 20, 39 16, 37 12" stroke="#FED7AA" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <!-- Cooking Claypot Handles -->
+  <rect x="12" y="34" width="6" height="4" rx="2" fill="#78350F" stroke="#0F172A" stroke-width="1.2"/>
+  <rect x="46" y="34" width="6" height="4" rx="2" fill="#78350F" stroke="#0F172A" stroke-width="1.2"/>
+  <!-- Claypot / Bowl Body -->
+  <path d="M16 32 L20 48 C 22 52, 42 52, 44 48 L48 32 Z" fill="url(#ct-pot)" stroke="#0F172A" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Rim of Bowl -->
+  <ellipse cx="32" cy="32" rx="16" ry="5" fill="#92400E" stroke="#0F172A" stroke-width="1.3"/>
+  <!-- Delicious Curry Stew Surface -->
+  <ellipse cx="32" cy="32" rx="14" ry="4" fill="url(#ct-soup)"/>
+  <!-- Garnish & Spices -->
+  <circle cx="28" cy="32" r="1.5" fill="#15803D"/>
+  <circle cx="35" cy="31" r="1.3" fill="#15803D"/>
+  <circle cx="32" cy="33" r="1.2" fill="#DC2626"/>
+  <!-- Wooden Ladle dipping in -->
+  <path d="M42 22 L35 34" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="35" cy="34" rx="3" ry="2" fill="#B45309" stroke="#0F172A" stroke-width="1"/>
+  <!-- Spice Sparkles -->
+  <path d="M48 16 L49 18 L51 19 L49 20 L48 22 L47 20 L45 19 L47 18 Z" fill="#FEF08A"/>
+</svg>\n

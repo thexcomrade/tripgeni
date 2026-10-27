@@ -6,6 +6,7 @@ import tripService from "../../services/trip.service";
 import { ensureTripItinerary } from "../../utils/itineraryHelper";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import RewardBadgeIcon from "../rewards/RewardBadgeIcon";
 import {
   Compass,
   Calendar,
@@ -945,18 +946,28 @@ export default function ProfileGrid({
               >
                 <div
                   style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "14px",
-                    background: "rgba(255, 255, 255, 0.06)",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    width: "52px",
+                    height: "52px",
+                    borderRadius: "15px",
+                    background: ach.unlocked
+                      ? "linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(20, 184, 166, 0.15))"
+                      : "rgba(255, 255, 255, 0.04)",
+                    border: ach.unlocked
+                      ? "1px solid rgba(14, 165, 233, 0.35)"
+                      : "1px solid rgba(255, 255, 255, 0.08)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "1.5rem",
+                    padding: "3px",
                   }}
                 >
-                  {ach.icon}
+                  <RewardBadgeIcon
+                    id={ach.id}
+                    icon={ach.icon}
+                    title={ach.title}
+                    size={42}
+                    unlocked={ach.unlocked}
+                  />
                 </div>
 
                 {ach.unlocked ? (

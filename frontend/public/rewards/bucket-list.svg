@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bl-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F43F5E"/>
+      <stop offset="50%" stop-color="#E11D48"/>
+      <stop offset="100%" stop-color="#881337"/>
+    </linearGradient>
+    <linearGradient id="bl-heart" x1="20" y1="16" x2="44" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FB7185"/>
+      <stop offset="50%" stop-color="#F43F5E"/>
+      <stop offset="100%" stop-color="#BE123C"/>
+    </linearGradient>
+    <linearGradient id="bl-ribbon" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#EAB308"/>
+    </linearGradient>
+    <filter id="bl-glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#881337" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <!-- Background Badge -->
+  <circle cx="32" cy="32" r="30" fill="url(#bl-bg)" filter="url(#bl-glow)"/>
+  <circle cx="32" cy="32" r="27.5" stroke="#FDA4AF" stroke-width="1.5" opacity="0.5"/>
+  <!-- Gold Bookmark Ribbon in Back -->
+  <path d="M38 12 L38 32 L43 27 L48 32 L48 12 Z" fill="url(#bl-ribbon)" stroke="#0F172A" stroke-width="1.2"/>
+  <!-- Main 3D Glossy Cartoon Heart -->
+  <path d="M32 48 C 28 44, 14 34, 14 24 C 14 17, 19 14, 25 14 C 29 14, 31 16, 32 18 C 33 16, 35 14, 39 14 C 45 14, 50 17, 50 24 C 50 34, 36 44, 32 48 Z" fill="url(#bl-heart)" stroke="#0F172A" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Heart Specular Highlight -->
+  <path d="M19 22 C 18 20, 20 17, 24 16 C 25 16, 25 17, 24 18 C 21 19, 19 21, 19 22 Z" fill="#FFFFFF" opacity="0.8"/>
+  <ellipse cx="21" cy="24" rx="2" ry="4" transform="rotate(-30 21 24)" fill="#FFFFFF" opacity="0.6"/>
+  <!-- Checkmark Star Badge -->
+  <g transform="translate(34, 34)">
+    <circle cx="8" cy="8" r="9" fill="#10B981" stroke="#0F172A" stroke-width="1.3"/>
+    <path d="M4.5 8 L7 10.5 L12 5.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- Sparkles -->
+  <path d="M14 14 L15 16 L17 17 L15 18 L14 20 L13 18 L11 17 L13 16 Z" fill="#FEF08A"/>
+  <path d="M48 46 L49 48 L51 49 L49 50 L48 52 L47 50 L45 49 L47 48 Z" fill="#FEF08A"/>
+  <circle cx="48" cy="18" r="1.5" fill="#FEF9C3"/>
+</svg>\n

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="gp-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="gp-leaf-l" x1="16" y1="20" x2="32" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#86EFAC"/>
+      <stop offset="100%" stop-color="#22C55E"/>
+    </linearGradient>
+    <linearGradient id="gp-leaf-r" x1="30" y1="14" x2="48" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4ADE80"/>
+      <stop offset="100%" stop-color="#15803D"/>
+    </linearGradient>
+    <linearGradient id="gp-soil" x1="20" y1="46" x2="44" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#78350F"/>
+      <stop offset="100%" stop-color="#451A03"/>
+    </linearGradient>
+    <filter id="gp-glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#047857" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- Background Badge -->
+  <circle cx="32" cy="32" r="30" fill="url(#gp-bg)" filter="url(#gp-glow)"/>
+  <circle cx="32" cy="32" r="27.5" stroke="#6EE7B7" stroke-width="1.5" opacity="0.5"/>
+  <!-- Sunbeams -->
+  <circle cx="32" cy="22" r="14" fill="#FEF08A" opacity="0.25"/>
+  <!-- Soil Mound -->
+  <ellipse cx="32" cy="50" rx="18" ry="6" fill="url(#gp-soil)" stroke="#0F172A" stroke-width="1.3"/>
+  <circle cx="24" cy="49" r="1.5" fill="#B45309"/>
+  <circle cx="39" cy="51" r="1.3" fill="#B45309"/>
+  <!-- Plant Stem -->
+  <path d="M32 48 C 32 38, 31 30, 33 22" stroke="#15803D" stroke-width="3" stroke-linecap="round"/>
+  <path d="M31.5 48 C 31.5 38, 30.5 30, 32.5 22" stroke="#4ADE80" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Left Leaf -->
+  <path d="M32 32 C 24 30, 16 35, 17 40 C 22 43, 29 38, 32 32 Z" fill="url(#gp-leaf-l)" stroke="#0F172A" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M19 38 C 23 37, 28 35, 32 32" stroke="#166534" stroke-width="0.8" stroke-linecap="round"/>
+  <!-- Dew Drop on Left Leaf -->
+  <circle cx="21" cy="38" r="1.5" fill="#E0F2FE"/>
+  <!-- Right Leaf (Tilted upwards) -->
+  <path d="M32 25 C 38 18, 48 18, 48 24 C 47 30, 38 30, 32 25 Z" fill="url(#gp-leaf-r)" stroke="#0F172A" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M34 25 C 39 24, 44 22, 47 23" stroke="#14532D" stroke-width="0.8" stroke-linecap="round"/>
+  <!-- Top Sprout Bud -->
+  <path d="M33 22 C 32 16, 36 13, 37 13 C 38 15, 36 19, 33 22 Z" fill="#86EFAC" stroke="#0F172A" stroke-width="1"/>
+  <!-- Sparkles -->
+  <path d="M48 12 L49 14 L51 15 L49 16 L48 18 L47 16 L45 15 L47 14 Z" fill="#FEF08A"/>
+  <path d="M14 20 L15 22 L17 23 L15 24 L14 26 L13 24 L11 23 L13 22 Z" fill="#FEF08A"/>
+  <circle cx="20" cy="14" r="1.5" fill="#FEF9C3"/>
+</svg>\n

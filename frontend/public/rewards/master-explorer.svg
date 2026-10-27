@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="me-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="50%" stop-color="#4C1D95"/>
+      <stop offset="100%" stop-color="#1E1B4B"/>
+    </linearGradient>
+    <linearGradient id="me-crown" x1="16" y1="20" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="35%" stop-color="#FACC15"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <filter id="me-glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#7C3AED" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Background Badge -->
+  <circle cx="32" cy="32" r="30" fill="url(#me-bg)" filter="url(#me-glow)"/>
+  <circle cx="32" cy="32" r="27.5" stroke="#C084FC" stroke-width="1.5" opacity="0.6"/>
+  <!-- Sunburst Radiant Star Halo -->
+  <circle cx="32" cy="32" r="23" stroke="#FDE047" stroke-width="1" stroke-dasharray="2 3" opacity="0.7"/>
+  <!-- Golden Crown Base Band -->
+  <path d="M14 44 C 18 46, 46 46, 50 44 L48 48 C 44 50, 20 50, 16 48 Z" fill="#B45309" stroke="#0F172A" stroke-width="1.2"/>
+  <rect x="15" y="41" width="34" height="4" rx="1.5" fill="url(#me-crown)" stroke="#0F172A" stroke-width="1.2"/>
+  <!-- Crown Peaks & Arches -->
+  <path d="M15 41 L14 26 L23 34 L32 20 L41 34 L50 26 L49 41 Z" fill="url(#me-crown)" stroke="#0F172A" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Pearl / Gem Spheres atop Peaks -->
+  <circle cx="14" cy="25" r="2.5" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
+  <circle cx="32" cy="19" r="3.5" fill="#EF4444" stroke="#0F172A" stroke-width="1"/>
+  <circle cx="50" cy="25" r="2.5" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
+  <!-- Crown Jewel Inserts -->
+  <polygon points="32,32 35,36 32,40 29,36" fill="#3B82F6" stroke="#0F172A" stroke-width="0.8"/>
+  <circle cx="21" cy="38" r="2" fill="#EF4444"/>
+  <circle cx="43" cy="38" r="2" fill="#10B981"/>
+  <!-- Grand Brilliant Diamond Star atop Center -->
+  <path d="M32 6 L33.5 11 L38 12 L33.5 14 L32 18 L30.5 14 L26 12 L30.5 11 Z" fill="#FDE047"/>
+  <!-- Sparkles -->
+  <path d="M10 16 L11 18 L13 19 L11 20 L10 22 L9 20 L7 19 L9 18 Z" fill="#FDE047"/>
+  <path d="M54 16 L55 18 L57 19 L55 20 L54 22 L53 20 L51 19 L53 18 Z" fill="#FDE047"/>
+</svg>\n
