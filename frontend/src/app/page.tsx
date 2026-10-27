@@ -359,12 +359,12 @@ export default function HomePage() {
               animationDelay: "300ms",
               fontFamily:
                 "'Playfair Display', 'Cormorant Garamond', 'Bodoni Moda', 'Cinzel', Georgia, serif",
-              fontSize: "clamp(2.8rem, 6.2vw, 5.2rem)",
+              fontSize: "clamp(2.1rem, 4.2vw, 3.75rem)",
               fontWeight: 700,
-              lineHeight: 1.15,
-              letterSpacing: "-0.02em",
-              maxWidth: "1150px",
-              margin: "0 auto 24px auto",
+              lineHeight: 1.2,
+              letterSpacing: "-0.015em",
+              maxWidth: "960px",
+              margin: "0 auto 20px auto",
               textAlign: "center",
               color: "#FFFFFF",
               textShadow:

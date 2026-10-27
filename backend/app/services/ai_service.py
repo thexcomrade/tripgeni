@@ -96,7 +96,23 @@ class AIService:
 
         self.recommendation_service = RecommendationService()
 
-        self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        # OpenAI ChatGPT client initialization
+        self.openai_client = None
+        if getattr(settings, "OPENAI_API_KEY", None):
+            try:
+                import openai
+                self.openai_client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+                logger.info("OpenAI ChatGPT client initialized successfully.")
+            except Exception as e:
+                logger.warning("Failed to initialize OpenAI client: %s", e)
+
+        # Gemini client initialization
+        self.client = None
+        if getattr(settings, "GEMINI_API_KEY", None):
+            try:
+                self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
+            except Exception as e:
+                logger.warning("Failed to initialize Gemini client: %s", e)
 
         self.model_name = "gemini-2.5-flash"
         self.fallback_models = ["gemini-2.5-flash", "gemini-1.5-flash"]
@@ -264,28 +280,57 @@ Return JSON.
     def _generate_content(self, prompt: str) -> str:
         last_error = None
 
-        for attempt in range(self.MAX_RETRIES):
-            try:
-                response = self.client.models.generate_content(
-                    model=self.model_name, contents=prompt
-                )
+        # Priority 1: OpenAI ChatGPT API (gpt-4o / gpt-4o-mini)
+        if self.openai_client:
+            for attempt in range(self.MAX_RETRIES):
+                try:
+                    response = self.openai_client.chat.completions.create(
+                        model=getattr(settings, "OPENAI_MODEL", "gpt-4o"),
+                        messages=[
+                            {
+                                "role": "system",
+                                "content": (
+                                    "You are Trip Geni AI, an elite travel architect and real-world expense specialist. "
+                                    "Always return valid, complete JSON strictly adhering to the requested schema."
+                                ),
+                            },
+                            {"role": "user", "content": prompt},
+                        ],
+                        response_format={"type": "json_object"},
+                        temperature=0.7,
+                    )
+                    if response.choices and response.choices[0].message.content:
+                        logger.info("Successfully generated itinerary via OpenAI ChatGPT (%s)", getattr(settings, "OPENAI_MODEL", "gpt-4o"))
+                        return response.choices[0].message.content
+                except Exception as error:
+                    last_error = error
+                    logger.warning("OpenAI attempt %s failed: %s", attempt + 1, error)
+                    time.sleep(1)
 
-                if response and response.text:
-                    return response.text
+        # Priority 2: Google Gemini API
+        if self.client:
+            for attempt in range(self.MAX_RETRIES):
+                try:
+                    response = self.client.models.generate_content(
+                        model=self.model_name, contents=prompt
+                    )
 
-            except Exception as error:
-                last_error = error
-                err_str = str(error)
-                logger.warning("Gemini attempt %s failed: %s", attempt + 1, err_str)
+                    if response and response.text:
+                        logger.info("Successfully generated itinerary via Gemini (%s)", self.model_name)
+                        return response.text
 
-                # Fail fast on 429 quota exhaustion to prevent frontend timeout
-                if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
-                    logger.warning("Gemini quota exhausted (429). Fast-failing to deterministic fallback.")
-                    raise RuntimeError("Gemini quota exhausted")
+                except Exception as error:
+                    last_error = error
+                    err_str = str(error)
+                    logger.warning("Gemini attempt %s failed: %s", attempt + 1, err_str)
 
-                time.sleep(1)
+                    if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
+                        logger.warning("Gemini quota exhausted (429). Fast-failing to deterministic fallback.")
+                        break
 
-        raise RuntimeError(f"Gemini generation failed: {last_error}")
+                    time.sleep(1)
+
+        raise RuntimeError(f"Live AI generation failed across available providers: {last_error}")
 
     # ==================================================
     # JSON Parsing Utilities

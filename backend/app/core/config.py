@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     TOURISM_DATASET_PATH: str = Field(default="database/tourism.csv")
 
     GEMINI_API_KEY: str = Field(default="")
+    OPENAI_API_KEY: str = Field(default="")
+    OPENAI_MODEL: str = Field(default="gpt-4o")
     OPENWEATHER_API_KEY: str = Field(default="")
 
     CORS_ORIGINS: str = Field(

@@ -636,6 +636,7 @@ if (!leafletMapRef.current) {
   L.tileLayer(tileUrl, {
     maxZoom: 19,
     subdomains: "abcd",
+    crossOrigin: true,
     attribution:
       '&copy; <a href="https://carto.com/" target="_blank" rel="noreferrer">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
   }).addTo(map);
