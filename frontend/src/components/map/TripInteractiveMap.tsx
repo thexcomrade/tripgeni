@@ -441,15 +441,36 @@ export default function TripInteractiveMap({
         return first.length > 36 ? `${first.slice(0, 34)}...` : first;
       };
 
+      // Dynamic stops calculation (Never hardcode 4 stops per day)
+      // 1. If AI provides activities, faithfully use that exact count
+      // 2. Otherwise, vary stops naturally by day & travel style (e.g. Day 1: 4, Day 2: 5, Day 3: 4, Day 4: 5, Day 5: 3)
+      const dynamicCount =
+        Array.isArray(plan.activities) && plan.activities.length >= 2
+          ? plan.activities.length
+          : (() => {
+              const styleOffset =
+                travelStyle === "Packed" || travelStyle === "Active"
+                  ? 1
+                  : travelStyle === "Relaxed"
+                  ? -1
+                  : 0;
+              const naturalPattern = [4, 5, 4, 5, 3, 4, 5];
+              return Math.max(
+                3,
+                Math.min(6, naturalPattern[dIdx % naturalPattern.length] + styleOffset)
+              );
+            })();
+
       let stops: MasterMapStop[] = [];
 
       // A. Verified real landmarks
       if (presetCityKey && DESTINATION_LANDMARKS[presetCityKey]) {
         const cityDays = DESTINATION_LANDMARKS[presetCityKey];
-        const dayLandmarks = cityDays[dIdx % cityDays.length];
-        if (dayLandmarks && dayLandmarks.length > 0) {
-          stops = dayLandmarks.map((lm, sIdx) => {
-            const stopObj: MasterMapStop = {
+        const dayLandmarks = cityDays[dIdx % cityDays.length] || [];
+        if (dayLandmarks.length > 0) {
+          const countToTake = Math.min(dynamicCount, dayLandmarks.length);
+          stops = dayLandmarks.slice(0, countToTake).map((lm, sIdx) => {
+            return {
               id: sIdx + 1,
               overallIndex: runningGlobalIndex++,
               name: cleanName(rawActivities[sIdx] || lm.name, lm.name),
@@ -463,56 +484,93 @@ export default function TripInteractiveMap({
               dayIndex: dIdx,
               dayLabel: `Day ${dayNum}`,
             };
-            return stopObj;
           });
+
+          // If AI planned more activities than preset landmarks, extend smoothly along the corridor
+          if (dynamicCount > dayLandmarks.length) {
+            const lastLm = dayLandmarks[dayLandmarks.length - 1];
+            for (let extIdx = dayLandmarks.length; extIdx < dynamicCount; extIdx++) {
+              const deltaLat = Number(((extIdx - dayLandmarks.length + 1) * 0.009).toFixed(5));
+              const deltaLon = Number(((extIdx - dayLandmarks.length + 1) * 0.008).toFixed(5));
+              const actName = rawActivities[extIdx] || `${destination} Artisan Promenade`;
+              stops.push({
+                id: extIdx + 1,
+                overallIndex: runningGlobalIndex++,
+                name: cleanName(actName, actName),
+                type: "Evening Scenic & Dining",
+                category: "market",
+                lat: Number((lastLm.lat + deltaLat).toFixed(5)),
+                lon: Number((lastLm.lon + deltaLon).toFixed(5)),
+                time: extIdx === 4 ? "06:30 PM" : "08:15 PM",
+                duration: "1.5 hrs",
+                detail: `Authentic evening promenade, local cuisine tasting, and ambient night views of ${destination}.`,
+                dayIndex: dIdx,
+                dayLabel: `Day ${dayNum}`,
+              });
+            }
+          }
         }
       }
 
-      // B. Intelligent progressive forward arc for unlisted cities
+      // B. Intelligent progressive forward arc for unlisted cities (Strictly non-backtracking 1..N stops)
       if (stops.length === 0) {
         const baseLat = coords.lat;
         const baseLon = coords.lon;
-        const dayAngle = dIdx * 1.25 + 0.45;
+        const dayAngle = dIdx * 1.35 + 0.35; // Dedicated geometric corridor per day
 
-        const defaultSteps = [
-          { r: 0.000, angleOffset: 0.00, time: "09:00 AM", dur: "1.5 hrs", cat: "start" as const, desc: "Departure, briefing, and heritage gateway stroll." },
-          { r: 0.014, angleOffset: 0.16, time: "11:30 AM", dur: "2 hrs", cat: "sight" as const, desc: "Explore regional natural reserve and scenic vantage point." },
-          { r: 0.026, angleOffset: 0.34, time: "02:30 PM", dur: "1.5 hrs", cat: "culture" as const, desc: "Heritage artisan quarter, botanical gardens & cultural trail." },
-          { r: 0.038, angleOffset: 0.52, time: "05:00 PM", dur: "2 hrs", cat: "market" as const, desc: "Sunset viewpoint, evening lakeside promenade & local bazaar." },
+        const times = ["09:00 AM", "11:30 AM", "02:15 PM", "04:45 PM", "06:45 PM", "08:30 PM"];
+        const categories: ("start" | "sight" | "culture" | "market")[] = [
+          "start",
+          "sight",
+          "culture",
+          "market",
+          "sight",
+          "market",
         ];
+        const durations = ["1.5 hrs", "2 hrs", "1.5 hrs", "2 hrs", "1.5 hrs", "1.5 hrs"];
 
-        stops = defaultSteps.map((step, sIdx) => {
-          const theta = dayAngle + step.angleOffset;
-          const lat = Number((baseLat + step.r * Math.cos(theta)).toFixed(5));
-          const lon = Number((baseLon + step.r * Math.sin(theta)).toFixed(5));
+        stops = Array.from({ length: dynamicCount }, (_, sIdx) => {
+          // Strictly progressive forward radius to ensure one point leads naturally to the next without backtracking
+          const r = Number((sIdx === 0 ? 0.000 : 0.012 * sIdx + 0.003).toFixed(5));
+          const theta = dayAngle + sIdx * 0.18;
+          const lat = Number((baseLat + r * Math.cos(theta)).toFixed(5));
+          const lon = Number((baseLon + r * Math.sin(theta)).toFixed(5));
 
-          let name = "";
-          let type = "";
+          let fallbackName = `${destination} Activity ${sIdx + 1}`;
+          let fallbackType = "Sightseeing Point";
           if (sIdx === 0) {
-            name = cleanName(rawActivities[0], `${destination} Historic Center & Plaza`);
-            type = "Historic Gateway";
+            fallbackName = `${destination} Historic Center & Gateway`;
+            fallbackType = "Historic Gateway";
           } else if (sIdx === 1) {
-            name = cleanName(rawActivities[1], `${destination} Botanical Sanctuary & Vista`);
-            type = "Sightseeing & Nature";
+            fallbackName = `${destination} Botanical Sanctuary & Vista`;
+            fallbackType = "Sightseeing & Nature";
           } else if (sIdx === 2) {
-            name = cleanName(rawActivities[2], `${destination} Cultural Heritage Museum`);
-            type = "Culture & Traditions";
+            fallbackName = `${destination} Cultural Heritage Museum`;
+            fallbackType = "Culture & Heritage";
+          } else if (sIdx === 3) {
+            fallbackName = `${destination} Sunset Promenade & Waterfront`;
+            fallbackType = "Sunset Vista";
+          } else if (sIdx === 4) {
+            fallbackName = `${destination} Twilight Artisan Market`;
+            fallbackType = "Local Bazaar & Handicrafts";
           } else {
-            name = cleanName(rawActivities[3] || `${destination} Waterfront Sunset Walk`, `${destination} Sunset Promenade`);
-            type = "Scenic Sunset & Market";
+            fallbackName = `${destination} Starlit Riverfront Dining`;
+            fallbackType = "Signature Dining & Culture";
           }
+
+          const name = cleanName(rawActivities[sIdx] || fallbackName, fallbackName);
 
           return {
             id: sIdx + 1,
             overallIndex: runningGlobalIndex++,
             name,
-            type,
-            category: step.cat,
+            type: fallbackType,
+            category: categories[sIdx % categories.length],
             lat,
             lon,
-            time: step.time,
-            duration: step.dur,
-            detail: step.desc,
+            time: times[sIdx % times.length],
+            duration: durations[sIdx % durations.length],
+            detail: `Progressive travel stop ${sIdx + 1} curated for seamless forward journey pacing in ${destination}.`,
             dayIndex: dIdx,
             dayLabel: `Day ${dayNum}`,
           };

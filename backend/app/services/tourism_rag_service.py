@@ -1206,12 +1206,12 @@ class TourismRAGService:
         full_context = f"{history_text} {msg_lower}"
 
         # 1. Greeting check
-        malayalam_greetings = ["sugano", "sugamano", "sukhamano", "sukham", "sugam", "kollam"]
+        malayalam_greetings = ["sugano", "sugamano", "sukhamano", "sukham", "sugam", "kollam", "macha", "machane", "entha", "enthe"]
         if any(w in msg_lower for w in malayalam_greetings):
             return {
                 "reply": (
-                    f"Sugam thanne, macha! 🙏 (Doing great!) PADAYAPPA here, ready for our next adventure.\n\n"
-                    "Where are we heading next, or what would you like me to plan for you?"
+                    f"Sugam thanne, macha! 🙏 PADAYAPPA here. Where are we heading today?\n\n"
+                    "Tell me your dream destination or how many days you have, and I'll analyze it and get your plan ready!"
                 ),
                 "source": "rag_knowledge_engine",
             }
@@ -1220,20 +1220,19 @@ class TourismRAGService:
         words_set = set(re.findall(r"\b\w+\b", msg_lower))
 
         if words_set.issubset(greeting_words) or msg_lower in ["hi", "hai", "hello", "hey", "namaskaram", "namaste", "good morning", "good evening"]:
+            gname = display_name or "Traveler"
             if already_greeted:
                 return {
                     "reply": (
-                        f"Hello {display_name or 'there'}! 😊 Ready for the next adventure.\n\n"
-                        "Tell me your destination or whatever is on your mind, and let's plan it out together!"
+                        f"Hello {gname}! 😊 Ready for your next journey.\n\n"
+                        "Tell me your destination or travel vibe, and let's craft the perfect plan!"
                     ),
                     "source": "rag_knowledge_engine",
                 }
             return {
                 "reply": (
-                    f"Namaskaram {display_name}! 🙏 PADAYAPPA here, your personal AI travel companion and trip architect.\n\n"
-                    "How may I help you today?\n\n"
-                    "Tell me your dream destination, budget, or the travel vibe you have in mind, and I'll analyze it to craft the ideal plan with verified stays and costs in ₹.\n\n"
-                    "❓ Where would you like to travel, or what would you like me to plan for you?"
+                    f"Namaskaram {gname}! 🙏 PADAYAPPA here.\n\n"
+                    "Where would you like to travel today? Drop a destination (e.g. Munnar, Kashmir, Varanasi, Goa) or your timeframe, and I'll analyze it for you!"
                 ),
                 "source": "rag_knowledge_engine",
             }

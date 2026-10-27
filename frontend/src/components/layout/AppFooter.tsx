@@ -161,6 +161,7 @@ export default function AppFooter() {
               { label: "History", href: "/trip/history" },
               { label: "Favorites", href: "/favorites" },
               { label: "Analytics", href: "/analytics" },
+              { label: "Profile", href: "/profile" },
               { label: "AI ChatBot", href: "/ai-chat", highlight: true },
             ].map((item) => (
               <Link

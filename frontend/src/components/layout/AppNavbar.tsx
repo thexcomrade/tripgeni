@@ -502,6 +502,27 @@ export default function AppNavbar() {
             </div>
           )}
 
+          {/* MOBILE PROFILE BUTTON (Visible on <= 1020px) */}
+          <Link
+            href={isLoggedIn ? "/profile" : "/login"}
+            className={`liquid-glass mobile-profile-btn ${isHome ? "animate-blur-fade-up" : ""}`}
+            title={isLoggedIn ? `Profile (${userName.split(" ")[0]})` : "Sign In"}
+            style={{
+              width: "38px",
+              height: "38px",
+              borderRadius: "10px",
+              display: "none",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              color: isLoggedIn ? "#38BDF8" : "#CBD5E1",
+              textDecoration: "none",
+              animationDelay: isHome ? "300ms" : undefined,
+            }}
+          >
+            <User size={18} />
+          </Link>
+
           {/* MOBILE HAMBURGER BUTTON */}
           <button
             type="button"
@@ -542,6 +563,9 @@ export default function AppNavbar() {
           .mobile-hamburger-btn {
             display: flex !important;
           }
+          .mobile-profile-btn {
+            display: flex !important;
+          }
         }
         @media (min-width: 1021px) {
           .desktop-nav-container {
@@ -551,6 +575,9 @@ export default function AppNavbar() {
             display: inline-flex !important;
           }
           .mobile-hamburger-btn {
+            display: none !important;
+          }
+          .mobile-profile-btn {
             display: none !important;
           }
           .desktop-auth-pill {
@@ -585,6 +612,46 @@ export default function AppNavbar() {
             gap: "20px",
           }}
         >
+          {/* USER PROFILE CARD IN MOBILE DRAWER */}
+          <Link
+            href={isLoggedIn ? "/profile" : "/login"}
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: "14px 16px",
+              borderRadius: "14px",
+              background: "linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(20, 184, 166, 0.15))",
+              border: "1px solid rgba(56, 189, 248, 0.35)",
+              textDecoration: "none",
+              marginBottom: "8px",
+            }}
+          >
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "10px",
+                background: "rgba(56, 189, 248, 0.20)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#38BDF8",
+              }}
+            >
+              <User size={20} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#FFFFFF" }}>
+                {isLoggedIn ? userName : "Guest Traveler"}
+              </div>
+              <div style={{ fontSize: "0.78rem", color: "#38BDF8" }}>
+                {isLoggedIn ? "Manage Profile & Settings ➔" : "Sign In to sync trips ➔"}
+              </div>
+            </div>
+          </Link>
+
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <span
               style={{

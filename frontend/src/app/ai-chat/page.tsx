@@ -180,11 +180,8 @@ export default function AIChatPage() {
       id: "welcome-msg",
       role: "assistant",
       content:
-        `Namaskaram ${name}! 🙏 PADAYAPPA here, your personal AI travel companion and trip architect.\n\n` +
-        `How may I help you today?\n\n` +
-        `Tell me your dream destination, budget, or the travel vibe you have in mind. I'll understand your goals, analyze your requirements, and craft a bespoke day-by-day plan with verified stays and realistic costs in ₹.\n\n` +
-        `🎙️ **Voice Command Enabled**: You can speak with me using the microphone button below, or type your message. Trip Geni automatically sends your message after you finish speaking.\n\n` +
-        `❓ Where would you like to travel, or what travel experience would you like to plan?`,
+        `Namaskaram ${name}! 🙏 PADAYAPPA here, your personal AI travel companion.\n\n` +
+        `Where would you like to travel today? Drop a destination (e.g. Munnar, Kashmir, Varanasi, Goa), your duration, or budget — I'll analyze it and get your itinerary ready!`,
       timestamp: new Date().toISOString(),
     };
     setMessages([welcome]);
@@ -752,6 +749,12 @@ export default function AIChatPage() {
 
     // 2. Comprehensive keyword dictionary
     const keywords = [
+      "Kashmir",
+      "Srinagar",
+      "Gulmarg",
+      "Pahalgam",
+      "Shimla",
+      "Rishikesh",
       "Vattappara",
       "Vattavada",
       "Manali",
@@ -1595,30 +1598,56 @@ export default function AIChatPage() {
                     )}
 
                     {msg.suggestedDestination && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          router.push(
-                            `/planner?destination=${encodeURIComponent(msg.suggestedDestination!)}`,
-                          )
-                        }
+                      <div
                         style={{
-                          background: "rgba(14, 165, 233, 0.15)",
-                          border: "1px solid rgba(14, 165, 233, 0.30)",
-                          color: "#38BDF8",
-                          borderRadius: "6px",
-                          padding: "2px 8px",
-                          fontSize: "0.78rem",
-                          fontWeight: 600,
-                          cursor: "pointer",
+                          width: "100%",
+                          marginTop: "10px",
+                          marginBottom: "4px",
+                          padding: "12px 14px",
+                          borderRadius: "12px",
+                          background: "linear-gradient(135deg, rgba(14, 165, 233, 0.16) 0%, rgba(20, 184, 166, 0.16) 100%)",
+                          border: "1px solid rgba(56, 189, 248, 0.35)",
                           display: "flex",
                           alignItems: "center",
-                          gap: "4px",
+                          justifyContent: "space-between",
+                          flexWrap: "wrap",
+                          gap: "10px",
                         }}
                       >
-                        <Sparkles size={11} /> Open {msg.suggestedDestination}{" "}
-                        in Planner
-                      </button>
+                        <div>
+                          <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#FFFFFF" }}>
+                            🚀 Ready to craft your itinerary for {msg.suggestedDestination}?
+                          </div>
+                          <div style={{ fontSize: "0.74rem", color: "#94A3B8" }}>
+                            Auto-configures GPS map, live transit fares & daily timeline
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            router.push(
+                              `/planner?destination=${encodeURIComponent(msg.suggestedDestination!)}`,
+                            )
+                          }
+                          style={{
+                            background: "linear-gradient(135deg, #0EA5E9, #14B8A6)",
+                            border: "none",
+                            color: "#FFFFFF",
+                            borderRadius: "999px",
+                            padding: "6px 14px",
+                            fontSize: "0.80rem",
+                            fontWeight: 700,
+                            cursor: "pointer",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "5px",
+                            boxShadow: "0 0 12px rgba(14, 165, 233, 0.35)",
+                          }}
+                        >
+                          <Sparkles size={13} />
+                          <span>Generate in Planner ➔</span>
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}
