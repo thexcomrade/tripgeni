@@ -471,14 +471,12 @@ export default function FloatingMascot() {
           <header className="assistant-header">
             <div className="assistant-heading">
               <div className="assistant-avatar-badge">
-                <Image
+                <img
                   src="/images/das.png"
                   alt="Padayappa"
-                  width={34}
-                  height={34}
-                  style={{ objectFit: "cover", borderRadius: "50%" }}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }}
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/images/model.ico";
+                    e.currentTarget.src = "/images/model.ico";
                   }}
                 />
                 <span className="mascot-live-indicator" />
@@ -515,14 +513,12 @@ export default function FloatingMascot() {
             {messages.length === 0 ? (
               <div className="assistant-intro-box">
                 <div className="assistant-mini-avatar">
-                  <Image
+                  <img
                     src="/images/das.png"
                     alt="Padayappa AI Companion"
-                    width={58}
-                    height={58}
-                    style={{ objectFit: "cover", borderRadius: "50%" }}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }}
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = "/images/model.ico";
+                      e.currentTarget.src = "/images/model.ico";
                     }}
                   />
                 </div>

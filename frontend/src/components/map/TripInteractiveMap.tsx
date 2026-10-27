@@ -640,8 +640,7 @@ if (!leafletMapRef.current) {
       '&copy; <a href="https://carto.com/" target="_blank" rel="noreferrer">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
   }).addTo(map);
 
-  L.control.zoom({ position: "bottomright" }).addTo(map);
-
+  // User disabled map zoom buttons
   leafletMapRef.current = map;
 }
 
@@ -658,35 +657,16 @@ const map = leafletMapRef.current;
       // Iconic Google Maps A, B, C... Navigation Pin Generator
       const getGmapsLetter = (idx: number) => String.fromCharCode(65 + (idx % 26));
 
-      const makeGoogleNavPinIcon = (letter: string, isOrigin: boolean, active: boolean) => {
-        if (isOrigin) {
-          // Point A: Iconic Google Maps Red Teardrop Marker Pin with White Inner Badge & Letter A
-          return L.divIcon({
-            className: "gmaps-pin-container",
-            html: `
-              <div class="gmaps-pin-wrapper ${active ? "gmaps-active-pin" : ""}">
-                <svg width="36" height="48" viewBox="0 0 36 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <ellipse cx="18" cy="45" rx="7.5" ry="2.5" fill="rgba(0,0,0,0.35)"/>
-                  <path d="M18 0C8.06 0 0 8.06 0 18C0 29.5 15.3 43.8 17.2 45.6C17.6 46 18.4 46 18.8 45.6C20.7 43.8 36 29.5 36 18C36 8.06 27.94 0 18 0Z" fill="#EA4335" stroke="#C5221F" stroke-width="0.8"/>
-                  <circle cx="18" cy="17" r="11" fill="#FFFFFF"/>
-                  <text x="18" y="21.5" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" text-anchor="middle" fill="#202124">${letter}</text>
-                </svg>
-              </div>
-            `,
-            iconSize: [36, 48],
-            iconAnchor: [18, 46],
-            popupAnchor: [0, -44],
-          });
-        }
-
-        // Waypoints B, C, D...: Iconic Google Maps White Circular Badges with 2.8px Solid Black Border
+      // Google Maps Style Circular Numbered Marker: 1, 2, 3, 4, 5...
+      const makeGoogleRoundPinIcon = (num: number | string, isOrigin: boolean, active: boolean) => {
         return L.divIcon({
           className: "gmaps-pin-container",
           html: `
             <div class="gmaps-pin-wrapper ${active ? "gmaps-active-pin" : ""}">
               <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="17" cy="17" r="14" fill="#FFFFFF" stroke="#000000" stroke-width="2.8"/>
-                <text x="17" y="22" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" text-anchor="middle" fill="#000000">${letter}</text>
+                <ellipse cx="17" cy="30" rx="9" ry="3" fill="rgba(0,0,0,0.30)"/>
+                <circle cx="17" cy="16" r="13" fill="#FFFFFF" stroke="${active ? "#0EA5E9" : isOrigin ? "#EA4335" : "#000000"}" stroke-width="${active ? "3.2" : "2.8"}"/>
+                <text x="17" y="21" font-size="13" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" text-anchor="middle" fill="#000000">${num}</text>
               </svg>
             </div>
           `,
@@ -725,12 +705,12 @@ const map = leafletMapRef.current;
       // 2. Add Google Maps Navigation Pins (Point A Red Pin, Points B, C, D... White Circular Badges)
       currentStops.forEach((stop, idx) => {
         const isSelected = idx === selectedStopIdx;
-        const letter = getGmapsLetter(idx);
+        const stopNumber = idx + 1;
         const isOrigin = idx === 0;
 
         const marker = L.marker([stop.lat, stop.lon], {
-          icon: makeGoogleNavPinIcon(letter, isOrigin, isSelected),
-          title: `Waypoint ${letter}: ${stop.name}`,
+          icon: makeGoogleRoundPinIcon(stopNumber, isOrigin, isSelected),
+          title: `Stop ${stopNumber}: ${stop.name}`,
           zIndexOffset: isOrigin ? 500 : isSelected ? 400 : 200,
         }).addTo(map);
 
@@ -740,14 +720,14 @@ const map = leafletMapRef.current;
         marker.bindPopup(
           `<div class="map-popup-card">
             <div class="popup-badge" style="color: ${isOrigin ? "#EA4335" : "#1A73E8"}; font-weight: 800;">
-              WAYPOINT ${letter} • STOP ${idx + 1} OF ${currentStops.length} (${stop.dayLabel || "Day 1"})
+              STOP  OF  ()
             </div>
             <strong class="popup-title">${stop.name}</strong>
             <div class="popup-meta">${stop.type} • ${stop.time} (${stop.duration})</div>
             <p class="popup-detail">${stop.detail}</p>
             ${
               idx < currentStops.length - 1
-                ? `<div class="popup-next-preview">➔ Next: Waypoint ${getGmapsLetter(idx + 1)} (${nextStopName})</div>`
+                ? `<div class="popup-next-preview">➔ Next: Stop ${getGmapsLetter(idx + 1)} (${nextStopName})</div>`
                 : `<div class="popup-next-preview" style="color: #34d399;">✓ Destination reached</div>`
             }
           </div>`
@@ -983,12 +963,34 @@ const map = leafletMapRef.current;
           </div>
           <button
             type="button"
-            onClick={handleFitEntireRoute}
+            onClick={() => {
+              if (googleMapsConnectedUrl) {
+                window.open(googleMapsConnectedUrl, "_blank");
+              } else if (currentStops.length > 0) {
+                const originCoord = `${currentStops[0].lat},${currentStops[0].lon}`;
+                const destCoord = `${currentStops[currentStops.length - 1].lat},${currentStops[currentStops.length - 1].lon}`;
+                const gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originCoord)}&destination=${encodeURIComponent(destCoord)}`;
+                window.open(gmapsUrl, "_blank");
+              }
+            }}
             className="fit-entire-route-btn"
-            title="Fit all stops into view"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              background: "rgba(56, 189, 248, 0.14)",
+              border: "1px solid rgba(56, 189, 248, 0.35)",
+              color: "#38BDF8",
+              borderRadius: "999px",
+              padding: "6px 14px",
+              fontSize: "0.78rem",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+            title="Open route in Google Maps"
           >
-            <Maximize2 size={13} />
-            <span>Fit Entire Route</span>
+            <ExternalLink size={13} />
+            <span>Open in Google Maps</span>
           </button>
         </div>
       </header>

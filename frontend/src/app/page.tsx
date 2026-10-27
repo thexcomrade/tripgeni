@@ -354,27 +354,36 @@ export default function HomePage() {
           </div>
 
           <h1
-            className="animate-blur-fade-up font-luxury-display heading-luxury-title"
+            className="animate-blur-fade-up"
             style={{
               animationDelay: "300ms",
               fontFamily:
-                "'Cormorant Garamond', 'Bodoni Moda', 'Playfair Display', 'Cinzel', serif",
+                "'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
               fontSize: "clamp(2.6rem, 5.8vw, 5.0rem)",
-              fontWeight: 600,
-              lineHeight: 1.18,
-              letterSpacing: "-0.015em",
+              fontWeight: 800,
+              lineHeight: 1.14,
+              letterSpacing: "-0.03em",
               maxWidth: "1150px",
               margin: "0 auto 24px auto",
               textAlign: "center",
               color: "#FFFFFF",
-              textShadow:
-                "0 4px 28px rgba(0, 0, 0, 0.85), 0 2px 6px rgba(0, 0, 0, 0.95)",
+              textShadow: "0 2px 10px rgba(0, 0, 0, 0.85)",
             }}
           >
             Plan Extraordinary Journeys with
             <br />
-            <span className="text-intelligent-cyan">Intelligent</span>{" "}
-            <span className="text-precision-gold">Precision</span>
+            <span
+              style={{
+                background:
+                  "linear-gradient(115deg, #38BDF8 0%, #00F0FF 25%, #2DD4BF 60%, #FBBF24 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                display: "inline-block",
+                fontWeight: 900,
+              }}
+            >
+              Intelligent Precision
+            </span>
           </h1>
 
           <p

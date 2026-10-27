@@ -155,38 +155,38 @@ const ACCOMMODATIONS = [
   {
     id: "NoStay",
     label: "No Stay / Day Trip",
-    desc: "Single-day outing — no overnight accommodation needed",
-    icon: "🌅",
+    desc: "Single-day outing — no overnight stay needed",
+    imageUrl: "/accommodations/no_stay.png",
   },
   {
     id: "Hotel",
     label: "Comfort Hotel",
     desc: "Modern amenities & central access",
-    icon: "🏨",
+    imageUrl: "/accommodations/hotel.png",
   },
   {
     id: "Resort",
     label: "Boutique Resort",
     desc: "Scenic vistas & premium relaxation",
-    icon: "🏖️",
+    imageUrl: "/accommodations/resort.png",
   },
   {
     id: "Homestay",
     label: "Authentic Homestay",
     desc: "Warm hospitality & regional cooking",
-    icon: "🏡",
+    imageUrl: "/accommodations/homestay.png",
   },
   {
     id: "Eco-Lodge",
     label: "Eco Lodge / Farmstay",
     desc: "Solar powered & tranquil nature immersion",
-    icon: "🌿",
+    imageUrl: "/accommodations/eco_lodge.png",
   },
   {
     id: "Hostel",
     label: "Backpacker Hostel",
     desc: "Budget friendly & social backpacker hubs",
-    icon: "🎒",
+    imageUrl: "/accommodations/hostel.png",
   },
 ];
 
@@ -2958,11 +2958,10 @@ function PlannerContent() {
                   Preferred Accommodation
                 </label>
                 <div
-                  className="grid-3-col"
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                    gap: "12px",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                    gap: "14px",
                   }}
                 >
                   {ACCOMMODATIONS.map((acc) => {
@@ -2973,52 +2972,79 @@ function PlannerContent() {
                         key={acc.id}
                         onClick={() => setPreferredAccommodation(acc.id)}
                         style={{
-                          padding: "14px",
-                          borderRadius: "12px",
+                          padding: "16px 18px",
+                          borderRadius: "16px",
                           background: isSelected
                             ? isNoStay
-                              ? "rgba(251, 146, 60, 0.15)"
-                              : "rgba(14, 165, 233, 0.15)"
+                              ? "linear-gradient(135deg, rgba(251, 146, 60, 0.18) 0%, rgba(15, 23, 42, 0.90) 100%)"
+                              : "linear-gradient(135deg, rgba(14, 165, 233, 0.18) 0%, rgba(15, 23, 42, 0.90) 100%)"
                             : "rgba(255, 255, 255, 0.04)",
                           border: isSelected
                             ? isNoStay
-                              ? "1px solid #FB923C"
-                              : "1px solid #38BDF8"
+                              ? "1.5px solid #FB923C"
+                              : "1.5px solid #38BDF8"
                             : isNoStay
                             ? "1px dashed rgba(251, 146, 60, 0.35)"
                             : "1px solid rgba(255, 255, 255, 0.08)",
+                          boxShadow: isSelected
+                            ? isNoStay
+                              ? "0 0 16px rgba(251, 146, 60, 0.25)"
+                              : "0 0 16px rgba(56, 189, 248, 0.25)"
+                            : "none",
                           cursor: "pointer",
                           transition: "all 0.2s ease",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "14px",
                         }}
                       >
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                          <span style={{ fontSize: "1.1rem" }}>{acc.icon}</span>
+                        <div
+                          style={{
+                            width: "54px",
+                            height: "54px",
+                            borderRadius: "14px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                            overflow: "hidden",
+                          }}
+                        >
+                          <img
+                            src={acc.imageUrl}
+                            alt={acc.label}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "contain",
+                              display: "block",
+                              filter: isSelected
+                                ? "drop-shadow(0 4px 10px rgba(56, 189, 248, 0.40))"
+                                : "drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35))",
+                            }}
+                          />
+                        </div>
+
+                        <div style={{ flex: 1, minWidth: 0 }}>
                           <h5
                             style={{
-                              fontSize: "0.9rem",
+                              fontSize: "0.94rem",
                               fontWeight: 700,
-                              color: isSelected
-                                ? isNoStay ? "#FB923C" : "#38BDF8"
-                                : "#FFFFFF",
+                              color: isSelected ? "#FFFFFF" : "#E2E8F0",
+                              marginBottom: "3px",
                             }}
                           >
                             {acc.label}
                           </h5>
-                        </div>
-                        <p
-                          style={{
-                            fontSize: "0.75rem",
-                            color: isNoStay ? "#94A3B8" : "#94A3B8",
-                            marginTop: "2px",
-                          }}
-                        >
-                          {acc.desc}
-                        </p>
-                        {isNoStay && (
-                          <p style={{ fontSize: "0.68rem", color: "#FB923C", marginTop: "4px", fontStyle: "italic" }}>
-                            💡 Budget will exclude hotel costs
+                          <p style={{ fontSize: "0.76rem", color: "#94A3B8", margin: 0, lineHeight: 1.35 }}>
+                            {acc.desc}
                           </p>
-                        )}
+                          {isNoStay && (
+                            <p style={{ fontSize: "0.68rem", color: "#FB923C", marginTop: "4px", fontStyle: "italic" }}>
+                              Budget will exclude hotel costs
+                            </p>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
