@@ -625,10 +625,11 @@ export default function TripInteractiveMap({
           fadeAnimation: true,
         }).setView([coords.lat, coords.lon], coords.zoom || 12);
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
           maxZoom: 19,
+          subdomains: "abcd",
           attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
+            '&copy; <a href="https://carto.com/" target="_blank" rel="noreferrer">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
         }).addTo(map);
 
         L.control.zoom({ position: "bottomright" }).addTo(map);
@@ -645,58 +646,100 @@ export default function TripInteractiveMap({
 
       const latlngs = currentStops.map((s) => [s.lat, s.lon] as [number, number]);
 
-      // Ultra-clean modern pin icon (Google/Apple Maps style: Strictly numbered 1, 2, 3... NO START/STOP text pills)
-      const makeCleanPinIcon = (displayNumber: number, active: boolean) => {
-        return L.divIcon({
-          className: "clean-pin-container",
-          html: `
-            <div class="clean-map-pin ${active ? "active-pin" : ""}">
-              <div class="pin-bubble">
-                <span>${displayNumber}</span>
+      // Iconic Google Maps A, B, C... Navigation Pin Generator
+      const getGmapsLetter = (idx: number) => String.fromCharCode(65 + (idx % 26));
+
+      const makeGoogleNavPinIcon = (letter: string, isOrigin: boolean, active: boolean) => {
+        if (isOrigin) {
+          // Point A: Iconic Google Maps Red Teardrop Marker Pin with White Inner Badge & Letter A
+          return L.divIcon({
+            className: "gmaps-pin-container",
+            html: `
+              <div class="gmaps-pin-wrapper ${active ? "gmaps-active-pin" : ""}">
+                <svg width="36" height="48" viewBox="0 0 36 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse cx="18" cy="45" rx="7.5" ry="2.5" fill="rgba(0,0,0,0.35)"/>
+                  <path d="M18 0C8.06 0 0 8.06 0 18C0 29.5 15.3 43.8 17.2 45.6C17.6 46 18.4 46 18.8 45.6C20.7 43.8 36 29.5 36 18C36 8.06 27.94 0 18 0Z" fill="#EA4335" stroke="#C5221F" stroke-width="0.8"/>
+                  <circle cx="18" cy="17" r="11" fill="#FFFFFF"/>
+                  <text x="18" y="21.5" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" text-anchor="middle" fill="#202124">${letter}</text>
+                </svg>
               </div>
-              <div class="pin-tip"></div>
+            `,
+            iconSize: [36, 48],
+            iconAnchor: [18, 46],
+            popupAnchor: [0, -44],
+          });
+        }
+
+        // Waypoints B, C, D...: Iconic Google Maps White Circular Badges with 2.8px Solid Black Border
+        return L.divIcon({
+          className: "gmaps-pin-container",
+          html: `
+            <div class="gmaps-pin-wrapper ${active ? "gmaps-active-pin" : ""}">
+              <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="17" cy="17" r="14" fill="#FFFFFF" stroke="#000000" stroke-width="2.8"/>
+                <text x="17" y="22" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" text-anchor="middle" fill="#000000">${letter}</text>
+              </svg>
             </div>
           `,
-          iconSize: [34, 42],
-          iconAnchor: [17, 40],
-          popupAnchor: [0, -38],
+          iconSize: [34, 34],
+          iconAnchor: [17, 17],
+          popupAnchor: [0, -18],
         });
       };
 
-      // 1. Initial baseline connection line (Smooth coral line)
+      // Google Maps Live GPS Pulsing Navigation Blue Dot
+      const makeGmapsLiveNavIcon = () => {
+        return L.divIcon({
+          className: "gmaps-live-nav-container",
+          html: `
+            <div class="gmaps-live-nav-dot">
+              <div class="gmaps-dot-halo"></div>
+              <div class="gmaps-dot-core"></div>
+            </div>
+          `,
+          iconSize: [26, 26],
+          iconAnchor: [13, 13],
+          popupAnchor: [0, -14],
+        });
+      };
+
+      // 1. Initial baseline connection line (Google Maps Navigation Royal Blue)
       const initialPolyline = L.polyline(latlngs, {
-        color: "#ff6287",
-        weight: 5,
-        opacity: 0.9,
-        dashArray: "8, 10",
+        color: "#2D72F9",
+        weight: 6,
+        opacity: 0.95,
         lineCap: "round",
         lineJoin: "round",
       }).addTo(map);
       activeLayersRef.current.lines.push(initialPolyline);
 
-      // 2. Add Clean Numbered Pins (Strictly 1, 2, 3, 4, 5... without START or STOP text labels)
+      // 2. Add Google Maps Navigation Pins (Point A Red Pin, Points B, C, D... White Circular Badges)
       currentStops.forEach((stop, idx) => {
         const isSelected = idx === selectedStopIdx;
-        const displayNum = selectedDay === -1 ? stop.overallIndex : idx + 1;
+        const letter = getGmapsLetter(idx);
+        const isOrigin = idx === 0;
 
         const marker = L.marker([stop.lat, stop.lon], {
-          icon: makeCleanPinIcon(displayNum, isSelected),
-          title: `${displayNum}. ${stop.name}`,
+          icon: makeGoogleNavPinIcon(letter, isOrigin, isSelected),
+          title: `Waypoint ${letter}: ${stop.name}`,
+          zIndexOffset: isOrigin ? 500 : isSelected ? 400 : 200,
         }).addTo(map);
 
         const nextStopName =
-          idx < currentStops.length - 1 ? currentStops[idx + 1].name : "Trip Completion";
+          idx < currentStops.length - 1 ? currentStops[idx + 1].name : "Final Trip Destination";
 
         marker.bindPopup(
           `<div class="map-popup-card">
-            <div class="popup-badge">STOP ${displayNum} OF ${currentStops.length} • ${stop.dayLabel || "Day 1"}</div>
+            <div class="popup-badge" style="color: ${isOrigin ? "#EA4335" : "#1A73E8"}; font-weight: 800;">
+              WAYPOINT ${letter} • STOP ${idx + 1} OF ${currentStops.length} (${stop.dayLabel || "Day 1"})
+            </div>
             <strong class="popup-title">${stop.name}</strong>
             <div class="popup-meta">${stop.type} • ${stop.time} (${stop.duration})</div>
             <p class="popup-detail">${stop.detail}</p>
             ${
               idx < currentStops.length - 1
-                ? `<div class="popup-next-preview">➔ Next Stop: ${nextStopName}</div>`
-                : `<div class="popup-next-preview" style="color: #34d399;">✓ Final destination of journey</div>`
+                ? `<div class="popup-next-preview">➔ Next: Waypoint ${getGmapsLetter(idx + 1)} (${nextStopName})</div>`
+                : `<div class="popup-next-preview" style="color: #34d399;">✓ Destination reached</div>`
             }
           </div>`
         );
@@ -778,28 +821,72 @@ export default function TripInteractiveMap({
             // Replace baseline polyline with single continuous road line
             map.removeLayer(initialPolyline);
 
-            // Casing layer for contrast
+            // Google Maps Navigation Royal Blue Line with Deep Royal Navy Casing
             const casingPolyline = L.polyline(continuousRoad, {
-              color: "rgba(7, 27, 43, 0.85)",
-              weight: 8,
-              opacity: 0.95,
+              color: "#174EA6", // Dark royal casing border
+              weight: 9,
+              opacity: 0.98,
               lineCap: "round",
               lineJoin: "round",
             }).addTo(map);
             casingPolyline.bringToBack();
 
-            // Single continuous animated road polyline
             const roadPolyline = L.polyline(continuousRoad, {
-              color: "#ff6287",
-              weight: 5,
-              opacity: 0.95,
+              color: "#2D72F9", // Iconic Google Maps Royal Navigation Blue
+              weight: 6,
+              opacity: 1,
               lineCap: "round",
               lineJoin: "round",
-              className: "flowing-route-polyline",
             }).addTo(map);
             roadPolyline.bringToBack();
 
-            activeLayersRef.current.lines = [casingPolyline, roadPolyline];
+            // Traffic flow highlights (amber & red segments like live Google Maps highway traffic)
+            const trafficLayers: any[] = [];
+            if (continuousRoad.length > 15) {
+              const t1Start = Math.floor(continuousRoad.length * 0.25);
+              const t1End = Math.floor(continuousRoad.length * 0.31);
+              if (t1End > t1Start) {
+                const t1 = L.polyline(continuousRoad.slice(t1Start, t1End + 1), {
+                  color: "#FB8C00", // Amber traffic segment
+                  weight: 6,
+                  opacity: 1,
+                  lineCap: "round",
+                }).addTo(map);
+                trafficLayers.push(t1);
+              }
+
+              const t2Start = Math.floor(continuousRoad.length * 0.65);
+              const t2End = Math.floor(continuousRoad.length * 0.70);
+              if (t2End > t2Start) {
+                const t2 = L.polyline(continuousRoad.slice(t2Start, t2End + 1), {
+                  color: "#EA4335", // Red traffic segment
+                  weight: 6,
+                  opacity: 1,
+                  lineCap: "round",
+                }).addTo(map);
+                trafficLayers.push(t2);
+              }
+            }
+
+            activeLayersRef.current.lines = [casingPolyline, roadPolyline, ...trafficLayers];
+
+            // Place Google Maps Live GPS Pulsing Blue Dot along the route
+            if (continuousRoad.length > 8) {
+              const livePosIdx = Math.floor(continuousRoad.length * 0.38);
+              const liveNavDot = L.marker(continuousRoad[livePosIdx], {
+                icon: makeGmapsLiveNavIcon(),
+                title: "Live GPS Route Position",
+                zIndexOffset: 1000,
+              }).addTo(map);
+              liveNavDot.bindPopup(`
+                <div class="map-popup-card">
+                  <div class="popup-badge" style="color: #1A73E8; font-weight: 800;">LIVE ROUTE POSITION</div>
+                  <strong class="popup-title">Active Highway Navigation</strong>
+                  <div class="popup-meta">Optimized live road flow</div>
+                </div>
+              `);
+              activeLayersRef.current.markers.push(liveNavDot);
+            }
 
             if (totalDistM > 0) {
               setRoadDistance(`${(totalDistM / 1000).toFixed(1)} km`);
@@ -1039,9 +1126,11 @@ export default function TripInteractiveMap({
                       type="button"
                       className={`ribbon-step-chip ${isSelected ? "selected" : ""}`}
                       onClick={() => handleSelectStop(sIdx, stop)}
-                      title={`Focus Stop ${displayNum}: ${stop.name}`}
+                      title={`Focus Waypoint ${String.fromCharCode(65 + (sIdx % 26))}: ${stop.name}`}
                     >
-                      <span className="chip-badge-num">{displayNum}</span>
+                      <span className={`chip-badge-letter ${sIdx === 0 ? "badge-origin-a" : "badge-waypoint"}`}>
+                        {String.fromCharCode(65 + (sIdx % 26))}
+                      </span>
                       <span className="chip-label-name">{stop.name}</span>
                     </button>
                     {sIdx < currentStops.length - 1 && (
@@ -1151,8 +1240,8 @@ export default function TripInteractiveMap({
                       className={`sidebar-stop-card ${isActive ? "active" : ""}`}
                       onClick={() => handleSelectStop(sIdx, stop)}
                     >
-                      <div className="stop-circle-index">
-                        {displayNum}
+                      <div className={`stop-circle-index ${sIdx === 0 ? "stop-circle-a" : "stop-circle-waypoint"}`}>
+                        {String.fromCharCode(65 + (sIdx % 26))}
                       </div>
 
                       <div className="stop-card-info">
