@@ -2512,43 +2512,34 @@ function PlannerContent() {
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
                           <div
                             style={{
-                              width: "58px",
-                              height: "58px",
-                              borderRadius: "16px",
-                              padding: "2px",
-                              background: isSelected
-                                ? "linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(16, 185, 129, 0.18) 100%)"
-                                : "rgba(255, 255, 255, 0.05)",
+                              width: "56px",
+                              height: "56px",
+                              borderRadius: "14px",
                               border: isSelected
-                                ? "1.5px solid rgba(56, 189, 248, 0.55)"
-                                : "1.5px solid rgba(255, 255, 255, 0.10)",
+                                ? "2px solid #38BDF8"
+                                : "1.5px solid rgba(255, 255, 255, 0.12)",
                               boxShadow: isSelected
-                                ? "0 0 18px rgba(56, 189, 248, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)"
-                                : "0 4px 12px rgba(0, 0, 0, 0.20)",
+                                ? "0 0 16px rgba(56, 189, 248, 0.35)"
+                                : "0 2px 8px rgba(0, 0, 0, 0.25)",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
                               flexShrink: 0,
                               position: "relative",
-                              overflow: "visible",
-                              transition: "all 0.25s ease",
+                              overflow: "hidden",
+                              background: "#0F172A",
+                              transition: "all 0.2s ease",
                             }}
                           >
                             <img
                               src={style.imageUrl}
                               alt={style.label}
                               style={{
-                                width: "66px",
-                                height: "66px",
-                                maxWidth: "none",
-                                objectFit: "contain",
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
                                 display: "block",
-                                position: "relative",
-                                top: "-2px",
-                                filter: isSelected
-                                  ? "drop-shadow(0 4px 12px rgba(56, 189, 248, 0.35))"
-                                  : "drop-shadow(0 2px 6px rgba(0, 0, 0, 0.30))",
-                                transition: "transform 0.25s ease",
+                                transition: "transform 0.3s ease",
                               }}
                             />
                           </div>
