@@ -349,17 +349,16 @@ export default function HomePage() {
             }}
           >
             <Badge variant="ai" size="md" icon={<Sparkles size={14} />}>
-              Next-Gen Travel AI Engine 3.0 Pro
+              Next-Gen Travel AI
             </Badge>
           </div>
 
 <h1
   style={{
     fontFamily: "inherit",
-    fontSize: "inherit",
     fontWeight: 600,
-    lineHeight: "inherit",
-    textShadow: "none",
+    textAlign: "center",
+    textShadow: "0 4px 12px rgba(0, 0, 0, 0.35)",
   }}
 >
   Plan Extraordinary Journeys with
@@ -367,14 +366,13 @@ export default function HomePage() {
   <span
     style={{
       fontFamily: "inherit",
-      fontSize: "inherit",
       fontWeight: 600,
-      textShadow: "none",
-      background: "linear-gradient(90deg, #38bdf8 0%, #10b981 100%)",
+      background: "linear-gradient(90deg, #00BFFF 0%, #00C9A7 50%, #A3E635 80%, #FACC15 100%)",
       WebkitBackgroundClip: "text",
       backgroundClip: "text",
       WebkitTextFillColor: "transparent",
       display: "inline-block",
+      textShadow: "none",
     }}
   >
     Intelligent Precision
