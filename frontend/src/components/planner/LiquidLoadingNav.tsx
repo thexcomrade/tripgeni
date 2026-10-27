@@ -11,6 +11,10 @@ import {
   Rocket,
   Check,
   Loader2,
+  Compass,
+  Cpu,
+  Layers,
+  ShieldCheck,
 } from "lucide-react";
 import "./LiquidLoadingNav.css";
 
@@ -28,11 +32,20 @@ interface LiquidLoadingNavProps {
   stages: SynthesisStage[];
 }
 
+const DESTINATION_INSIGHTS = [
+  "Mapping optimal chronological sequence to capture iconic sights during ideal golden-hour lighting.",
+  "Calibrating transit legs along progressive linear corridors to eliminate backtracking and travel fatigue.",
+  "Filtering top-rated local dining spots featuring authentic regional thalis and chef-curated culinary traditions.",
+  "Cross-referencing opening hours, entry slots, and crowd density indexes for seamless sightseeing.",
+  "Balancing walking distances with comfortable rest buffers and low-emission regional transit.",
+];
+
 export default function LiquidLoadingNav({
   currentStage,
   destination,
   stages,
 }: LiquidLoadingNavProps) {
+  const [insightIdx, setInsightIdx] = useState(0);
   const [glarePos, setGlarePos] = useState<{ x: string; y: string }>({
     x: "50%",
     y: "50%",
@@ -43,7 +56,15 @@ export default function LiquidLoadingNav({
   });
   const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Update active sliding pill position with Apple bouncy spring
+  // Rotate travel insights every 3.2 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setInsightIdx((prev) => (prev + 1) % DESTINATION_INSIGHTS.length);
+    }, 3200);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Update active sliding pill position
   useEffect(() => {
     const currentBtn = btnRefs.current[currentStage];
     if (currentBtn) {
@@ -54,7 +75,6 @@ export default function LiquidLoadingNav({
     }
   }, [currentStage]);
 
-  // Handle interactive 3D light specular glare that follows cursor / finger
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = `${e.clientX - rect.left}px`;
@@ -89,31 +109,66 @@ export default function LiquidLoadingNav({
 
   return (
     <div className="liquid-loading-wrapper">
-      {/* 1. AMBIENT LIGHT BLOBS (Mesh background for authentic liquid light refraction) */}
+      {/* 1. AMBIENT MESH LIGHT REFRACTION */}
       <div className="bg-mesh" aria-hidden="true">
         <div className="blob blob-1" />
         <div className="blob blob-2" />
         <div className="blob blob-3" />
       </div>
 
-      {/* 2. COMPACT LIQUID GLASS CARD */}
+      {/* 2. CINEMATIC SYNTHESIS CONSOLE CARD */}
       <div className="liquid-glass-card">
-        {/* Compact Header */}
-        <div className="liquid-card-header">
-          <div className="liquid-neural-orb">
-            <Sparkles size={20} className="orb-sparkle" />
+        {/* COMPASS RADAR + LIVE TELEMETRY HEADER */}
+        <div className="synthesis-hero-banner">
+          <div className="radar-compass-wrapper">
+            <div className="radar-ring radar-ring-outer" />
+            <div className="radar-ring radar-ring-middle" />
+            <div className="radar-ring radar-ring-inner" />
+            <div className="radar-crosshair-h" />
+            <div className="radar-crosshair-v" />
+            <div className="radar-sweep" />
+            <div className="radar-center-core">
+              <Compass size={22} className="radar-compass-icon" />
+            </div>
           </div>
-          <div className="liquid-header-text">
-            <h3 className="liquid-title">
-              Synthesizing Itinerary for <span className="highlight-dest">{destination}</span>...
-            </h3>
-            <p className="liquid-sub">
-              Our neural multi-agent system is crafting your bespoke travel roadmap
+
+          <div className="synthesis-headline-block">
+            <div className="synthesis-badge-row">
+              <span className="live-status-dot" />
+              <span className="telemetry-pill">AUTONOMOUS MULTI-AGENT SYNTHESIS</span>
+              <span className="telemetry-coord">CORRIDOR: {destination.toUpperCase()}</span>
+            </div>
+            <h2 className="synthesis-main-heading">
+              Synthesizing Bespoke Itinerary for{" "}
+              <span className="highlight-dest">{destination}</span>
+            </h2>
+            <p className="synthesis-subheading">
+              Harmonizing geographic waypoint order, verified landmarks, dining culture, and optimal pacing.
             </p>
           </div>
         </div>
 
-        {/* 3. LIQUID GLASS NAVIGATION BAR (Apple Liquid Glass with Bouncy Spring Pill) */}
+        {/* 3. MULTI-AGENT ORCHESTRATION CAROUSEL */}
+        <div className="agent-telemetry-row">
+          <div className={`agent-chip ${currentStage >= 0 ? "active" : ""}`}>
+            <Cpu size={12} />
+            <span>Neural Corridor</span>
+          </div>
+          <div className={`agent-chip ${currentStage >= 2 ? "active" : ""}`}>
+            <Layers size={12} />
+            <span>Landmark Geometry</span>
+          </div>
+          <div className={`agent-chip ${currentStage >= 4 ? "active" : ""}`}>
+            <Leaf size={12} />
+            <span>Carbon Pacing</span>
+          </div>
+          <div className={`agent-chip ${currentStage >= 5 ? "active" : ""}`}>
+            <ShieldCheck size={12} />
+            <span>Schedule Pacing</span>
+          </div>
+        </div>
+
+        {/* 4. LIQUID NAVIGATION BAR WITH SLIDING SPRING PILL */}
         <div
           className="liquid-nav"
           onMouseMove={handleMouseMove}
@@ -124,13 +179,11 @@ export default function LiquidLoadingNav({
             } as React.CSSProperties
           }
         >
-          {/* 3D Specular Interactive Glare */}
           <div className="liquid-glare-container">
             <div className="liquid-glare" />
           </div>
 
           <div className="nav-items">
-            {/* Smooth Bouncy Sliding Pill */}
             <div
               className="active-pill"
               style={{
@@ -163,7 +216,7 @@ export default function LiquidLoadingNav({
           </div>
         </div>
 
-        {/* 4. ACTIVE STAGE SPOTLIGHT GLASS PANEL */}
+        {/* 5. ACTIVE STAGE SPOTLIGHT & PROGRESS */}
         <div className="active-stage-spotlight">
           <div className="spotlight-header">
             <div className="spotlight-title-row">
@@ -171,7 +224,7 @@ export default function LiquidLoadingNav({
               <strong className="spotlight-label">{activeStage.label}</strong>
             </div>
             <span className="spotlight-badge">
-              Stage {currentStage + 1} of {stages.length}
+              Step {currentStage + 1} of {stages.length} ({progressPercent}%)
             </span>
           </div>
 
@@ -187,7 +240,22 @@ export default function LiquidLoadingNav({
             <span className="spotlight-metric">
               ⚡ {activeStage.metric}
             </span>
-            <span className="spotlight-percent">{progressPercent}%</span>
+            <span className="live-intelligence-indicator">
+              AI Orchestrator Active
+            </span>
+          </div>
+        </div>
+
+        {/* 6. ROTATING TRAVEL INTELLIGENCE TICKER */}
+        <div className="synthesis-insight-ticker">
+          <div className="ticker-icon-wrap">
+            <Sparkles size={14} className="ticker-sparkle" />
+          </div>
+          <div className="ticker-text-block">
+            <span className="ticker-tag">INTELLIGENT TRAVEL REFINEMENT</span>
+            <p className="ticker-content" key={insightIdx}>
+              {DESTINATION_INSIGHTS[insightIdx]}
+            </p>
           </div>
         </div>
       </div>

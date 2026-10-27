@@ -431,3 +431,266 @@
     font-size: 0.82rem;
   }
 }
+
+/* ==============================================================================
+   RADAR COMPASS & HIGH-TECH SYNTHESIS ATMOSPHERE
+============================================================================== */
+
+.synthesis-hero-banner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-align: left;
+}
+
+/* 3D Orbiting Radar Compass */
+.radar-compass-wrapper {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.18) 0%, rgba(15, 23, 42, 0.8) 70%);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 25px rgba(14, 165, 233, 0.35), inset 0 0 15px rgba(14, 165, 233, 0.2);
+}
+
+.radar-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.radar-ring-outer {
+  inset: 2px;
+  border: 1px dashed rgba(56, 189, 248, 0.4);
+  animation: radarSpinCW 18s linear infinite;
+}
+
+.radar-ring-middle {
+  inset: 10px;
+  border: 1px solid rgba(20, 184, 166, 0.35);
+  border-top-color: #38bdf8;
+  animation: radarSpinCCW 10s linear infinite;
+}
+
+.radar-ring-inner {
+  inset: 18px;
+  border: 1px dotted rgba(245, 158, 11, 0.5);
+  animation: radarSpinCW 6s linear infinite;
+}
+
+.radar-crosshair-h {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  height: 1px;
+  background: rgba(56, 189, 248, 0.25);
+}
+
+.radar-crosshair-v {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: rgba(56, 189, 248, 0.25);
+}
+
+.radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(56, 189, 248, 0.45) 0deg, transparent 60deg, transparent 360deg);
+  animation: radarSpinCW 2.4s linear infinite;
+}
+
+.radar-center-core {
+  position: relative;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+}
+
+.radar-compass-icon {
+  color: #ffffff;
+  animation: pulseScale 3s infinite ease-in-out;
+}
+
+@keyframes radarSpinCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes radarSpinCCW {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+/* Synthesis Headline Block */
+.synthesis-headline-block {
+  flex: 1;
+}
+
+.synthesis-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.live-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseGlow 1.2s infinite ease-in-out;
+}
+
+.telemetry-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.telemetry-coord {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #f59e0b;
+}
+
+.synthesis-main-heading {
+  font-size: 1.28rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+  line-height: 1.25;
+}
+
+.synthesis-subheading {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* Multi-Agent Telemetry Row */
+.agent-telemetry-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.agent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.agent-chip.active {
+  background: rgba(14, 165, 233, 0.12);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
+}
+
+.live-intelligence-indicator {
+  font-size: 0.72rem;
+  color: #34d399;
+  font-weight: 700;
+}
+
+/* Rotating Travel Intelligence Ticker */
+.synthesis-insight-ticker {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  text-align: left;
+}
+
+.ticker-icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ticker-sparkle {
+  color: #fbbf24;
+}
+
+.ticker-text-block {
+  flex: 1;
+}
+
+.ticker-tag {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fbbf24;
+  margin-bottom: 2px;
+}
+
+.ticker-content {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  margin: 0;
+  line-height: 1.4;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .synthesis-hero-banner {
+    gap: 14px;
+  }
+  .radar-compass-wrapper {
+    width: 56px;
+    height: 56px;
+  }
+  .radar-center-core {
+    width: 26px;
+    height: 26px;
+  }
+  .synthesis-main-heading {
+    font-size: 1.1rem;
+  }
+}

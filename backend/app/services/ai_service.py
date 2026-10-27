@@ -979,56 +979,55 @@ Return JSON.
                 "evening": "",
             }
 
-            if day == 1:
-                a1 = parsed_attractions[attr_idx % total_attrs]
-                attr_idx += 1
-                a2 = parsed_attractions[attr_idx % total_attrs]
+            stop_count = 4 if day == 1 or day == duration_days else (5 if day % 2 == 0 else 6)
+            day_acts = []
+            for _ in range(stop_count):
+                day_acts.append(parsed_attractions[attr_idx % total_attrs])
                 attr_idx += 1
 
-                day_plan["title"] = f"Day 1: Arrival & Exploring {a1['name']}"
+            day_plan["activities"] = [a["name"] for a in day_acts]
+
+            if day == 1:
+                day_plan["title"] = f"Day 1: Arrival, {day_acts[0]['name']} & Cultural Welcome"
                 day_plan["morning"] = (
-                    f"Arrival in {dest_clean}, hotel check-in [Transit ~₹{transit_cost:,.0f}]. "
-                    f"Morning visit to {a1['name']} ({a1['location']}) [Est. entry ~₹{activity_cost:,.0f}]."
+                    f"8:30 AM • Arrival in {dest_clean}, hotel check-in and luggage drop [Transit ~₹{transit_cost:,.0f}]. "
+                    f"Morning orientation walk at {day_acts[0]['name']} ({day_acts[0]['location']}) [Est. entry ~₹{activity_cost:,.0f}]."
                 )
                 day_plan["afternoon"] = (
-                    f"Excursion to {a2['name']} ({a2['location']}) followed by authentic regional lunch (~₹{meal_cost:,.0f}/person)."
+                    f"1:00 PM • Traditional regional lunch (~₹{meal_cost:,.0f}/person), followed by an afternoon tour of "
+                    f"{day_acts[1]['name']} ({day_acts[1]['location']}) exploring architectural highlights and local craft heritage."
                 )
                 day_plan["evening"] = (
-                    f"Sunset stroll through historic {dest_clean} marketplace & tea stalls; dinner at traditional dining spot (~₹{meal_cost:,.0f}/person)."
+                    f"5:30 PM • Sunset viewpoint at {day_acts[2]['name']} followed by an evening stroll through {day_acts[3]['name'] if len(day_acts) > 3 else 'the historic bazaars'}; "
+                    f"dinner featuring authentic regional dishes (~₹{meal_cost:,.0f}/person)."
                 )
 
             elif day == duration_days:
-                a_last = parsed_attractions[attr_idx % total_attrs]
-                attr_idx += 1
-
-                day_plan["title"] = f"Day {day}: {a_last['name']} & Farewell"
+                day_plan["title"] = f"Day {day}: {day_acts[0]['name']} & Memorable Farewell"
                 day_plan["morning"] = (
-                    f"Regional breakfast (~₹{meal_bfast:,.0f}/person). Early excursion to {a_last['name']} ({a_last['location']}) for morning vistas [Entry pass ~₹{activity_cost:,.0f}]."
+                    f"8:00 AM • Wholesome regional breakfast (~₹{meal_bfast:,.0f}/person). Early excursion to "
+                    f"{day_acts[0]['name']} ({day_acts[0]['location']}) to enjoy pristine morning vistas and capture final photographs [Entry ~₹{activity_cost:,.0f}]."
                 )
                 day_plan["afternoon"] = (
-                    f"Final scenic photography stop in {dest_clean}, handicraft & local spice shopping [Self-funded]."
+                    f"12:30 PM • Farewell regional lunch followed by last-minute handicraft, tea, and souvenir shopping at {day_acts[1]['name']}."
                 )
                 day_plan["evening"] = (
-                    f"Hotel check-out and onward departure transfer [Transit ~₹{transit_cost:,.0f}]."
+                    f"4:30 PM • Final scenic viewpoint stop at {day_acts[2]['name']}, followed by hotel check-out and onward departure transfer [Transit ~₹{transit_cost:,.0f}]."
                 )
 
             else:
-                a_morn = parsed_attractions[attr_idx % total_attrs]
-                attr_idx += 1
-                a_aft = parsed_attractions[attr_idx % total_attrs]
-                attr_idx += 1
-                a_eve = parsed_attractions[attr_idx % total_attrs]
-                attr_idx += 1
-
-                day_plan["title"] = f"Day {day}: {a_morn['name']} & {a_aft['name']}"
+                day_plan["title"] = f"Day {day}: {day_acts[0]['name']} & {day_acts[1]['name']} Expedition"
                 day_plan["morning"] = (
-                    f"Guided visit to {a_morn['name']} ({a_morn['location']}) [Est. ticket ~₹{activity_cost:,.0f}/person]."
+                    f"7:45 AM • Early morning exploration of {day_acts[0]['name']} ({day_acts[0]['location']}) to experience serene surroundings before peak hours. "
+                    f"Continue along the heritage corridor to {day_acts[1]['name']} [Est. pass ~₹{activity_cost:,.0f}/person]."
                 )
                 day_plan["afternoon"] = (
-                    f"Head to {a_aft['name']} ({a_aft['location']}) with regional lunch stop (~₹{meal_cost:,.0f}/person)."
+                    f"1:15 PM • Authentic local specialty lunch (~₹{meal_cost:,.0f}/person). Afternoon immersion at {day_acts[2]['name']} ({day_acts[2]['location']}), "
+                    + (f"followed by {day_acts[3]['name']} for artisan crafts." if len(day_acts) > 3 else "exploring cultural artifacts.")
                 )
                 day_plan["evening"] = (
-                    f"Scenic sunset stop at {a_eve['name']} ({a_eve['location']}) followed by local dinner tasting (~₹{meal_cost:,.0f}/person)."
+                    f"5:15 PM • Golden hour sunset vantage point at {day_acts[-1]['name']} ({day_acts[-1]['location']}), "
+                    f"followed by night market food tasting and traditional dinner (~₹{meal_cost:,.0f}/person)."
                 )
 
             itinerary.append(day_plan)

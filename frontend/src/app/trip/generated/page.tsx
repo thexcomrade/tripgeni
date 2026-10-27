@@ -31,6 +31,7 @@ import {
   ArrowRight,
   Clock,
   Compass,
+  Navigation,
   Globe,
   Coffee,
   Luggage,
@@ -1436,27 +1437,70 @@ export default function GeneratedTripPage() {
                     {day.activities && day.activities.length > 0 && (
                       <div
                         style={{
-                          marginTop: "18px",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          flexWrap: "wrap",
+                          marginTop: "20px",
+                          paddingTop: "16px",
+                          borderTop: "1px solid rgba(255, 255, 255, 0.08)",
                         }}
                       >
-                        <span
+                        <div
                           style={{
-                            fontSize: "0.82rem",
-                            color: "#94A3B8",
-                            fontWeight: 600,
+                            fontSize: "0.78rem",
+                            fontWeight: 800,
+                            letterSpacing: "0.06em",
+                            textTransform: "uppercase",
+                            color: "#38BDF8",
+                            marginBottom: "10px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
                           }}
                         >
-                          Key Stops:
-                        </span>
-                        {day.activities.map((act, i) => (
-                          <Badge key={i} variant="neutral" size="sm">
-                            {act}
-                          </Badge>
-                        ))}
+                          <MapPin size={13} />
+                          <span>Sequential Waypoints Corridor ({day.activities.length} Stops)</span>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          {day.activities.map((act, i) => (
+                            <div
+                              key={i}
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "7px",
+                                background: "rgba(15, 23, 42, 0.8)",
+                                border: "1px solid rgba(56, 189, 248, 0.22)",
+                                padding: "5px 11px",
+                                borderRadius: "8px",
+                                fontSize: "0.80rem",
+                                color: "#E2E8F0",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  borderRadius: "50%",
+                                  background: "linear-gradient(135deg, #0EA5E9, #14B8A6)",
+                                  color: "#FFFFFF",
+                                  fontSize: "0.70rem",
+                                  fontWeight: 800,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                {i + 1}
+                              </span>
+                              <span>{act}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </GlassCard>

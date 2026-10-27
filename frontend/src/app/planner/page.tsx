@@ -614,6 +614,13 @@ function PlannerContent() {
     return roundToCleanZeros(rawTotal);
   }, [transportationMode, transitPricing, travelersCount, durationDays]);
 
+  // Long-distance safety: completely eliminate bicycle for intercity trips > 60 km
+  useEffect(() => {
+    if (transitPricing.distanceKm > 60 && (transportationMode === "Bicycle" || transportationMode === "Cycling")) {
+      setTransportationMode(transitPricing.train.available ? "Train" : (transitPricing.flight.available ? "Flight" : "Car"));
+    }
+  }, [transitPricing.distanceKm, transitPricing.train.available, transitPricing.flight.available, transportationMode]);
+
   // Phase 1 Budget Calculation: Auto-incorporate transit fare and duration/travelers
   useEffect(() => {
     if (!hasUserCustomizedBudget) {
@@ -1623,8 +1630,8 @@ function PlannerContent() {
                       );
                     })()}
 
-                    {/* 5. BICYCLE */}
-                    {(() => {
+                    {/* 5. BICYCLE (Completely hidden for long-distance / intercity journeys > 60 km) */}
+                    {transitPricing.distanceKm <= 60 && transitPricing.bicycle.available && (() => {
                       const isBicycleSelected = transportationMode === "Bicycle" || transportationMode === "Cycling";
                       return (
                         <div
@@ -2628,7 +2635,7 @@ function PlannerContent() {
                     gap: "14px",
                   }}
                 >
-                  {TRANSPORT_MODES.map((t) => {
+                  {TRANSPORT_MODES.filter(t => (t.id !== "Bicycle" && t.id !== "Cycling") || transitPricing.distanceKm <= 60).map((t) => {
                     const isSelected =
                       transportationMode === t.id ||
                       (t.id === "Flight" && transportationMode === "Airline") ||

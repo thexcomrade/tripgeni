@@ -21,6 +21,847 @@ interface DestinationSchedule {
 }
 
 const CURATED_DESTINATIONS: Record<string, DestinationSchedule> = {
+  agra: {
+    themes: [
+      "Taj Mahal Sunrise, Taj Nature Walk & Red Fort Palaces",
+      "Baby Taj, Mehtab Bagh Sunset & Old Mughal Bazaars",
+      "Imperial Capital of Fatehpur Sikri & Akbar's Sikandra",
+      "Keoladeo UNESCO Wetland Safari & Deeg Water Palaces",
+      "Sacred Yamuna Heritage: Mathura & Vrindavan Temples",
+      "Wildlife Conservation & Marble Inlay Artisan Quarter",
+      "Colonial Agra, Cantonment Heritage & Farewell Feast",
+    ],
+    days: [
+      {
+        theme: "Taj Mahal Sunrise, Taj Nature Walk & Red Fort Palaces",
+        morning:
+          "5:45 AM • Sunrise entry to the magnificent Taj Mahal through the Eastern Gate, watching the white marble shift from soft blush to radiant ivory in the morning light. Follow with a tranquil walk through Taj Nature Walk along the forested Yamuna ravines.",
+        afternoon:
+          "1:00 PM • Lunch and empowerment visit at Sheroes Hangout Cafe (operated by resilient acid attack survivors). Afternoon guided architectural tour of Agra Fort including Jahangir Mahal, Khas Mahal, and Musamman Burj where Shah Jahan spent his final years overlooking the Taj.",
+        evening:
+          "5:30 PM • Sunset promenade across the Yamuna at Mehtab Bagh (Moonlight Garden) with classic reflection vistas of the Taj Mahal. Taste authentic Agra petha varieties (kesar, angoori, paan) at legendary Panchhi Petha in Sadar Bazaar.",
+        activities: [
+          "Taj Mahal Sunrise Viewing",
+          "Taj Nature Walk Ravine Trails",
+          "Sheroes Hangout Cafe",
+          "Agra Fort & Jahangir Mahal",
+          "Mehtab Bagh Yamuna Sunset",
+          "Panchhi Petha Sadar Bazaar",
+        ],
+      },
+      {
+        theme: "Baby Taj, Mehtab Bagh Sunset & Old Mughal Bazaars",
+        morning:
+          "9:00 AM • Explore the exquisite Tomb of I'timad-ud-Daulah (Baby Taj), renowned as the jewel box of Mughal architecture with India's earliest and finest pietre dure marble inlay work.",
+        afternoon:
+          "1:00 PM • Royal Mughlai lunch featuring slow-simmered gravies at Pinch of Spice. Visit Chini Ka Rauza, the striking 17th-century Persian funerary monument adorned with brilliant glazed ceramic tiles.",
+        evening:
+          "4:30 PM • Heritage architectural stroll through the grand Jama Masjid Agra and the labyrinthine lanes of Rawatpara spice quarter. Evening rooftop chai with views over the historic riverbanks.",
+        activities: [
+          "Tomb of I'timad-ud-Daulah (Baby Taj)",
+          "Chini Ka Rauza Persian Tiles",
+          "Pinch of Spice Mughlai Dining",
+          "Jama Masjid Agra",
+          "Rawatpara Spice Quarter",
+          "Yamuna Riverfront Sunset Chai",
+        ],
+      },
+      {
+        theme: "Imperial Capital of Fatehpur Sikri & Akbar's Sikandra",
+        morning:
+          "8:30 AM • Excursion to UNESCO World Heritage Fatehpur Sikri, Emperor Akbar's red sandstone capital. Stand beneath the towering 54-meter Buland Darwaza and wander through the Diwan-i-Khas.",
+        afternoon:
+          "1:00 PM • Traditional thali lunch at a highway dhaba, then offer prayers and tie a wish thread at the white marble tomb of Sufi mystic Sheikh Salim Chishti inside the Jama Masjid courtyard.",
+        evening:
+          "4:30 PM • On the return corridor, stop at Sikandra to wander through the expansive gardens of Emperor Akbar's Mausoleum, where herds of spotted blackbucks and peacocks roam freely.",
+        activities: [
+          "Buland Darwaza (Gate of Magnificence)",
+          "Sheikh Salim Chishti Dargah",
+          "Fatehpur Sikri Imperial Palace Complex",
+          "Sikandra: Akbar's Great Tomb",
+          "Blackbuck Garden Sanctuary",
+        ],
+      },
+      {
+        theme: "Keoladeo UNESCO Wetland Safari & Deeg Water Palaces",
+        morning:
+          "6:00 AM • Dawn excursion to UNESCO Keoladeo National Park (Bharatpur Bird Sanctuary). Enjoy a guided cycle safari through the morning mist, spotting over 370 migratory bird species.",
+        afternoon:
+          "1:00 PM • Traditional Brij thali lunch in Bharatpur town, followed by a visit to the historic Bharatpur Government Museum inside Lohagarh Fort.",
+        evening:
+          "4:00 PM • Excursion to Deeg Palace, the monsoon pleasure gardens of the Jat rulers featuring 500 working gravity fountains, marble water pavilions, and manicured Mughal-style charbaghs.",
+        activities: [
+          "Keoladeo Wetland Cycle Safari",
+          "Migratory Bird Sanctuary Watchtower",
+          "Lohagarh Fort Museum",
+          "Deeg Water Palace & 500 Fountains",
+          "Brij Heritage Dining Experience",
+        ],
+      },
+      {
+        theme: "Sacred Yamuna Heritage: Mathura & Vrindavan Temples",
+        morning:
+          "8:00 AM • Drive north along the Yamuna to historic Mathura. Visit Shri Krishna Janmabhoomi Temple Complex, the sacred birthplace of Lord Krishna, and stroll Vishram Ghat riverbank.",
+        afternoon:
+          "1:00 PM • Traditional Mathura lunch with famous Mathura ke Pede. Continue to Vrindavan to visit the historic Banke Bihari Temple and ISKCON Krishna Balaram Temple.",
+        evening:
+          "5:30 PM • Witness the grand musical fountain and light show at the opulent Prem Mandir, whose white Italian Carrara marble glows in vibrant hues as evening descends.",
+        activities: [
+          "Krishna Janmabhoomi Mathura",
+          "Vishram Ghat Riverfront Aarti",
+          "Mathura Peda Tasting",
+          "Banke Bihari Temple Vrindavan",
+          "ISKCON Vrindavan Temple",
+          "Prem Mandir Musical Light Show",
+        ],
+      },
+      {
+        theme: "Wildlife Conservation & Marble Inlay Artisan Quarter",
+        morning:
+          "9:00 AM • Uplifting morning visit to Wildlife SOS Elephant Conservation and Care Center, observing rescued Asian elephants enjoying cruelty-free natural habitats and bathing pools.",
+        afternoon:
+          "1:30 PM • Lunch by Keetham Lake, followed by a peaceful nature walk through Soor Sarovar Bird Sanctuary spotting migratory waterfowl and marsh crocodiles.",
+        evening:
+          "4:30 PM • Visit master craftsmen workshops in Agra to observe authentic Pietra Dura (Parchin Kari) marble inlay, the same stone-crafting technique used on the Taj Mahal.",
+        activities: [
+          "Wildlife SOS Elephant Care Center",
+          "Keetham Lake Nature Reserve",
+          "Soor Sarovar Bird Sanctuary",
+          "Pietra Dura Master Marble Workshop",
+          "Rooftop Sunset Dinner with Taj Silhouette",
+        ],
+      },
+      {
+        theme: "Colonial Agra, Cantonment Heritage & Farewell Feast",
+        morning:
+          "9:30 AM • Discover colonial Agra in the leafy Cantonment quarter. Visit St. George's Cathedral (built 1828) and the historic Roman Catholic Cemetery containing the Red Taj tomb of Colonel John Hessing.",
+        afternoon:
+          "1:00 PM • Farewell colonial-style lunch at Dasaprakash or Peshawri. Browse the hand-knotted Agra wool and silk carpet emporiums renowned since Akbar's royal ateliers.",
+        evening:
+          "5:00 PM • Final sunset stroll along the Yamuna viewpoint, followed by souvenir shopping in Subhash Bazaar and packing preparation for your onward travel.",
+        activities: [
+          "St. George's Cathedral (1828)",
+          "Historic Roman Catholic Cemetery & Red Taj",
+          "Agra Hand-Knotted Carpet Looms",
+          "Peshawri Royal Frontier Dining",
+          "Subhash Bazaar Farewell Walk",
+        ],
+      },
+    ],
+  },
+  jaipur: {
+    themes: [
+      "Pink City Fortresses, Amber Palace & Sheesh Mahal",
+      "City Palace Royal Courtyards & Celestial Jantar Mantar",
+      "Aravalli Ridge: Nahargarh Sunset & Jaigarh Cannon",
+      "Hidden Shrines & Sacred Springs of Galta Ji",
+      "Artisan Heritage & Sanganer Hand Block Printing",
+      "Bhangarh Historic Excursion & Abhaneri Stepwell",
+      "Royal Cenotaphs & Farewell Pink City Vistas",
+    ],
+    days: [
+      {
+        theme: "Pink City Fortresses, Amber Palace & Sheesh Mahal",
+        morning:
+          "8:00 AM • Ascend to the majestic Amber Fort atop the Aravalli hills, marveling at the Diwan-i-Aam, Ganesh Pol, and the glittering Sheesh Mahal (Mirror Palace) where candlelight creates a starlit illusion.",
+        afternoon:
+          "1:00 PM • Authentic Rajasthani Dal Baati Churma lunch in Amer village, followed by a photo stop at the emerald waters of Maota Lake and the ancient geometric Panna Meena Ka Kund stepwell.",
+        evening:
+          "5:00 PM • Sunset promenade along Man Sagar Lake admiring the floating Jal Mahal water palace, followed by fresh Ghewar tasting at iconic Laxmi Mishthan Bhandar (LMB) in the walled city.",
+        activities: [
+          "Amber Fort & Sheesh Mahal",
+          "Panna Meena Ka Kund Stepwell",
+          "Maota Lake Scenic Viewpoint",
+          "Jal Mahal Water Palace",
+          "LMB Traditional Sweets & Ghewar",
+        ],
+      },
+      {
+        theme: "City Palace Royal Courtyards & Celestial Jantar Mantar",
+        morning:
+          "9:00 AM • Explore the opulent City Palace, still home to the royal family of Jaipur, visiting the Peacock Gate in Pritam Niwas Chowk, Mubarak Mahal, and the royal armory museum.",
+        afternoon:
+          "12:30 PM • Tour the UNESCO Jantar Mantar, the world’s largest stone astronomical observatory built by Maharaja Sawai Jai Singh II, featuring the 27-meter Samrat Yantra sundial.",
+        evening:
+          "4:30 PM • Photograph the iconic honeycombed pink facade of Hawa Mahal (Palace of Winds) from Wind View Cafe. Shop for vibrant bandhani textiles and silver jewelry in Johari and Bapu Bazaars.",
+        activities: [
+          "City Palace & Peacock Gate",
+          "Jantar Mantar UNESCO Observatory",
+          "Hawa Mahal Palace of Winds",
+          "Wind View Cafe Rooftop",
+          "Bapu Bazaar & Johari Bazaar",
+        ],
+      },
+      {
+        theme: "Aravalli Ridge: Nahargarh Sunset & Jaigarh Cannon",
+        morning:
+          "9:30 AM • Journey up the rugged Aravalli ridge to Jaigarh Fort, home to the massive Jaivana—once the world’s largest wheeled cannon—and fortified watchtowers overlooking Amber.",
+        afternoon:
+          "1:30 PM • Mountain drive to Nahargarh Fort (Tiger Fort), exploring the connected royal suites of Madhavendra Bhawan and the historic stepwells featured in Rang De Basanti.",
+        evening:
+          "5:30 PM • Watch the sun sink below the horizon at Padao Open-Air Restaurant with sweeping panoramic views over the illuminated Jaipur city basin. Evening dinner at Chokhi Dhani ethnic resort.",
+        activities: [
+          "Jaigarh Fort & Jaivana Cannon",
+          "Nahargarh Fort & Madhavendra Bhawan",
+          "Padao Hilltop Sunset Viewpoint",
+          "Chokhi Dhani Ethnic Village",
+          "Rajasthani Cultural Performance",
+        ],
+      },
+      {
+        theme: "Hidden Shrines & Sacred Springs of Galta Ji",
+        morning:
+          "8:30 AM • Scenic morning walk into the narrow mountain gorge of Galta Ji (The Monkey Temple), renowned for natural freshwater springs, sacred kunds, and playful rhesus macaque troops.",
+        afternoon:
+          "1:00 PM • Traditional Thali lunch, followed by a visit to the peaceful Sisodia Rani Garden, featuring terraced Mughal-style water cascades, painted pavilions, and fragrant flowerbeds.",
+        evening:
+          "4:30 PM • Explore Vidyadhar Garden, designed in tribute to Jaipur’s chief architect, followed by sunset views from the hilltop Sun Temple overlooking the eastern plains.",
+        activities: [
+          "Galta Ji Monkey Temple",
+          "Sisodia Rani Terraced Gardens",
+          "Vidyadhar Architectural Garden",
+          "Hilltop Sun Temple Sunset",
+          "Old City Street Food Walk",
+        ],
+      },
+      {
+        theme: "Artisan Heritage & Sanganer Hand Block Printing",
+        morning:
+          "9:30 AM • Excursion to Sanganer, the epicenter of Rajasthani block-printing. Visit master wood-carvers and artisan studios dipping teak blocks into vibrant natural dyes.",
+        afternoon:
+          "1:00 PM • Visit the Anokhi Museum of Hand Printing inside a restored haveli near Amber. Enjoy light cafe lunch and hands-on block printing demonstration.",
+        evening:
+          "4:30 PM • Marvel at the intricate pastel arches of Patrika Gate at Jawahar Circle Garden, followed by an evening walk along the illuminated Albert Hall Museum lawns.",
+        activities: [
+          "Sanganer Hand Block Studios",
+          "Anokhi Museum of Hand Printing",
+          "Patrika Gate Architecture",
+          "Jawahar Circle Musical Fountain",
+          "Albert Hall Museum Illumination",
+        ],
+      },
+      {
+        theme: "Bhangarh Historic Excursion & Abhaneri Stepwell",
+        morning:
+          "8:00 AM • Day excursion eastward to Abhaneri to marvel at Chand Baori, India’s deepest and most visually stunning stepwell with 3,500 precisely carved geometric stone steps.",
+        afternoon:
+          "1:00 PM • Rural Rajasthani farmhouse lunch, then continue to the 17th-century preserved ruins of Bhangarh Fort, surrounded by banyan trees beneath the Aravalli hills.",
+        evening:
+          "5:00 PM • Return drive to Jaipur through peaceful farmlands, stopping for roadside masala chai in clay kulhads.",
+        activities: [
+          "Chand Baori Stepwell (Abhaneri)",
+          "Harshat Mata Temple Ruins",
+          "Bhangarh Historic Protected Reserve",
+          "Countryside Farmstay Lunch",
+          "Rural Highway Sunset Chai",
+        ],
+      },
+      {
+        theme: "Royal Cenotaphs & Farewell Pink City Vistas",
+        morning:
+          "9:30 AM • Visit the serene, intricately carved marble and sandstone cenotaphs of the Kachwaha Maharajas at Gaitore Ki Chhatriyan, tucked peacefully beneath the shadow of Nahargarh.",
+        afternoon:
+          "1:00 PM • Farewell royal lunch at 1135 AD inside Amber Fort or Cinnamon at Jai Mahal Palace. Browse local blue pottery workshops and lacquer bangle makers.",
+        evening:
+          "5:30 PM • Final sunset drink at Peacock Rooftop Restaurant, savoring panoramic city views and authentic Rajasthani laal maas before your onward journey.",
+        activities: [
+          "Gaitore Ki Chhatriyan Cenotaphs",
+          "Blue Pottery Artisan Studios",
+          "Lac Bangle Artisan Quarter",
+          "Peacock Rooftop Farewell Dinner",
+        ],
+      },
+    ],
+  },
+  delhi: {
+    themes: [
+      "Mughal Grandeur: Old Delhi & Chandni Chowk",
+      "UNESCO Architectural Wonders: Qutub & Humayun's Tomb",
+      "Imperial Axis, Art District & Lodhi Gardens",
+      "Spiritual Marvels: Lotus Temple & Akshardham",
+      "Bohemian Delhi: Hauz Khas Village & Dilli Haat",
+      "National Heritage, Agrasen Ki Baoli & CP Colonnades",
+      "Sufi Traditions, Crafts Museum & Farewell Dining",
+    ],
+    days: [
+      {
+        theme: "Mughal Grandeur: Old Delhi & Chandni Chowk",
+        morning:
+          "8:30 AM • Stand before the monumental red sandstone battlements of the Red Fort (Lal Qila). Walk through Lahori Gate, Chhatta Chowk bazaar, and Diwan-i-Aam.",
+        afternoon:
+          "12:30 PM • Climb the southern minaret of Jama Masjid for panoramic views over Old Delhi. Board an electric rickshaw through Chandni Chowk, sampling stuffed paranthas at the historic Paranthe Wali Gali.",
+        evening:
+          "5:00 PM • Aromatic walk through Khari Baoli, Asia’s largest wholesale spice market. Traditional Mughlai dinner at Karim’s or Al Jawahar savoring slow-cooked seekh kebabs and fragrant biryani.",
+        activities: [
+          "Red Fort (Lal Qila)",
+          "Jama Masjid & Minaret View",
+          "Chandni Chowk Rickshaw Safari",
+          "Paranthe Wali Gali",
+          "Khari Baoli Spice Market",
+          "Karims Historic Dinner",
+        ],
+      },
+      {
+        theme: "UNESCO Architectural Wonders: Qutub & Humayun's Tomb",
+        morning:
+          "9:00 AM • Explore the soaring 73-meter Qutub Minar, the 4th-century rustless Iron Pillar of Chandragupta II, and the ruins of Quwwat-ul-Islam Mosque in Mehrauli.",
+        afternoon:
+          "1:30 PM • Contemporary cafe lunch in Mehrauli, followed by a walk through Humayun’s Tomb, the magnificent red sandstone precursor to the Taj Mahal surrounded by symmetrical Persian Charbagh gardens.",
+        evening:
+          "5:30 PM • Experience evening Sufi Qawwali devotional singing at Hazrat Nizamuddin Aulia Dargah, enveloped in the fragrance of rose petals, burning incense, and centuries of mysticism.",
+        activities: [
+          "Qutub Minar & Iron Pillar",
+          "Mehrauli Archaeological Park",
+          "Humayun Tomb UNESCO Gardens",
+          "Hazrat Nizamuddin Dargah Qawwali",
+          "Old Nizami Kebab Trail",
+        ],
+      },
+      {
+        theme: "Imperial Axis, Art District & Lodhi Gardens",
+        morning:
+          "9:00 AM • Stroll along Kartavya Path to view the solemn India Gate war memorial, Amar Jawan Jyoti, and the majestic sandstone facades of Rashtrapati Bhavan and North/South Blocks.",
+        afternoon:
+          "1:00 PM • Lunch at the National Museum Cafe, followed by an exploration of India’s greatest historical treasures: Harappan Indus Valley artifacts, Bronze Chola sculptures, and Mughal miniatures.",
+        evening:
+          "4:30 PM • Walk through the vibrant open-air street murals of Lodhi Art District. Conclude with a serene sunset stroll among the 15th-century dome tombs of Lodhi Gardens.",
+        activities: [
+          "India Gate & Kartavya Path",
+          "Rashtrapati Bhavan Vista",
+          "National Museum Antiquities",
+          "Lodhi Art District Murals",
+          "Lodhi Gardens Sunset Walk",
+        ],
+      },
+      {
+        theme: "Spiritual Marvels: Lotus Temple & Akshardham",
+        morning:
+          "9:00 AM • Experience meditative silence beneath the 27 pure white marble petals of the Bahá'í Lotus Temple, surrounded by tranquil blue reflecting ponds.",
+        afternoon:
+          "1:30 PM • South Indian thali lunch at Saravana Bhavan, then cross the Yamuna River to the sprawling Swaminarayan Akshardham Temple complex.",
+        evening:
+          "5:00 PM • Marvel at the 20,000 carved deities, stone elephants, and Sanskrit murals of Akshardham, followed by the spectacular Sahaj Anand illuminated musical water fountain show.",
+        activities: [
+          "Lotus Temple Meditation",
+          "Kalkaji Heritage Precinct",
+          "Swaminarayan Akshardham Temple",
+          "Sahaj Anand Water & Light Show",
+          "Premvati Food Court Delicacies",
+        ],
+      },
+      {
+        theme: "Bohemian Delhi: Hauz Khas Village & Dilli Haat",
+        morning:
+          "10:00 AM • Explore the medieval 13th-century madrasa, lake reservoir, and Feroz Shah Tughlaq’s tomb in Hauz Khas Complex.",
+        afternoon:
+          "1:00 PM • Independent designer boutiques and rooftop cafe lunch overlooking the lake in Hauz Khas Village. Visit the nearby deer park and peacock groves.",
+        evening:
+          "5:00 PM • Immersive shopping and cultural walk at Dilli Haat INA, exploring artisan craft stalls from all 28 Indian states. Sample regional specialties from Kashmiri Momos to Naga pork curries.",
+        activities: [
+          "Hauz Khas Medieval Madrasa & Lake",
+          "Hauz Khas Designer Boutiques",
+          "Deer Park Nature Walk",
+          "Dilli Haat INA Crafts Bazaars",
+          "All-India Regional Food Tasting",
+        ],
+      },
+      {
+        theme: "National Heritage, Agrasen Ki Baoli & CP Colonnades",
+        morning:
+          "9:30 AM • Descend the 108 stone steps of Agrasen Ki Baoli, a serene 14th-century stepwell hidden in the heart of modern New Delhi.",
+        afternoon:
+          "12:30 PM • Stroll through the concentric Georgian white colonnades of Connaught Place (CP). Enjoy classic cold coffee at Keventers and historic lunch at United Coffee House (est. 1942).",
+        evening:
+          "4:30 PM • Explore modern Indian art at the National Gallery of Modern Art (NGMA) inside historic Jaipur House, followed by evening coffee at the Indian Coffee House rooftop.",
+        activities: [
+          "Agrasen Ki Baoli Stepwell",
+          "Connaught Place Georgian Colonnades",
+          "United Coffee House (est. 1942)",
+          "NGMA Modern Art Gallery",
+          "Indian Coffee House Rooftop",
+        ],
+      },
+      {
+        theme: "Sufi Traditions, Crafts Museum & Farewell Dining",
+        morning:
+          "9:30 AM • Visit the idyllic National Handicrafts and Handlooms Museum (Crafts Museum), wandering through recreated tribal village courtyards and viewing folk terracotta and textiles.",
+        afternoon:
+          "1:00 PM • Lunch at Cafe Lota serving contemporary regional Indian cooking, followed by a visit to the monumental Baroque-style Safdarjung Tomb.",
+        evening:
+          "5:30 PM • Final bookshop browsing and high-end boutique stroll in fashionable Khan Market, followed by an elegant farewell dinner at Olive Bar & Kitchen under the banyan tree.",
+        activities: [
+          "National Crafts Museum & Village",
+          "Cafe Lota Contemporary Lunch",
+          "Safdarjung Tomb Garden Vista",
+          "Khan Market Boutique Stroll",
+          "Olive Bar & Kitchen Farewell Dinner",
+        ],
+      },
+    ],
+  },
+  kashmir: {
+    themes: [
+      "Dal Lake Reflections, Shikara Sunrise & Houseboat Living",
+      "Royal Mughal Terraces & Pari Mahal Sunset",
+      "Meadow of Flowers: High Alpine Gulmarg Gondola",
+      "Valley of Shepherds: Pahalgam & Lidder River",
+      "Meadow of Gold: Sonamarg & Thajiwas Glacial Trails",
+      "Old Srinagar Heritage, Wooden Mosques & Spice Bazaars",
+      "Doodhpathri Valley of Milk & Farewell Wazwan Banquet",
+    ],
+    days: [
+      {
+        theme: "Dal Lake Reflections, Shikara Sunrise & Houseboat Living",
+        morning:
+          "6:00 AM • Dawn Shikara cruise through misty Dal Lake to the 150-year-old Floating Vegetable & Flower Market, where local farmers trade lotus stems and fresh blooms on flat wooden boats.",
+        afternoon:
+          "1:00 PM • Check into a handcrafted cedarwood Deluxe Houseboat on Nigeen Lake. Savor traditional Kashmiri Kahwa tea brewed with saffron, crushed almonds, and cardamom.",
+        evening:
+          "5:00 PM • Sunset Shikara glide past the iconic four chinars of Char Chinar islet. Savor a multi-course Kashmiri Wazwan feast on the houseboat deck with views of the Zabarwan range.",
+        activities: [
+          "Dal Lake Floating Flower Market",
+          "Dawn Shikara Safari",
+          "Nigeen Lake Cedarwood Houseboat",
+          "Char Chinar Sunset",
+          "Authentic Kashmiri Wazwan Banquet",
+        ],
+      },
+      {
+        theme: "Royal Mughal Terraces & Pari Mahal Sunset",
+        morning:
+          "9:00 AM • Explore Nishat Bagh (Garden of Bliss), the 12-terraced garden built by Asif Khan in 1633, with fountains cascading down toward Dal Lake under centenarian chinar trees.",
+        afternoon:
+          "1:00 PM • Continue to Shalimar Bagh, the royal pleasure garden built by Emperor Jahangir for Empress Nur Jahan. Traditional Kashmiri Harissa and Rogan Josh lunch nearby.",
+        evening:
+          "4:30 PM • Ascend to Pari Mahal (Palace of Fairies), a 17th-century astronomical school and terraced garden offering the most breathtaking golden hour sunset view over all of Srinagar.",
+        activities: [
+          "Nishat Bagh 12 Terraces",
+          "Shalimar Bagh Mughal Royal Court",
+          "Chashme Shahi Spring Garden",
+          "Pari Mahal Hilltop Sunset",
+          "Zabarwan Mountain Panorama",
+        ],
+      },
+      {
+        theme: "Meadow of Flowers: High Alpine Gulmarg Gondola",
+        morning:
+          "8:00 AM • Scenic 50 km drive past Tangmarg apple orchards up to Gulmarg (2,650m). Board the world’s second-highest cable car, the Gulmarg Gondola Phase 1 to Kongdoori.",
+        afternoon:
+          "12:30 PM • Ride Gondola Phase 2 to Apharwat Peak (4,200m) snowline, enjoying panoramic views of snow-draped Himalayan peaks and Nanga Parbat on clear days. Warm Thukpa and Kahwa at high altitude.",
+        evening:
+          "4:00 PM • Walk through the pine-fringed alpine meadows of Strawberry Valley and visit the historic 120-year-old St. Mary’s Church before returning to Srinagar.",
+        activities: [
+          "Gulmarg Gondola Phase 1 & 2",
+          "Apharwat Peak Snowline (4,200m)",
+          "Strawberry Valley Alpine Meadows",
+          "St. Marys Victorian Church",
+          "Tangmarg Valley Scenic Corridor",
+        ],
+      },
+      {
+        theme: "Valley of Shepherds: Pahalgam & Lidder River",
+        morning:
+          "7:30 AM • Journey through the purple saffron fields of Pampore and historic 9th-century Avantipur temple ruins along the rushing turquoise Lidder River to Pahalgam (2,130m).",
+        afternoon:
+          "1:00 PM • Scenic valley cab transfer to Betaab Valley (named after the Bollywood film) and the alpine paradise of Aru Valley with lush meadows and grazing Gujjar sheep herds.",
+        evening:
+          "5:00 PM • Excursion to Chandanwari, the starting point of the holy Amarnath Yatra. Relax with a riverside trout fish dinner along the Lidder River banks.",
+        activities: [
+          "Pampore Saffron Fields",
+          "Avantipur Ancient Sun Temple",
+          "Betaab Valley Pine Corridors",
+          "Aru Valley Alpine Wildlife Reserve",
+          "Lidder River Riverside Dinner",
+        ],
+      },
+      {
+        theme: "Meadow of Gold: Sonamarg & Thajiwas Glacial Trails",
+        morning:
+          "8:00 AM • Dramatic drive through the roaring gorge of the Sindh River to Sonamarg (2,800m), the historic Silk Route gateway surrounded by jagged glacier peaks.",
+        afternoon:
+          "12:00 PM • Trek or take a mountain pony ride up to the gleaming Thajiwas Glacier, playing in the snow and drinking from ice-cold glacial meltwater streams.",
+        evening:
+          "4:30 PM • Relax in the flower-carpeted meadows beside the Sindh River, watching local anglers fly-fish for trout, before returning scenic route via Kangan.",
+        activities: [
+          "Sindh River Scenic Drive",
+          "Thajiwas Glacier Ice Wall",
+          "Alpine Meadow Pony Trail",
+          "Nilagrad River Golden Confluence",
+          "Sonamarg Trout Streams",
+        ],
+      },
+      {
+        theme: "Old Srinagar Heritage, Wooden Mosques & Spice Bazaars",
+        morning:
+          "9:00 AM • Heritage architectural walk through Downtown Srinagar. Visit Jamia Masjid with its 378 monumental Deodar cedarwood pillars and serene central courtyard.",
+        afternoon:
+          "1:00 PM • Marvel at the 14th-century Khanqah-e-Moula along the Jhelum River, renowned for its master paper-mâché wood paneling and green papier-mâché domes.",
+        evening:
+          "4:30 PM • Wander through the historic copperware, walnut wood-carving, and pure Pashmina shawl weaving quarters around Zaina Kadal, enjoying freshly baked Girda and Noon Chai.",
+        activities: [
+          "Jamia Masjid 378 Deodar Pillars",
+          "Khanqah-e-Moula Papier-Mache Shrine",
+          "Shah Hamdan Jhelum Riverfront",
+          "Zaina Kadal Copperware Bazaars",
+          "Authentic Pashmina Weaving Studio",
+        ],
+      },
+      {
+        theme: "Doodhpathri Valley of Milk & Farewell Wazwan Banquet",
+        morning:
+          "9:00 AM • Excursion to pristine Doodhpathri, the hidden valley of milk known for emerald rolling pastures, bubbling Shaliganga river rapids, and fragrant deodar woods.",
+        afternoon:
+          "1:30 PM • Picnic lunch amidst wild alpine flowers, interacting with welcoming nomadic shepherd families and tasting fresh mountain curd and herbal tea.",
+        evening:
+          "6:00 PM • Return to Srinagar for a grand farewell banquet at legendary Ahdoos Restaurant, savoring Gushtaba, Rista, and Tabak Maaz overlooking the Jhelum River.",
+        activities: [
+          "Doodhpathri Shaliganga River Rapids",
+          "Emerald Alpine Pasture Hike",
+          "Nomadic Shepherd Hospitality",
+          "Ahdoos Heritage Restaurant Wazwan",
+        ],
+      },
+    ],
+  },
+  srinagar: {
+    themes: [
+      "Dal Lake Reflections, Shikara Sunrise & Houseboat Living",
+      "Royal Mughal Terraces & Pari Mahal Sunset",
+      "Meadow of Flowers: High Alpine Gulmarg Gondola",
+      "Valley of Shepherds: Pahalgam & Lidder River",
+      "Meadow of Gold: Sonamarg & Thajiwas Glacial Trails",
+      "Old Srinagar Heritage, Wooden Mosques & Spice Bazaars",
+      "Doodhpathri Valley of Milk & Farewell Wazwan Banquet",
+    ],
+    days: [
+      {
+        theme: "Dal Lake Reflections, Shikara Sunrise & Houseboat Living",
+        morning:
+          "6:00 AM • Dawn Shikara cruise through misty Dal Lake to the 150-year-old Floating Vegetable & Flower Market, where local farmers trade lotus stems and fresh blooms on flat wooden boats.",
+        afternoon:
+          "1:00 PM • Check into a handcrafted cedarwood Deluxe Houseboat on Nigeen Lake. Savor traditional Kashmiri Kahwa tea brewed with saffron, crushed almonds, and cardamom.",
+        evening:
+          "5:00 PM • Sunset Shikara glide past the iconic four chinars of Char Chinar islet. Savor a multi-course Kashmiri Wazwan feast on the houseboat deck with views of the Zabarwan range.",
+        activities: [
+          "Dal Lake Floating Flower Market",
+          "Dawn Shikara Safari",
+          "Nigeen Lake Cedarwood Houseboat",
+          "Char Chinar Sunset",
+          "Authentic Kashmiri Wazwan Banquet",
+        ],
+      },
+      {
+        theme: "Royal Mughal Terraces & Pari Mahal Sunset",
+        morning:
+          "9:00 AM • Explore Nishat Bagh (Garden of Bliss), the 12-terraced garden built by Asif Khan in 1633, with fountains cascading down toward Dal Lake under centenarian chinar trees.",
+        afternoon:
+          "1:00 PM • Continue to Shalimar Bagh, the royal pleasure garden built by Emperor Jahangir for Empress Nur Jahan. Traditional Kashmiri Harissa and Rogan Josh lunch nearby.",
+        evening:
+          "4:30 PM • Ascend to Pari Mahal (Palace of Fairies), a 17th-century astronomical school and terraced garden offering the most breathtaking golden hour sunset view over all of Srinagar.",
+        activities: [
+          "Nishat Bagh 12 Terraces",
+          "Shalimar Bagh Mughal Royal Court",
+          "Chashme Shahi Spring Garden",
+          "Pari Mahal Hilltop Sunset",
+          "Zabarwan Mountain Panorama",
+        ],
+      },
+      {
+        theme: "Meadow of Flowers: High Alpine Gulmarg Gondola",
+        morning:
+          "8:00 AM • Scenic 50 km drive past Tangmarg apple orchards up to Gulmarg (2,650m). Board the world’s second-highest cable car, the Gulmarg Gondola Phase 1 to Kongdoori.",
+        afternoon:
+          "12:30 PM • Ride Gondola Phase 2 to Apharwat Peak (4,200m) snowline, enjoying panoramic views of snow-draped Himalayan peaks and Nanga Parbat on clear days. Warm Thukpa and Kahwa at high altitude.",
+        evening:
+          "4:00 PM • Walk through the pine-fringed alpine meadows of Strawberry Valley and visit the historic 120-year-old St. Mary’s Church before returning to Srinagar.",
+        activities: [
+          "Gulmarg Gondola Phase 1 & 2",
+          "Apharwat Peak Snowline (4,200m)",
+          "Strawberry Valley Alpine Meadows",
+          "St. Marys Victorian Church",
+          "Tangmarg Valley Scenic Corridor",
+        ],
+      },
+      {
+        theme: "Valley of Shepherds: Pahalgam & Lidder River",
+        morning:
+          "7:30 AM • Journey through the purple saffron fields of Pampore and historic 9th-century Avantipur temple ruins along the rushing turquoise Lidder River to Pahalgam (2,130m).",
+        afternoon:
+          "1:00 PM • Scenic valley cab transfer to Betaab Valley (named after the Bollywood film) and the alpine paradise of Aru Valley with lush meadows and grazing Gujjar sheep herds.",
+        evening:
+          "5:00 PM • Excursion to Chandanwari, the starting point of the holy Amarnath Yatra. Relax with a riverside trout fish dinner along the Lidder River banks.",
+        activities: [
+          "Pampore Saffron Fields",
+          "Avantipur Ancient Sun Temple",
+          "Betaab Valley Pine Corridors",
+          "Aru Valley Alpine Wildlife Reserve",
+          "Lidder River Riverside Dinner",
+        ],
+      },
+      {
+        theme: "Meadow of Gold: Sonamarg & Thajiwas Glacial Trails",
+        morning:
+          "8:00 AM • Dramatic drive through the roaring gorge of the Sindh River to Sonamarg (2,800m), the historic Silk Route gateway surrounded by jagged glacier peaks.",
+        afternoon:
+          "12:00 PM • Trek or take a mountain pony ride up to the gleaming Thajiwas Glacier, playing in the snow and drinking from ice-cold glacial meltwater streams.",
+        evening:
+          "4:30 PM • Relax in the flower-carpeted meadows beside the Sindh River, watching local anglers fly-fish for trout, before returning scenic route via Kangan.",
+        activities: [
+          "Sindh River Scenic Drive",
+          "Thajiwas Glacier Ice Wall",
+          "Alpine Meadow Pony Trail",
+          "Nilagrad River Golden Confluence",
+          "Sonamarg Trout Streams",
+        ],
+      },
+      {
+        theme: "Old Srinagar Heritage, Wooden Mosques & Spice Bazaars",
+        morning:
+          "9:00 AM • Heritage architectural walk through Downtown Srinagar. Visit Jamia Masjid with its 378 monumental Deodar cedarwood pillars and serene central courtyard.",
+        afternoon:
+          "1:00 PM • Marvel at the 14th-century Khanqah-e-Moula along the Jhelum River, renowned for its master paper-mâché wood paneling and green papier-mâché domes.",
+        evening:
+          "4:30 PM • Wander through the historic copperware, walnut wood-carving, and pure Pashmina shawl weaving quarters around Zaina Kadal, enjoying freshly baked Girda and Noon Chai.",
+        activities: [
+          "Jamia Masjid 378 Deodar Pillars",
+          "Khanqah-e-Moula Papier-Mache Shrine",
+          "Shah Hamdan Jhelum Riverfront",
+          "Zaina Kadal Copperware Bazaars",
+          "Authentic Pashmina Weaving Studio",
+        ],
+      },
+      {
+        theme: "Doodhpathri Valley of Milk & Farewell Wazwan Banquet",
+        morning:
+          "9:00 AM • Excursion to pristine Doodhpathri, the hidden valley of milk known for emerald rolling pastures, bubbling Shaliganga river rapids, and fragrant deodar woods.",
+        afternoon:
+          "1:30 PM • Picnic lunch amidst wild alpine flowers, interacting with welcoming nomadic shepherd families and tasting fresh mountain curd and herbal tea.",
+        evening:
+          "6:00 PM • Return to Srinagar for a grand farewell banquet at legendary Ahdoos Restaurant, savoring Gushtaba, Rista, and Tabak Maaz overlooking the Jhelum River.",
+        activities: [
+          "Doodhpathri Shaliganga River Rapids",
+          "Emerald Alpine Pasture Hike",
+          "Nomadic Shepherd Hospitality",
+          "Ahdoos Heritage Restaurant Wazwan",
+        ],
+      },
+    ],
+  },
+  amritsar: {
+    themes: [
+      "The Golden Sanctuary: Harmandir Sahib & Langar",
+      "Heroic Heritage: Jallianwala Bagh & Partition Museum",
+      "National Pride: Wagah Border Beating Retreat",
+      "Spiritual Roots & Ancient Ram Tirath Ashram",
+      "Harike Wetland Birding & Rural Punjabi Pind",
+      "Maharaja Ranjit Singh Summer Palace & Farewell Bazaars",
+    ],
+    days: [
+      {
+        theme: "The Golden Sanctuary: Harmandir Sahib & Langar",
+        morning:
+          "5:30 AM • Early morning darshan at Sri Harmandir Sahib (Golden Temple) as the Palki Sahib ceremony commences and morning Gurbani hymns echo across the sacred Amrit Sarovar.",
+        afternoon:
+          "12:30 PM • Experience seva (selfless service) and partake in the free community meal at Guru-ka-Langar, the largest community kitchen in the world feeding over 100,000 pilgrims daily.",
+        evening:
+          "5:30 PM • Walk through the Central Sikh Museum displaying historic Sikh art and manuscripts, followed by world-famous crisp Amritsari Kulcha with melting butter at Bhai Kulwant Singh Kulcheian.",
+        activities: [
+          "Golden Temple Dawn Darshan",
+          "Amrit Sarovar Holy Walk",
+          "Guru-ka-Langar Community Seva",
+          "Akal Takht Historic Throne",
+          "Bhai Kulwant Singh Amritsari Kulcha",
+        ],
+      },
+      {
+        theme: "Heroic Heritage: Jallianwala Bagh & Partition Museum",
+        morning:
+          "9:00 AM • Pay solemn homage at Jallianwala Bagh Memorial, viewing the preserved bullet marks on the red brick walls and the historic Martyrs Well.",
+        afternoon:
+          "12:30 PM • Deeply moving visit to the Partition Museum in the historic Town Hall, the world’s first museum dedicated to the 1947 partition of India and the largest human migration in history.",
+        evening:
+          "5:00 PM • Traditional Punjabi lunch at Kesar Da Dhaba (est. 1916) savoring 24-hour slow-simmered Dal Makhani and Laccha Parathas. Evening 7D laser show at historic Gobindgarh Fort.",
+        activities: [
+          "Jallianwala Bagh Memorial",
+          "Partition Museum Town Hall",
+          "Kesar Da Dhaba Slow-Cooked Dal",
+          "Gobindgarh Fort Whispering Walls 7D Show",
+          "Heritage Street Evening Stroll",
+        ],
+      },
+      {
+        theme: "National Pride: Wagah Border Beating Retreat",
+        morning:
+          "10:00 AM • Explore Pul Kanjri, the historic 18th-century border outpost built by Maharaja Ranjit Singh for military rest, featuring an ancient stepwell and frescoed mosque.",
+        afternoon:
+          "2:30 PM • Transfer to the India-Pakistan border at Attari-Wagah for the world-famous Beating Retreat Military Ceremony.",
+        evening:
+          "5:00 PM • Experience the electric patriotic energy of thousands of spectators as BSF soldiers in fan-crested turbans perform high-kicking precision drills during the simultaneous lowering of national flags.",
+        activities: [
+          "Pul Kanjri Historic Outpost",
+          "Attari-Wagah Border Grandstand",
+          "Beating Retreat Flag Ceremony",
+          "Patriotic Celebration & Drills",
+          "Sarhad Peace Restaurant Border Cuisine",
+        ],
+      },
+      {
+        theme: "Spiritual Roots & Ancient Ram Tirath Ashram",
+        morning:
+          "9:00 AM • Visit Bhagwan Valmiki Tirath Sthal (Ram Tirath), the ancient sacred ashram where Maharishi Valmiki wrote the Ramayana and Sita gave birth to Luv and Kush.",
+        afternoon:
+          "1:00 PM • Visit Durgiana Temple (Silver Temple), an architectural marvel honoring Goddess Durga with intricately embossed silver doors surrounded by a holy sarovar.",
+        evening:
+          "4:30 PM • Browse Katra Jaimal Singh bazaar for handmade Phulkari embroidered dupattas and colorful Punjabi Juttis, followed by creamy malai lassi at Ahuja Lassi.",
+        activities: [
+          "Ram Tirath Sacred Ashram",
+          "Durgiana Silver Temple",
+          "Katra Jaimal Singh Phulkari Bazaars",
+          "Ahuja Creamy Lassi",
+          "Traditional Punjabi Street Food Trail",
+        ],
+      },
+      {
+        theme: "Harike Wetland Birding & Rural Punjabi Pind",
+        morning:
+          "7:00 AM • Excursion to Harike Wetland and Bird Sanctuary at the confluence of the Beas and Sutlej rivers, observing rare migratory waterfowl and Indus River dolphins.",
+        afternoon:
+          "12:30 PM • Immersive rural farmstay experience in a traditional Punjabi Pind (village). Enjoy a tractor ride through golden mustard fields and help churn fresh butter.",
+        evening:
+          "5:00 PM • Authentic village feast: wood-fired Sarson Da Saag, piping hot Makki Di Roti, white home-churned butter, and sugarcane jaggery (gur) under the banyan tree.",
+        activities: [
+          "Harike Wetland Bird Sanctuary",
+          "Beas & Sutlej River Confluence",
+          "Punjabi Village Pind Farmstay",
+          "Tractor Ride through Mustard Fields",
+          "Authentic Sarson Da Saag Village Feast",
+        ],
+      },
+      {
+        theme: "Maharaja Ranjit Singh Summer Palace & Farewell Bazaars",
+        morning:
+          "9:30 AM • Explore the Maharaja Ranjit Singh Panorama and Museum in Ram Bagh Gardens, showcasing illuminated dioramas and oil paintings of the Lion of Punjabs conquests.",
+        afternoon:
+          "1:00 PM • Farewell royal Punjabi banquet at Makhan Fish & Chicken Corner tasting authentic Amritsari fried fish coated in carom seed gram flour batter.",
+        evening:
+          "5:00 PM • Final evening visit to the Golden Temple illuminated beneath moonlight, sitting peacefully on the marble parikrama before your onward departure.",
+        activities: [
+          "Maharaja Ranjit Singh Summer Palace",
+          "Ram Bagh Heritage Gardens",
+          "Makhan Amritsari Fried Fish",
+          "Golden Temple Night Illumination",
+        ],
+      },
+    ],
+  },
+  punjab: {
+    themes: [
+      "The Golden Sanctuary: Harmandir Sahib & Langar",
+      "Heroic Heritage: Jallianwala Bagh & Partition Museum",
+      "National Pride: Wagah Border Beating Retreat",
+      "Spiritual Roots & Ancient Ram Tirath Ashram",
+      "Harike Wetland Birding & Rural Punjabi Pind",
+      "Maharaja Ranjit Singh Summer Palace & Farewell Bazaars",
+    ],
+    days: [
+      {
+        theme: "The Golden Sanctuary: Harmandir Sahib & Langar",
+        morning:
+          "5:30 AM • Early morning darshan at Sri Harmandir Sahib (Golden Temple) as the Palki Sahib ceremony commences and morning Gurbani hymns echo across the sacred Amrit Sarovar.",
+        afternoon:
+          "12:30 PM • Experience seva (selfless service) and partake in the free community meal at Guru-ka-Langar, the largest community kitchen in the world feeding over 100,000 pilgrims daily.",
+        evening:
+          "5:30 PM • Walk through the Central Sikh Museum displaying historic Sikh art and manuscripts, followed by world-famous crisp Amritsari Kulcha with melting butter at Bhai Kulwant Singh Kulcheian.",
+        activities: [
+          "Golden Temple Dawn Darshan",
+          "Amrit Sarovar Holy Walk",
+          "Guru-ka-Langar Community Seva",
+          "Akal Takht Historic Throne",
+          "Bhai Kulwant Singh Amritsari Kulcha",
+        ],
+      },
+      {
+        theme: "Heroic Heritage: Jallianwala Bagh & Partition Museum",
+        morning:
+          "9:00 AM • Pay solemn homage at Jallianwala Bagh Memorial, viewing the preserved bullet marks on the red brick walls and the historic Martyrs Well.",
+        afternoon:
+          "12:30 PM • Deeply moving visit to the Partition Museum in the historic Town Hall, the world’s first museum dedicated to the 1947 partition of India and the largest human migration in history.",
+        evening:
+          "5:00 PM • Traditional Punjabi lunch at Kesar Da Dhaba (est. 1916) savoring 24-hour slow-simmered Dal Makhani and Laccha Parathas. Evening 7D laser show at historic Gobindgarh Fort.",
+        activities: [
+          "Jallianwala Bagh Memorial",
+          "Partition Museum Town Hall",
+          "Kesar Da Dhaba Slow-Cooked Dal",
+          "Gobindgarh Fort Whispering Walls 7D Show",
+          "Heritage Street Evening Stroll",
+        ],
+      },
+      {
+        theme: "National Pride: Wagah Border Beating Retreat",
+        morning:
+          "10:00 AM • Explore Pul Kanjri, the historic 18th-century border outpost built by Maharaja Ranjit Singh for military rest, featuring an ancient stepwell and frescoed mosque.",
+        afternoon:
+          "2:30 PM • Transfer to the India-Pakistan border at Attari-Wagah for the world-famous Beating Retreat Military Ceremony.",
+        evening:
+          "5:00 PM • Experience the electric patriotic energy of thousands of spectators as BSF soldiers in fan-crested turbans perform high-kicking precision drills during the simultaneous lowering of national flags.",
+        activities: [
+          "Pul Kanjri Historic Outpost",
+          "Attari-Wagah Border Grandstand",
+          "Beating Retreat Flag Ceremony",
+          "Patriotic Celebration & Drills",
+          "Sarhad Peace Restaurant Border Cuisine",
+        ],
+      },
+      {
+        theme: "Spiritual Roots & Ancient Ram Tirath Ashram",
+        morning:
+          "9:00 AM • Visit Bhagwan Valmiki Tirath Sthal (Ram Tirath), the ancient sacred ashram where Maharishi Valmiki wrote the Ramayana and Sita gave birth to Luv and Kush.",
+        afternoon:
+          "1:00 PM • Visit Durgiana Temple (Silver Temple), an architectural marvel honoring Goddess Durga with intricately embossed silver doors surrounded by a holy sarovar.",
+        evening:
+          "4:30 PM • Browse Katra Jaimal Singh bazaar for handmade Phulkari embroidered dupattas and colorful Punjabi Juttis, followed by creamy malai lassi at Ahuja Lassi.",
+        activities: [
+          "Ram Tirath Sacred Ashram",
+          "Durgiana Silver Temple",
+          "Katra Jaimal Singh Phulkari Bazaars",
+          "Ahuja Creamy Lassi",
+          "Traditional Punjabi Street Food Trail",
+        ],
+      },
+      {
+        theme: "Harike Wetland Birding & Rural Punjabi Pind",
+        morning:
+          "7:00 AM • Excursion to Harike Wetland and Bird Sanctuary at the confluence of the Beas and Sutlej rivers, observing rare migratory waterfowl and Indus River dolphins.",
+        afternoon:
+          "12:30 PM • Immersive rural farmstay experience in a traditional Punjabi Pind (village). Enjoy a tractor ride through golden mustard fields and help churn fresh butter.",
+        evening:
+          "5:00 PM • Authentic village feast: wood-fired Sarson Da Saag, piping hot Makki Di Roti, white home-churned butter, and sugarcane jaggery (gur) under the banyan tree.",
+        activities: [
+          "Harike Wetland Bird Sanctuary",
+          "Beas & Sutlej River Confluence",
+          "Punjabi Village Pind Farmstay",
+          "Tractor Ride through Mustard Fields",
+          "Authentic Sarson Da Saag Village Feast",
+        ],
+      },
+      {
+        theme: "Maharaja Ranjit Singh Summer Palace & Farewell Bazaars",
+        morning:
+          "9:30 AM • Explore the Maharaja Ranjit Singh Panorama and Museum in Ram Bagh Gardens, showcasing illuminated dioramas and oil paintings of the Lion of Punjabs conquests.",
+        afternoon:
+          "1:00 PM • Farewell royal Punjabi banquet at Makhan Fish & Chicken Corner tasting authentic Amritsari fried fish coated in carom seed gram flour batter.",
+        evening:
+          "5:00 PM • Final evening visit to the Golden Temple illuminated beneath moonlight, sitting peacefully on the marble parikrama before your onward departure.",
+        activities: [
+          "Maharaja Ranjit Singh Summer Palace",
+          "Ram Bagh Heritage Gardens",
+          "Makhan Amritsari Fried Fish",
+          "Golden Temple Night Illumination",
+        ],
+      },
+    ],
+  },
+
   mysore: {
     themes: [
       "Royal Heritage, Palaces & Historic Bazaars",
@@ -947,38 +1788,66 @@ export function generateRichDayPlans(
         estimated_daily_cost: dailyCost,
       });
     } else {
-      // Dynamic synthesis using destination name and available attractions/interests
-      const attrPool =
-        attractions && attractions.length > 0
-          ? attractions
-          : [
-              `${destClean} Central Plaza & Historic Gateway`,
-              `${destClean} Botanical Sanctuary & Panoramic View`,
-              `${destClean} Regional Heritage & Art Museum`,
-              `${destClean} Artisan Quarter & Spice Market`,
-              `${destClean} Waterfront Walkway & Scenic Pier`,
-              `${destClean} Clifftop Sunset & Cultural Village`,
-            ];
+      // Intelligent Dynamic Multi-Stop Generator (4-6 authentic distinct stops per day with NO repeats and realistic timings)
+      const dayThemes = [
+        `Arrival, Architectural Orientation & Welcome Dining`,
+        `Signature UNESCO Wonders & Royal Historic Heritage`,
+        `Nature Reserves, Panoramic Ridge & Sunset Golden Hour`,
+        `Ancient Shrines, Living Traditions & Artisan Bazaars`,
+        `Scenic Countryside Valley & Culinary Tasting Trail`,
+        `Hidden Overlooks, Folk Art Quarters & Riverfront Stroll`,
+        `Botanical Sanctuaries, Clifftop Vistas & Night Markets`,
+        `Regional Folklore, Craft Cooperatives & Tea Gardens`,
+        `Offbeat Heritage Corridors & Authentic Street Gastronomy`,
+        `Memorable Farewell Panoramic Vistas & Souvenir Trails`,
+      ];
 
-      const a1 = attrPool[(i * 3 - 3) % attrPool.length];
-      const a2 = attrPool[(i * 3 - 2) % attrPool.length];
-      const a3 = attrPool[(i * 3 - 1) % attrPool.length];
+      const dayTheme = dayThemes[(i - 1) % dayThemes.length];
 
-      let theme = `Signature Highlights & Scenic Landmarks`;
-      if (i === 1) theme = `Arrival & Signature ${destClean} Landmarks`;
-      else if (i === 2) theme = `Nature Trails, Culture & Local Flavors`;
-      else if (i === 3) theme = `Panoramic Viewpoints & Sunset Trails`;
-      else if (i === 4) theme = `Hidden Gems & Artisan Heritage`;
-      else theme = `Leisure Discovery & Memorable Farewell`;
+      // Build rich destination-specific activity anchors
+      const pool = attractions && attractions.length >= 6
+        ? attractions
+        : [
+            `${destClean} Historic Old Quarter & Grand Heritage Gateway`,
+            `${destClean} Royal Palace & Dynastic Museum`,
+            `${destClean} Panoramic Mountain Ridge & Skywalk Viewpoint`,
+            `${destClean} Botanical Nature Sanctuary & Forest Trail`,
+            `${destClean} 14th-Century Stone Fort & Lookout Towers`,
+            `${destClean} Traditional Spice, Tea & Silk Market`,
+            `${destClean} Sacred Riverfront Ghats & Ancient Shrines`,
+            `${destClean} Artisan Handcraft Workshop & Pottery Studio`,
+            `${destClean} Lakeside Promenade & Golden Hour Boat Cruise`,
+            `${destClean} Heritage Street Food Safari & Night Market`,
+            `${destClean} High-Altitude Scenic Pass & Alpine Meadows`,
+            `${destClean} Folk Art Museum & Living Heritage Village`,
+          ];
+
+      // Dynamic stop count: Day 1 (4 stops for arrival pacing), Days 2-3 (5-6 stops), other days (4-5 stops)
+      const stopCount = i === 1 ? 4 : (i % 2 === 0 ? 5 : 6);
+      const dayOffset = (i - 1) * 3;
+      const dayActs: string[] = [];
+      for (let s = 0; s < stopCount; s++) {
+        dayActs.push(pool[(dayOffset + s) % pool.length]);
+      }
+
+      const morningText = i === 1
+        ? `8:30 AM • Arrival in ${destClean}, seamless check-in and briefing. Morning orientation walk through ${dayActs[0]} to admire early architecture and morning street vibrancy.`
+        : `7:45 AM • Crisp early morning excursion to ${dayActs[0]}. Capture pristine photography before peak crowds, followed by a guided walking circuit through ${dayActs[1] || dayActs[0]}.`;
+
+      const afternoonText = `1:15 PM • Authentic regional lunch at a celebrated local dining spot. Afternoon cultural exploration at ${dayActs[2] || dayActs[1]}, immersing in local craftsmanship, heritage artifacts, and traditional customs.`;
+
+      const eveningText = i === daysCount
+        ? `5:30 PM • Sunset viewing at ${dayActs[dayActs.length - 1]}, followed by souvenir shopping for authentic ${destClean} handicrafts and a festive farewell dinner banquet.`
+        : `5:15 PM • Golden hour promenade along ${dayActs[dayActs.length - 2] || dayActs[dayActs.length - 1]} with panoramic sunset vistas. Evening street food safari and dinner at ${dayActs[dayActs.length - 1]}.`;
 
       result.push({
         day: i,
-        title: theme,
-        theme: theme,
-        morning: `8:30 AM • Morning exploration at ${a1}. Enjoy the fresh morning atmosphere, photography, and guided walking tour through key historical landmarks.`,
-        afternoon: `1:00 PM • Traditional regional lunch at a popular local eatery, followed by an afternoon visit to ${a2} with cultural immersion.`,
-        evening: `5:00 PM • Sunset viewing and promenade stroll around ${a3}, followed by local souvenir shopping and dinner featuring authentic ${destClean} dishes.`,
-        activities: [a1, a2, a3],
+        title: `Day ${i}: ${dayTheme}`,
+        theme: dayTheme,
+        morning: morningText,
+        afternoon: afternoonText,
+        evening: eveningText,
+        activities: dayActs,
         estimated_daily_cost: dailyCost,
       });
     }
@@ -1034,6 +1903,11 @@ export function getDestinationImage(destination?: string): string {
   if (clean.includes("ooty") || clean.includes("nilgiri")) return "/destinations/ooty.jpg";
   if (clean.includes("varkala")) return "/destinations/varkala.jpg";
   if (clean.includes("delhi")) return "/destinations/delhi.jpg";
+  if (clean.includes("agra")) return "/destinations/travel.jpg";
+  if (clean.includes("jaipur")) return "/destinations/travel.jpg";
+  if (clean.includes("kashmir") || clean.includes("srinagar")) return "/destinations/travel.jpg";
+  if (clean.includes("amritsar") || clean.includes("punjab")) return "/destinations/travel.jpg";
+
   if (clean.includes("munnar")) return "/destinations/munnar.jpg";
   if (clean.includes("goa")) return "/destinations/goa.jpg";
   if (clean.includes("paris") || clean.includes("france")) return "/destinations/paris.jpg";
