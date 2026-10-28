@@ -18,6 +18,11 @@ connect_args = {}
 
 if database_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False, "timeout": 15}
+    # Anchor relative SQLite database URLs to the canonical backend directory
+    # so that the database connection is uniform regardless of whether uvicorn
+    # is started from repository root (d:\tripgenius) or from backend\
+    db_file = settings.sqlite_database_file
+    database_url = f"sqlite:///{db_file.as_posix()}"
 
 engine = create_engine(
     database_url,

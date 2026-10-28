@@ -216,23 +216,25 @@ class AuthService {
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
+          const userEmail = parsed.email || "";
+          const defaultHandle = userEmail ? userEmail.split("@")[0] : "traveler";
           const resolvedUsername =
             parsed.username &&
             parsed.username !== "sivyababu" &&
             parsed.username !== "voyager"
               ? parsed.username
-              : "thexcomrade";
+              : defaultHandle;
           const resolvedName =
             parsed.full_name &&
             parsed.full_name !== "Traveler" &&
             parsed.full_name !== "Sivya Babu"
               ? parsed.full_name
-              : "Test Traveler";
+              : "Traveler";
           return {
             id: parsed.uid || "tg-traveler-99",
             full_name: resolvedName,
             username: resolvedUsername,
-            email: parsed.email || "thexcomrade@tripgenius.com",
+            email: userEmail || "traveler@tripgenius.com",
             is_active: true,
             is_verified: true,
             eco_travel_score: parsed.eco_score ?? 92,
@@ -243,9 +245,9 @@ class AuthService {
       }
       return {
         id: "tg-traveler-99",
-        full_name: "Test Traveler",
-        username: "thexcomrade",
-        email: "thexcomrade@tripgenius.com",
+        full_name: "Traveler",
+        username: "traveler",
+        email: "traveler@tripgenius.com",
         is_active: true,
         is_verified: true,
         eco_travel_score: 92,

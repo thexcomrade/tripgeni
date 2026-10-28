@@ -834,12 +834,21 @@ Return JSON.
         food_pct = pcts["food"]
         trans_pct = pcts["transportation"]
 
-        accommodation_cost = round(total_budget * acc_pct, 2)
-        food_cost = round(total_budget * food_pct, 2)
-        transportation_cost = round(total_budget * trans_pct, 2)
-        miscellaneous_cost = round(
-            total_budget - (accommodation_cost + food_cost + transportation_cost), 2
-        )
+        is_day_trip = (preferred_accommodation or "").lower() in [
+            "nostay", "no stay", "no_stay", "day trip", "day_trip"
+        ]
+        if is_day_trip:
+            accommodation_cost = 0.0
+            food_cost = round(total_budget * 0.40, 2)
+            transportation_cost = round(total_budget * 0.35, 2)
+            miscellaneous_cost = round(total_budget - (food_cost + transportation_cost), 2)
+        else:
+            accommodation_cost = round(total_budget * acc_pct, 2)
+            food_cost = round(total_budget * food_pct, 2)
+            transportation_cost = round(total_budget * trans_pct, 2)
+            miscellaneous_cost = round(
+                total_budget - (accommodation_cost + food_cost + transportation_cost), 2
+            )
 
         cost_per_day = round(total_budget / duration, 2)
         cost_per_person_day = round(total_budget / (duration * travelers), 2)

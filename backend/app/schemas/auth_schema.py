@@ -87,7 +87,7 @@ class CurrentUserResponse(BaseModel):
 
     full_name: str
 
-    username: str = "thexcomrade"
+    username: str = "traveler"
 
     email: EmailStr
 

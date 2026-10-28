@@ -64,15 +64,15 @@ export default function ProfileHeader({
 
   const ecoRank = getEcoRank(user.eco_score || 92);
 
-  // Compute clean initials e.g. "TT" for Test Traveler or "TC" for thexcomrade
+  // Compute clean initials e.g. "TR" for Traveler
   const getInitials = (name: string) => {
     const clean = (name || "").trim();
-    if (!clean) return "TC";
+    if (!clean) return "TR";
     const parts = clean.split(/\s+/);
     if (parts.length >= 2) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
     }
-    return clean.slice(0, 2).toUpperCase() || "TC";
+    return clean.slice(0, 2).toUpperCase() || "TR";
   };
 
   return (
@@ -248,7 +248,7 @@ export default function ProfileHeader({
                     color: "#94A3B8",
                   }}
                 >
-                  <span>@{user.username || "thexcomrade"}</span>
+                  <span>@{user.username || "traveler"}</span>
                   <span style={{ color: "#475569" }}>•</span>
                   <button
                     type="button"

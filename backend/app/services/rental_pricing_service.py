@@ -176,20 +176,17 @@ def detect_rental_category(transport_mode: str | None, travelers_count: int = 1)
         "rental", "rent", "self-drive", "self drive", "scooter",
         "bike", "two_wheeler", "two wheeler", "two-wheeler", "motorcycle",
         "cab", "taxi", "chauffeur", "car hire", "hired car",
-        "tempo", "traveller", "bus", "coach", "tour bus", "van"
+        "tempo", "traveller", "bus", "coach", "tour bus", "van",
+        "suv", "hatchback", "sedan", "car"
     ]
 
     # Check if transport mode matches rental keywords, exact IDs, or high traveler counts
     is_rental = (
-        mode in ["bike", "car"]
+        mode in ["bike", "car", "suv", "hatchback", "sedan"]
         or any(kw in mode for kw in rental_keywords)
         or travelers_count >= 10
     )
     if not is_rental:
-        # Also check common transportation strings like "car" or "two wheeler"
-        if mode in ["car", "own car"]:
-            # If specified as generic "car" with high travel or tourist setting, could be rental
-            return None
         return None
 
     # Determine specific tier based on mode keywords and party size (supporting college/100+ tours)
@@ -201,23 +198,25 @@ def detect_rental_category(transport_mode: str | None, travelers_count: int = 1)
         return "tempo_traveller"
     if "scooter" in mode or "activa" in mode or "moped" in mode or "two_wheeler" in mode or "two-wheeler" in mode or "two wheeler" in mode:
         return "scooter"
-    if "enfield" in mode or "bullet" in mode or "cruiser" in mode or "bike" in mode or "motorcycle" in mode:
+    if "enfield" in mode or "bullet" in mode or "cruiser" in mode or "motorcycle" in mode or "bike" in mode:
         return "bike_cruiser" if travelers_count <= 2 else "self_drive_hatchback"
     if "suv" in mode or "thar" in mode or "creta" in mode or "4x4" in mode:
         return "self_drive_suv"
-    if "sedan" in mode:
+    if "sedan" in mode or "dzire" in mode or "verna" in mode:
         return "self_drive_sedan"
+    if "hatchback" in mode or "swift" in mode or "i10" in mode or "tiago" in mode:
+        return "self_drive_hatchback"
     if "luxury" in mode or "premium" in mode:
         return "luxury_rental"
     if "cab" in mode or "taxi" in mode or "chauffeur" in mode or "driver" in mode:
         return "private_cab"
     
-    # Generic "rental car" / "self drive" -> choose based on group size
+    # Generic "rental car" / "self drive" / "car" -> choose based on group size
     if travelers_count > 4:
         return "self_drive_suv"
     elif travelers_count > 2:
         return "self_drive_sedan"
-    elif travelers_count == 1:
+    elif "bike" in mode or "two" in mode or "scooter" in mode:
         return "scooter"
     else:
         return "self_drive_hatchback"

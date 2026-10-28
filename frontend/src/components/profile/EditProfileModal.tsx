@@ -52,7 +52,7 @@ export default function EditProfileModal({
 }: EditProfileModalProps) {
   const [user, setUser] = useState<UserProfile>({
     full_name: "",
-    username: "thexcomrade",
+    username: "traveler",
     bio: "",
     country: "",
     travel_preferences: [],
@@ -63,7 +63,7 @@ export default function EditProfileModal({
 
     setUser({
       full_name: initialUser.full_name || "Test Traveler",
-      username: initialUser.username ? initialUser.username.replace(/^@+/, "") : "thexcomrade",
+      username: initialUser.username ? initialUser.username.replace(/^@+/, "") : "traveler",
       bio: initialUser.bio !== undefined ? initialUser.bio : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
       country: initialUser.country !== undefined ? initialUser.country : "Trivandrum, Kerala, India",
       travel_preferences:
@@ -108,7 +108,7 @@ export default function EditProfileModal({
   }
 
   function handleSave() {
-    const cleanUsername = user.username.trim().replace(/^@+/, "") || "thexcomrade";
+    const cleanUsername = user.username.trim().replace(/^@+/, "") || "traveler";
     const cleanFullName = user.full_name.trim() || "Test Traveler";
 
     onSave({
@@ -345,7 +345,7 @@ export default function EditProfileModal({
                     event.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""),
                   )
                 }
-                placeholder="thexcomrade"
+                placeholder="traveler"
                 style={{
                   width: "100%",
                   padding: "12px 14px 12px 38px",
@@ -377,7 +377,7 @@ export default function EditProfileModal({
                 color: "#94A3B8",
               }}
             >
-              Displayed as <strong style={{ color: "#38BDF8" }}>@{user.username || "thexcomrade"}</strong> across the platform, travel cards, and AI chat.
+              Displayed as <strong style={{ color: "#38BDF8" }}>@{user.username || "traveler"}</strong> across the platform, travel cards, and AI chat.
             </p>
           </div>
 
@@ -563,7 +563,7 @@ export default function EditProfileModal({
               }}
             >
               <Sparkles size={12} color="#38BDF8" />
-              <span>@{user.username || "thexcomrade"}</span>
+              <span>@{user.username || "traveler"}</span>
             </span>
           </div>
 

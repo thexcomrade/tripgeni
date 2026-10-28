@@ -105,10 +105,10 @@ export default function ProfilePage() {
 
   const [user, setUser] = useState<UserProfile>({
     uid: generateUID(),
-    tripgenius_id: "TG-TC8842",
-    full_name: "Test Traveler",
-    username: "thexcomrade",
-    email: "thexcomrade@tripgenius.com",
+    tripgenius_id: "TG-TR8842",
+    full_name: "Traveler",
+    username: "traveler",
+    email: "traveler@tripgenius.com",
     bio: "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
     country: "Trivandrum, Kerala, India",
     profile_image: "",
@@ -171,22 +171,24 @@ export default function ProfilePage() {
             ? parsed.full_name
             : "Test Traveler";
 
+        const userEmail = parsed.email || "";
+        const defaultHandle = userEmail ? userEmail.split("@")[0] : "traveler";
         const resolvedUsername =
           parsed.username &&
           parsed.username !== "voyager" &&
           parsed.username !== "sivyababu"
             ? parsed.username
-            : "thexcomrade";
+            : defaultHandle;
 
         const resolvedEmail =
           parsed.email && !parsed.email.includes("sivya")
             ? parsed.email
-            : "thexcomrade@tripgenius.com";
+            : "traveler@tripgenius.com";
 
         const resolvedId =
           parsed.tripgenius_id && parsed.tripgenius_id !== "TG-SB8842"
             ? parsed.tripgenius_id
-            : "TG-TC8842";
+            : "TG-TR8842";
 
         const profileData: UserProfile = {
           uid: parsed.uid ?? generateUID(),
@@ -221,15 +223,17 @@ export default function ProfilePage() {
         if (storedUser) {
           const parsed = JSON.parse(storedUser);
           const name = parsed.full_name || "Test Traveler";
-          const resolvedUsername = parsed.username || "thexcomrade";
-          const resolvedId = parsed.tripgenius_id || "TG-TC8842";
+          const guestEmail = parsed.email || "";
+          const guestHandle = guestEmail ? guestEmail.split("@")[0] : "traveler";
+          const resolvedUsername = parsed.username || guestHandle;
+          const resolvedId = parsed.tripgenius_id || "TG-TR8842";
 
           const guestData: UserProfile = {
             uid: parsed.uid ?? generateUID(),
             tripgenius_id: resolvedId,
             full_name: name,
             username: resolvedUsername,
-            email: parsed.email || "thexcomrade@tripgenius.com",
+            email: parsed.email || "traveler@tripgenius.com",
             bio: parsed.bio !== undefined ? parsed.bio : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
             country: parsed.country !== undefined ? parsed.country : "Trivandrum, Kerala, India",
             profile_image: image || parsed.profile_image || "",

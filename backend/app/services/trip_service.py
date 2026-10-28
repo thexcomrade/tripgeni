@@ -19,8 +19,9 @@ class TripService:
         self.recommendation_service = RecommendationService()
 
     def create_trip(self, trip_data: dict) -> Trip:
-
-        trip = Trip(id=str(uuid4()), **trip_data)
+        valid_fields = {c.name for c in Trip.__table__.columns}
+        filtered_data = {k: v for k, v in trip_data.items() if k in valid_fields}
+        trip = Trip(id=str(uuid4()), **filtered_data)
 
         self.db.add(trip)
 

@@ -2440,17 +2440,19 @@ function PlannerContent() {
                             setTravelersCount(1);
                           }
                         }}
+                        className="borderless-input"
                         style={{
                           width: "56px",
-                          padding: "4px 6px",
-                          borderRadius: "6px",
-                          background: "rgba(15, 23, 42, 0.7)",
-                          border: "1px solid rgba(56, 189, 248, 0.35)",
+                          padding: "2px 4px",
+                          borderRadius: "0",
+                          background: "transparent",
+                          border: "none",
                           color: "#38BDF8",
                           fontSize: "0.85rem",
                           fontWeight: 700,
                           textAlign: "center",
                           outline: "none",
+                          boxShadow: "none",
                         }}
                         title="Custom traveler count"
                       />
@@ -2600,6 +2602,7 @@ function PlannerContent() {
                           setBudget(1000);
                         }
                       }}
+                      className="borderless-input"
                       style={{
                         width: "130px",
                         textAlign: "right",
@@ -2608,7 +2611,9 @@ function PlannerContent() {
                         color: "#38BDF8",
                         background: "transparent",
                         border: "none",
+                        borderRadius: "0",
                         outline: "none",
+                        boxShadow: "none",
                         padding: "6px 0",
                         letterSpacing: "-0.01em",
                       }}

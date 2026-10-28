@@ -104,11 +104,12 @@ def get_profile(
 
     try:
         user = service.get_authenticated_profile(user_id)
+        derived_username = user.email.split("@")[0] if user.email else "traveler"
 
         return CurrentUserResponse(
             id=user.id,
             full_name=user.full_name,
-            username="thexcomrade",
+            username=derived_username,
             email=user.email,
             is_active=user.is_active,
             is_verified=user.is_verified,

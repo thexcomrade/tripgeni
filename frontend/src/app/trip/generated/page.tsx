@@ -32,6 +32,7 @@ import {
   Clock,
   Compass,
   Navigation,
+  Globe,
   Coffee,
   Luggage,
   Shield,
@@ -945,20 +946,26 @@ export default function GeneratedTripPage() {
                 boxShadow: "0 4px 16px rgba(0, 0, 0, 0.35)",
               }}
             >
+              <Globe size={15} color="#38BDF8" style={{ flexShrink: 0 }} />
               <span style={{ fontSize: "0.80rem", color: "#94A3B8", fontWeight: 600 }}>
                 Currency:
               </span>
               <select
                 value={selectedCurrency}
                 onChange={(e) => handleCurrencyChange(e.target.value)}
+                className="currency-select seamless-select"
                 style={{
                   background: "transparent",
                   border: "none",
+                  borderRadius: "0",
                   color: "#38BDF8",
                   fontSize: "0.85rem",
                   fontWeight: 700,
                   cursor: "pointer",
                   outline: "none",
+                  boxShadow: "none",
+                  padding: "0 4px",
+                  margin: 0,
                 }}
               >
                 {Object.values(SUPPORTED_CURRENCIES).map((c) => (
