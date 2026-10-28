@@ -354,21 +354,22 @@ export default function HomePage() {
           </div>
 
           <h1
-            className="animate-blur-fade-up font-luxury-display heading-luxury-title"
+            className="animate-blur-fade-up hero-main-title"
             style={{
               animationDelay: "300ms",
               fontFamily:
-                "'Playfair Display', 'Cormorant Garamond', 'Bodoni Moda', 'Cinzel', Georgia, serif",
-              fontSize: "clamp(2.1rem, 4.2vw, 3.75rem)",
-              fontWeight: 700,
-              lineHeight: 1.2,
-              letterSpacing: "-0.015em",
-              maxWidth: "960px",
-              margin: "0 auto 20px auto",
+                "'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              fontSize: "clamp(2.4rem, 5.2vw, 4.3rem)",
+              fontWeight: 800,
+              lineHeight: 1.16,
+              letterSpacing: "-0.025em",
+              maxWidth: "1050px",
+              margin: "0 auto 22px auto",
               textAlign: "center",
-              color: "#e93c3c",
-              textShadow:
-                "0 4px 24px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.95)",
+              color: "#FFFFFF",
+              textShadow: "0 2px 10px rgba(0, 0, 0, 0.65)",
+              WebkitFontSmoothing: "antialiased",
+              MozOsxFontSmoothing: "grayscale",
             }}
           >
             Plan Extraordinary Journeys with
@@ -416,7 +417,7 @@ export default function HomePage() {
                 "0 12px 36px rgba(0, 0, 0, 0.40), 0 0 24px rgba(14, 165, 233, 0.20)",
             }}
           >
-            <MapPin size={20} color="#77ccf7" style={{ flexShrink: 0 }} />
+            <MapPin size={20} color="#38BDF8" style={{ flexShrink: 0 }} />
             <input
               type="text"
               value={quickDestination}
@@ -429,7 +430,7 @@ export default function HomePage() {
                 backgroundColor: "transparent",
                 border: "none",
                 boxShadow: "none",
-                color: "#d5bb22",
+                color: "#FFFFFF",
                 fontSize: "1.05rem",
                 outline: "none",
               }}
@@ -454,7 +455,7 @@ export default function HomePage() {
               justifyContent: "center",
               gap: "clamp(16px, 3vw, 30px)",
               flexWrap: "wrap",
-              color: "#f3d73c",
+              color: "#cbd5e1",
               fontSize: "clamp(0.85rem, 1.2vw, 0.95rem)",
               textShadow: "0 2px 14px rgba(0, 0, 0, 0.85)",
             }}
@@ -481,14 +482,14 @@ export default function HomePage() {
               flexDirection: "column",
               alignItems: "center",
               gap: "6px",
-              color: "#e9eedd",
+              color: "#94a3b8",
               fontSize: "0.82rem",
               letterSpacing: "0.04em",
               textTransform: "uppercase",
             }}
           >
             <span>Explore Destinations & Intelligence</span>
-            <ChevronDown size={18} color="#a4dcf5" />
+            <ChevronDown size={18} color="#38BDF8" />
           </div>
         </section>
       </div>
