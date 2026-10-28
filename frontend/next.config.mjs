@@ -2,6 +2,11 @@
 const isDev = process.env.NODE_ENV === 'development';
 
 const nextConfig = {
+  images: {
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
   async rewrites() {
     // Only proxy /api/* to local FastAPI in development.
     // In production the frontend calls NEXT_PUBLIC_API_URL directly.

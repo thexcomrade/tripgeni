@@ -37,51 +37,6 @@ import { parseDestinationQuery } from "../../utils/queryParser";
 import { calculateTransitPricing } from "../../utils/transitPricing";
 import LiquidLoadingNav, { SynthesisStage } from "../../components/planner/LiquidLoadingNav";
 
-const COLLEGE_CIRCUIT_PRESETS = [
-  {
-    name: "Kerala Student Classic",
-    stops: ["Munnar", "Thekkady", "Alleppey"],
-    desc: "Misty tea hills ➔ Elephant & spice forest ➔ Backwater houseboats",
-    badge: "🎓 College Pick",
-  },
-  {
-    name: "Golden Triangle Circuit",
-    stops: ["Delhi", "Agra", "Jaipur"],
-    desc: "Capital monuments ➔ Taj Mahal sunrise ➔ Pink City palaces",
-    badge: "🏛️ Heritage",
-  },
-  {
-    name: "South India Mountain Tour",
-    stops: ["Bangalore", "Mysore", "Coorg", "Ooty"],
-    desc: "Tech hub ➔ Mysore Palace ➔ Coffee hills ➔ Nilgiri pine peaks",
-    badge: "⛰️ Highlands",
-  },
-  {
-    name: "Himachal Mountain Trails",
-    stops: ["Manali", "Kasol", "Shimla"],
-    desc: "Rohtang snow pass ➔ Parvati Valley trails ➔ Mall Road vistas",
-    badge: "❄️ Adventure",
-  },
-  {
-    name: "Goa Coastal Expedition",
-    stops: ["North Goa", "Panaji", "Palolem"],
-    desc: "Anjuna beach shacks ➔ Latin Quarter ➔ South Goa golden sands",
-    badge: "🏖️ Coastline",
-  },
-  {
-    name: "Euro City Hop",
-    stops: ["Paris", "Brussels", "Amsterdam"],
-    desc: "Eiffel Tower & Louvre ➔ Grand Place & waffles ➔ Canal house ring",
-    badge: "🌐 Euro Tour",
-  },
-  {
-    name: "Japan Golden Corridor",
-    stops: ["Tokyo", "Kyoto", "Osaka"],
-    desc: "Shinjuku neon ➔ Fushimi Inari torii gates ➔ Dotonbori street food",
-    badge: "⛩️ Asia Classic",
-  },
-];
-
 const POPULAR_ORIGINS = [
   "Ernakulam",
   "Trivandrum",
@@ -167,6 +122,14 @@ const TRANSPORT_MODES = [
     tagColor: "#38BDF8",
     desc: "Rapid domestic air travel with coordinated airport cab connections",
     iconUrl: "/logo/plane.png",
+  },
+  {
+    id: "Bus",
+    label: "BUS",
+    tag: "BUDGET & SLEEPER",
+    tagColor: "#A855F7",
+    desc: "Intercity express coaches, AC sleeper berths & economical point-to-point transit",
+    iconUrl: "/logo/bus.png",
   },
   {
     id: "Car",
@@ -601,6 +564,7 @@ function PlannerContent() {
   const oneWayTravelHours = useMemo(() => {
     if (transportationMode === "Train") return transitPricing.train.approxDurationHours || 4;
     if (transportationMode === "Flight" || transportationMode === "Airline") return transitPricing.flight.approxDurationHours || 2;
+    if (transportationMode === "Bus") return transitPricing.bus.approxDurationHours || 5;
     if (transportationMode === "Car") return transitPricing.car.drivingHours || 3;
     if (transportationMode === "Bike") return transitPricing.bike.ridingHours || 4;
     if (transportationMode === "Bicycle" || transportationMode === "Cycling") return transitPricing.bicycle.cyclingHours || 6;
@@ -642,6 +606,11 @@ function PlannerContent() {
     } else if (transportationMode === "Flight" || transportationMode === "Airline") {
       const minFare = transitPricing.flight.economyMinFare || 3500;
       const maxFare = transitPricing.flight.economyMaxFare || 6500;
+      const avgFare = (minFare + maxFare) / 2;
+      rawTotal = avgFare * Math.max(1, travelersCount);
+    } else if (transportationMode === "Bus") {
+      const minFare = transitPricing.bus.nonAcMinFare || 250;
+      const maxFare = transitPricing.bus.acSleeperMinFare || 750;
       const avgFare = (minFare + maxFare) / 2;
       rawTotal = avgFare * Math.max(1, travelersCount);
     } else if (transportationMode === "Car") {
@@ -900,16 +869,6 @@ function PlannerContent() {
         >
           Craft Your Bespoke Itinerary
         </h1>
-        <p
-          style={{
-            color: "#94A3B8",
-            fontSize: "1.05rem",
-            maxWidth: "600px",
-            margin: "8px auto 0 auto",
-          }}
-        >
-          Follow 4 quick steps or jump straight to AI synthesis.
-        </p>
       </div>
 
       {/* STEP PROGRESS INDICATOR (Hidden while synthesizing to keep screen 100% compact and zero-scroll) */}
@@ -1608,101 +1567,8 @@ function PlannerContent() {
                 </div>
               </div>
 
-              {/* QUICK PICKS GRID */}
-              {isMultiCity ? (
-                <div>
-                  <span
-                    style={{
-                      fontSize: "0.78rem",
-                      fontWeight: 700,
-                      color: "#C084FC",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.5px",
-                      display: "block",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    🎓 Popular College & Group Tour Circuits (Click to Load)
-                  </span>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-                      gap: "8px",
-                    }}
-                  >
-                    {COLLEGE_CIRCUIT_PRESETS.map((preset) => (
-                      <button
-                        key={preset.name}
-                        type="button"
-                        onClick={() => {
-                          setMultiStops([...preset.stops]);
-                          setDestination(preset.stops.join(" ➔ "));
-                          if (travelersCount < 4) setTravelersCount(4);
-                        }}
-                        style={{
-                          textAlign: "left",
-                          padding: "8px 12px",
-                          borderRadius: "10px",
-                          background: "rgba(255, 255, 255, 0.04)",
-                          border: "1px solid rgba(168, 85, 247, 0.25)",
-                          cursor: "pointer",
-                          transition: "all 0.15s ease",
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            marginBottom: "3px",
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: "0.82rem",
-                              fontWeight: 800,
-                              color: "#E0E7FF",
-                            }}
-                          >
-                            {preset.name}
-                          </span>
-                          <span
-                            style={{
-                              fontSize: "0.68rem",
-                              background: "rgba(168, 85, 247, 0.25)",
-                              color: "#C084FC",
-                              padding: "1px 6px",
-                              borderRadius: "999px",
-                              fontWeight: 700,
-                            }}
-                          >
-                            {preset.badge}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "0.73rem",
-                            color: "#A5B4FC",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {preset.stops.join(" ➔ ")}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "0.68rem",
-                            color: "#94A3B8",
-                            marginTop: "2px",
-                          }}
-                        >
-                          {preset.desc}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : (
+              {/* QUICK PICKS GRID (Starting City & Destinations for Single Destination Mode) */}
+              {!isMultiCity && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                   {/* Starting City Quick Picks */}
                   <div>
@@ -1862,57 +1728,64 @@ function PlannerContent() {
                     </div>
                   </div>
 
-                  {/* 5 DATA-DRIVEN TRANSIT MODE CARDS: TRAIN, AIRLINE, CAR, BIKE, BICYCLE */}
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))",
-                      gap: "12px",
-                    }}
-                  >
-                    {/* 1. TRAIN */}
-                    {(() => {
-                      const isTrainSelected = transportationMode === "Train";
-                      return (
-                        <div
-                          onClick={() => {
-                            if (transitPricing.train.available) {
-                              setTransportationMode("Train");
-                            }
-                          }}
-                          role="button"
-                          tabIndex={0}
-                          style={{
-                            background: isTrainSelected
-                              ? "rgba(52, 211, 153, 0.14)"
-                              : transitPricing.train.available
-                              ? "rgba(255, 255, 255, 0.03)"
-                              : "rgba(239, 68, 68, 0.04)",
-                            border: isTrainSelected
-                              ? "2px solid #34D399"
-                              : transitPricing.train.available
-                              ? "1px solid rgba(255, 255, 255, 0.14)"
-                              : "1px solid rgba(239, 68, 68, 0.20)",
-                            boxShadow: isTrainSelected ? "0 0 18px rgba(52, 211, 153, 0.25)" : "none",
-                            borderRadius: "14px",
-                            padding: "14px 16px",
-                            cursor: transitPricing.train.available ? "pointer" : "not-allowed",
-                            transition: "all 0.2s ease",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <div>
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                              <span style={{ fontWeight: 800, fontSize: "0.90rem", color: isTrainSelected ? "#34D399" : transitPricing.train.available ? "#F1F5F9" : "#94A3B8", display: "flex", alignItems: "center", gap: "8px" }}>
-                                <img src="/logo/train.png" alt="TRAIN" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
-                                TRAIN
-                              </span>
-                              <span style={{ fontSize: "0.72rem", color: isTrainSelected ? "#34D399" : transitPricing.train.available ? "#38BDF8" : "#EF4444", fontWeight: 700, background: isTrainSelected ? "rgba(52, 211, 153, 0.15)" : "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: "999px" }}>
-                                {transitPricing.train.available ? `~${transitPricing.train.durationText}` : "No Direct Track"}
-                              </span>
-                            </div>
+                  {/* DATA-DRIVEN TRANSIT MODE CARDS: TRAIN, AIRLINE, BUS, CAR, BIKE, BICYCLE */}
+                  {(() => {
+                    const getCleanTransitDuration = (rawText: string | undefined): string => {
+                      if (!rawText) return "";
+                      let clean = rawText.replace(/\(.*?\)/g, "").split("+")[0].replace(/^[~\s]+/, "").trim();
+                      return clean ? `~${clean}` : "";
+                    };
+                    return (
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))",
+                          gap: "12px",
+                        }}
+                      >
+                        {/* 1. TRAIN */}
+                        {(() => {
+                          const isTrainSelected = transportationMode === "Train";
+                          return (
+                            <div
+                              onClick={() => {
+                                if (transitPricing.train.available) {
+                                  setTransportationMode("Train");
+                                }
+                              }}
+                              role="button"
+                              tabIndex={0}
+                              style={{
+                                background: isTrainSelected
+                                  ? "rgba(52, 211, 153, 0.14)"
+                                  : transitPricing.train.available
+                                  ? "rgba(255, 255, 255, 0.03)"
+                                  : "rgba(239, 68, 68, 0.04)",
+                                border: isTrainSelected
+                                  ? "2px solid #34D399"
+                                  : transitPricing.train.available
+                                  ? "1px solid rgba(255, 255, 255, 0.14)"
+                                  : "1px solid rgba(239, 68, 68, 0.20)",
+                                boxShadow: isTrainSelected ? "0 0 18px rgba(52, 211, 153, 0.25)" : "none",
+                                borderRadius: "14px",
+                                padding: "14px 16px",
+                                cursor: transitPricing.train.available ? "pointer" : "not-allowed",
+                                transition: "all 0.2s ease",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <div>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                                  <span style={{ fontWeight: 800, fontSize: "0.90rem", color: isTrainSelected ? "#34D399" : transitPricing.train.available ? "#F1F5F9" : "#94A3B8", display: "flex", alignItems: "center", gap: "8px" }}>
+                                    <img src="/logo/train.png" alt="TRAIN" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
+                                    TRAIN
+                                  </span>
+                                  <span style={{ fontSize: "0.72rem", color: isTrainSelected ? "#34D399" : transitPricing.train.available ? "#38BDF8" : "#EF4444", fontWeight: 700, background: isTrainSelected ? "rgba(52, 211, 153, 0.15)" : "rgba(255,255,255,0.05)", padding: "3px 10px", borderRadius: "999px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                                    {transitPricing.train.available ? getCleanTransitDuration(transitPricing.train.durationText) : "No Direct Track"}
+                                  </span>
+                                </div>
 
                             {transitPricing.train.available ? (
                               <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.45 }}>
@@ -1985,8 +1858,8 @@ function PlannerContent() {
                                 <img src="/logo/plane.png" alt="AIRLINE" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
                                 AIRLINE
                               </span>
-                              <span style={{ fontSize: "0.72rem", color: "#38BDF8", fontWeight: 700, background: "rgba(56, 189, 248, 0.15)", padding: "2px 8px", borderRadius: "999px" }}>
-                                ~{transitPricing.flight.durationText}
+                              <span style={{ fontSize: "0.72rem", color: "#38BDF8", fontWeight: 700, background: "rgba(56, 189, 248, 0.15)", padding: "3px 10px", borderRadius: "999px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                                {getCleanTransitDuration(transitPricing.flight.durationText)}
                               </span>
                             </div>
 
@@ -1996,7 +1869,7 @@ function PlannerContent() {
                                   <div style={{ background: "rgba(245, 158, 11, 0.12)", border: "1px solid rgba(245, 158, 11, 0.25)", color: "#FBBF24", padding: "6px 8px", borderRadius: "8px", fontSize: "0.70rem", marginBottom: "8px" }}>
                                     🚫 Hub: <b>{transitPricing.flight.nearestAirportToDest?.name} ({transitPricing.flight.nearestAirportToDest?.code})</b>
                                     <div style={{ color: "#94A3B8", marginTop: "2px" }}>
-                                      {transitPricing.flight.nearestAirportToDest?.distanceToDestKm} km connecting transfer
+                                       {transitPricing.flight.nearestAirportToDest?.distanceToDestKm} km connecting transfer
                                     </div>
                                   </div>
                                   <div>Airfare: <b style={{ color: "#F59E0B" }}>₹{transitPricing.flight.economyMinFare.toLocaleString("en-IN")} - ₹{transitPricing.flight.economyMaxFare.toLocaleString("en-IN")}</b></div>
@@ -2026,6 +1899,68 @@ function PlannerContent() {
 
                           <div style={{ marginTop: "10px", fontSize: "0.72rem", color: isFlightSelected ? "#38BDF8" : "#94A3B8", fontWeight: 700, textAlign: "center", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "8px" }}>
                             {isFlightSelected ? "✓ Selected for Journey" : "Click to Select Airline"}
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* 3. BUS */}
+                    {(() => {
+                      const isBusSelected = transportationMode === "Bus";
+                      return (
+                        <div
+                          onClick={() => setTransportationMode("Bus")}
+                          role="button"
+                          tabIndex={0}
+                          style={{
+                            background: isBusSelected
+                              ? "rgba(168, 85, 247, 0.15)"
+                              : "rgba(255, 255, 255, 0.03)",
+                            border: isBusSelected
+                              ? "2px solid #A855F7"
+                              : "1px solid rgba(255, 255, 255, 0.14)",
+                            boxShadow: isBusSelected ? "0 0 18px rgba(168, 85, 247, 0.25)" : "none",
+                            borderRadius: "14px",
+                            padding: "14px 16px",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                              <span style={{ fontWeight: 800, fontSize: "0.90rem", color: isBusSelected ? "#C084FC" : "#F1F5F9", display: "flex", alignItems: "center", gap: "8px" }}>
+                                <img src="/logo/bus.png" alt="BUS" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
+                                BUS
+                              </span>
+                              <span style={{ fontSize: "0.72rem", color: "#C084FC", fontWeight: 700, background: "rgba(168, 85, 247, 0.15)", padding: "3px 10px", borderRadius: "999px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                                {getCleanTransitDuration(transitPricing.bus.durationText)}
+                              </span>
+                            </div>
+
+                            <div style={{ fontSize: "0.78rem", color: "#94A3B8", lineHeight: 1.45 }}>
+                              <div style={{ color: "#E2E8F0", fontSize: "0.74rem", fontWeight: 600, marginBottom: "6px" }}>
+                                🚌 Intercity Express / AC Sleeper Coach
+                              </div>
+
+                              <div style={{ background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.06)", padding: "6px 8px", borderRadius: "8px", marginBottom: "6px", fontSize: "0.68rem" }}>
+                                <div>Express Non-AC: <b style={{ color: "#E2E8F0" }}>₹{transitPricing.bus.nonAcMinFare.toLocaleString("en-IN")}</b></div>
+                                <div style={{ color: "#C084FC", fontWeight: 700, marginTop: "2px" }}>
+                                  AC Sleeper: ₹{transitPricing.bus.acSleeperMinFare.toLocaleString("en-IN")}
+                                </div>
+                              </div>
+
+                              <div style={{ fontSize: "0.68rem", color: "#A855F7", display: "flex", alignItems: "center", gap: "4px", marginTop: "6px" }}>
+                                <span>✓</span>
+                                <span>State Roadways & Private Fleets</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ marginTop: "10px", fontSize: "0.72rem", color: isBusSelected ? "#C084FC" : "#94A3B8", fontWeight: 700, textAlign: "center", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "8px" }}>
+                            {isBusSelected ? "✓ Selected for Journey" : "Click to Select Bus"}
                           </div>
                         </div>
                       );
@@ -2063,8 +1998,8 @@ function PlannerContent() {
                                 <img src="/logo/car.png" alt="CAR" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
                                 CAR
                               </span>
-                              <span style={{ fontSize: "0.72rem", color: "#C084FC", fontWeight: 700, background: "rgba(168, 85, 247, 0.15)", padding: "2px 8px", borderRadius: "999px" }}>
-                                ~{transitPricing.car.durationText}
+                              <span style={{ fontSize: "0.72rem", color: "#C084FC", fontWeight: 700, background: "rgba(168, 85, 247, 0.15)", padding: "3px 10px", borderRadius: "999px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                                {getCleanTransitDuration(transitPricing.car.durationText)}
                               </span>
                             </div>
 
@@ -2128,8 +2063,8 @@ function PlannerContent() {
                                 <img src="/logo/bike.png" alt="BIKE" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
                                 BIKE
                               </span>
-                              <span style={{ fontSize: "0.72rem", color: "#FB7185", fontWeight: 700, background: "rgba(251, 113, 133, 0.15)", padding: "2px 8px", borderRadius: "999px" }}>
-                                ~{transitPricing.bike.durationText}
+                              <span style={{ fontSize: "0.72rem", color: "#FB7185", fontWeight: 700, background: "rgba(251, 113, 133, 0.15)", padding: "3px 10px", borderRadius: "999px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                                {getCleanTransitDuration(transitPricing.bike.durationText)}
                               </span>
                             </div>
 
@@ -2192,8 +2127,8 @@ function PlannerContent() {
                                 <img src="/logo/bicycle.png" alt="BICYCLE" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
                                 BICYCLE
                               </span>
-                              <span style={{ fontSize: "0.72rem", color: "#2DD4BF", fontWeight: 700, background: "rgba(45, 212, 191, 0.15)", padding: "2px 8px", borderRadius: "999px" }}>
-                                ~{transitPricing.bicycle.durationText}
+                              <span style={{ fontSize: "0.72rem", color: "#2DD4BF", fontWeight: 700, background: "rgba(45, 212, 191, 0.15)", padding: "3px 10px", borderRadius: "999px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                                {getCleanTransitDuration(transitPricing.bicycle.durationText)}
                               </span>
                             </div>
 
@@ -2225,6 +2160,8 @@ function PlannerContent() {
                       );
                     })()}
                   </div>
+                );
+              })()}
 
                   {/* BOTTOM NOTE */}
                   <div style={{ marginTop: "12px", fontSize: "0.74rem", color: "#94A3B8", display: "flex", alignItems: "center", gap: "6px", background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: "8px" }}>
@@ -2433,7 +2370,8 @@ function PlannerContent() {
                     {[
                       { label: "Solo (1)", count: 1 },
                       { label: "Couple (2)", count: 2 },
-                      { label: "Friends (6)", count: 6 },
+                      { label: "Friends (4)", count: 4 },
+                      { label: "Squad (6)", count: 6 },
                       { label: "Group (15)", count: 15 },
                       { label: "🎓 College (50)", count: 50 },
                       { label: "🚌 Mega Tour (100+)", count: 100 },
@@ -2446,17 +2384,18 @@ function PlannerContent() {
                           onClick={() => setTravelersCount(preset.count)}
                           style={{
                             fontSize: "0.82rem",
-                            padding: "8px 14px",
+                            padding: "8px 16px",
                             borderRadius: "10px",
                             border: isSelected
                               ? "1px solid #38BDF8"
-                              : "1px solid rgba(255, 255, 255, 0.12)",
+                              : "1px solid rgba(255, 255, 255, 0.10)",
                             background: isSelected
-                              ? "rgba(14, 165, 233, 0.22)"
-                              : "rgba(255, 255, 255, 0.05)",
+                              ? "linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(56, 189, 248, 0.12) 100%)"
+                              : "rgba(255, 255, 255, 0.04)",
                             color: isSelected ? "#38BDF8" : "#CBD5E1",
                             cursor: "pointer",
                             fontWeight: isSelected ? 700 : 500,
+                            boxShadow: isSelected ? "0 0 14px rgba(56, 189, 248, 0.22)" : "none",
                             transition: "all 0.18s ease",
                           }}
                         >
@@ -2465,44 +2404,57 @@ function PlannerContent() {
                       );
                     })}
 
-                    {/* Custom Travelers Input */}
-                    <input
-                      type="number"
-                      min="1"
-                      max="500"
-                      placeholder="Custom"
-                      value={travelersCount === 0 ? "" : travelersCount}
-                      onFocus={(e) => e.target.select()}
-                      onChange={(e) => {
-                        const str = e.target.value;
-                        if (!str) {
-                          setTravelersCount(0);
-                          return;
-                        }
-                        const val = parseInt(str);
-                        if (!isNaN(val)) {
-                          setTravelersCount(Math.max(1, Math.min(500, val)));
-                        }
-                      }}
-                      onBlur={() => {
-                        if (!travelersCount || travelersCount < 1) {
-                          setTravelersCount(1);
-                        }
-                      }}
+                    {/* Sleek Custom Counter */}
+                    <div
                       style={{
-                        width: "75px",
-                        padding: "8px 10px",
-                        borderRadius: "8px",
-                        background: "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(255, 255, 255, 0.14)",
-                        color: "#FFFFFF",
-                        fontSize: "0.85rem",
-                        fontWeight: 600,
-                        textAlign: "center",
-                        outline: "none",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        background: "rgba(255, 255, 255, 0.04)",
+                        border: "1px solid rgba(255, 255, 255, 0.12)",
+                        borderRadius: "10px",
+                        padding: "3px 8px",
                       }}
-                      title="Custom traveler count"
-                    />
+                    >
+                      <span style={{ fontSize: "0.74rem", color: "#94A3B8", fontWeight: 600 }}>Custom:</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max="500"
+                        placeholder="1"
+                        value={travelersCount === 0 ? "" : travelersCount}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => {
+                          const str = e.target.value;
+                          if (!str) {
+                            setTravelersCount(0);
+                            return;
+                          }
+                          const val = parseInt(str);
+                          if (!isNaN(val)) {
+                            setTravelersCount(Math.max(1, Math.min(500, val)));
+                          }
+                        }}
+                        onBlur={() => {
+                          if (!travelersCount || travelersCount < 1) {
+                            setTravelersCount(1);
+                          }
+                        }}
+                        style={{
+                          width: "56px",
+                          padding: "4px 6px",
+                          borderRadius: "6px",
+                          background: "rgba(15, 23, 42, 0.7)",
+                          border: "1px solid rgba(56, 189, 248, 0.35)",
+                          color: "#38BDF8",
+                          fontSize: "0.85rem",
+                          fontWeight: 700,
+                          textAlign: "center",
+                          outline: "none",
+                        }}
+                        title="Custom traveler count"
+                      />
+                    </div>
                   </div>
 
                   {travelersCount >= 30 && (
@@ -2611,101 +2563,56 @@ function PlannerContent() {
                     </div>
                   </div>
 
-                  {/* RIGHT: QUICK STEPPERS & NUMERIC INPUT */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                    <button
-                      type="button"
-                      onClick={() => {
+                  {/* RIGHT: CLEAN GLOWING NUMERIC INPUT */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      background: "rgba(15, 23, 42, 0.7)",
+                      border: "1px solid rgba(56, 189, 248, 0.45)",
+                      boxShadow: "0 0 16px rgba(56, 189, 248, 0.15)",
+                      borderRadius: "12px",
+                      padding: "6px 16px",
+                    }}
+                  >
+                    <span style={{ color: "#38BDF8", fontWeight: 800, fontSize: "1.2rem", marginRight: "6px" }}>₹</span>
+                    <input
+                      type="number"
+                      min="1000"
+                      max="5000000"
+                      step="500"
+                      value={budget === 0 ? "" : budget}
+                      onFocus={(e) => e.target.select()}
+                      onChange={(e) => {
+                        const str = e.target.value;
+                        if (!str) {
+                          setBudget(0);
+                          return;
+                        }
                         setHasUserCustomizedBudget(true);
-                        setBudget((prev) => Math.max(1000, prev - 2500));
+                        const val = parseInt(str);
+                        if (!isNaN(val)) {
+                          setBudget(Math.max(0, val));
+                        }
+                      }}
+                      onBlur={() => {
+                        if (!budget || budget < 1000) {
+                          setBudget(1000);
+                        }
                       }}
                       style={{
-                        padding: "8px 12px",
-                        borderRadius: "10px",
-                        background: "rgba(255, 255, 255, 0.06)",
-                        border: "1px solid rgba(255, 255, 255, 0.12)",
-                        color: "#CBD5E1",
-                        fontSize: "0.82rem",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        transition: "all 0.15s ease",
+                        width: "130px",
+                        textAlign: "right",
+                        fontSize: "1.25rem",
+                        fontWeight: 800,
+                        color: "#38BDF8",
+                        background: "transparent",
+                        border: "none",
+                        outline: "none",
+                        padding: "6px 0",
+                        letterSpacing: "-0.01em",
                       }}
-                      title="Decrease by ₹2,500"
-                    >
-                      − ₹2.5k
-                    </button>
-
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        background: "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(56, 189, 248, 0.35)",
-                        borderRadius: "8px",
-                        padding: "6px 12px",
-                      }}
-                    >
-                      <span style={{ color: "#38BDF8", fontWeight: 800, fontSize: "1.15rem", marginRight: "6px" }}>₹</span>
-                      <input
-                        type="number"
-                        min="1000"
-                        max="5000000"
-                        step="500"
-                        value={budget === 0 ? "" : budget}
-                        onFocus={(e) => e.target.select()}
-                        onChange={(e) => {
-                          const str = e.target.value;
-                          if (!str) {
-                            setBudget(0);
-                            return;
-                          }
-                          setHasUserCustomizedBudget(true);
-                          const val = parseInt(str);
-                          if (!isNaN(val)) {
-                            setBudget(Math.max(0, val));
-                          }
-                        }}
-                        onBlur={() => {
-                          if (!budget || budget < 1000) {
-                            setBudget(1000);
-                          }
-                        }}
-                        style={{
-                          width: "120px",
-                          textAlign: "right",
-                          fontSize: "1.25rem",
-                          fontWeight: 800,
-                          color: "#38BDF8",
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          padding: "8px 0",
-                          letterSpacing: "-0.01em",
-                        }}
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setHasUserCustomizedBudget(true);
-                        setBudget((prev) => prev + 2500);
-                      }}
-                      style={{
-                        padding: "8px 12px",
-                        borderRadius: "10px",
-                        background: "rgba(255, 255, 255, 0.06)",
-                        border: "1px solid rgba(255, 255, 255, 0.12)",
-                        color: "#CBD5E1",
-                        fontSize: "0.82rem",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        transition: "all 0.15s ease",
-                      }}
-                      title="Increase by ₹2,500"
-                    >
-                      + ₹2.5k
-                    </button>
+                    />
                   </div>
                 </div>
 
@@ -2843,27 +2750,13 @@ function PlannerContent() {
                         </div>
 
                         {/* PRICE HERO */}
-                        <div style={{ marginBottom: "12px", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "10px" }}>
+                        <div style={{ marginTop: "4px" }}>
                           <div style={{ fontSize: "1.45rem", fontWeight: 900, color: isSelected ? tier.accent : "#FFFFFF", letterSpacing: "-0.02em" }}>
                             ₹{calculatedTotal.toLocaleString("en-IN")}
                           </div>
                           <div style={{ fontSize: "0.72rem", color: "#64748B" }}>
                             ~₹{tier.perDayPerson.toLocaleString("en-IN")} / guest / day base
                           </div>
-                        </div>
-
-                        {/* FEATURES LIST */}
-                        <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "12px" }}>
-                          {tier.features.map((feat, i) => (
-                            <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.74rem", color: "#CBD5E1" }}>
-                              <span style={{ color: tier.accent, fontSize: "0.78rem" }}>•</span>
-                              <span>{feat}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div style={{ fontSize: "0.72rem", color: "#38BDF8", fontWeight: 600, marginTop: "6px" }}>
-                          Includes ~₹{calculatedTransitCost.toLocaleString("en-IN")} travel tickets + stay & meals
                         </div>
                       </div>
                     );
@@ -3180,6 +3073,8 @@ function PlannerContent() {
                         : "No direct rail line";
                     } else if (t.id === "Flight") {
                       fareTag = `From ~₹${transitPricing.flight.economyMinFare.toLocaleString("en-IN")}/person`;
+                    } else if (t.id === "Bus") {
+                      fareTag = `Express ₹${transitPricing.bus.nonAcMinFare.toLocaleString("en-IN")} • AC Sleeper ₹${transitPricing.bus.acSleeperMinFare.toLocaleString("en-IN")}`;
                     } else if (t.id === "Car") {
                       fareTag = `Est. Fuel & Tolls: ~₹${transitPricing.car.fuelAndTollsApprox.toLocaleString("en-IN")}`;
                     } else if (t.id === "Bike") {
@@ -3342,6 +3237,8 @@ function PlannerContent() {
                           ? "/logo/train.png"
                           : transportationMode === "Flight" || transportationMode === "Airline"
                           ? "/logo/plane.png"
+                          : transportationMode === "Bus"
+                          ? "/logo/bus.png"
                           : transportationMode === "Bike"
                           ? "/logo/bike.png"
                           : transportationMode === "Bicycle" || transportationMode === "Cycling"
@@ -3375,44 +3272,12 @@ function PlannerContent() {
                     </div>
                   </div>
 
-                  {/* ROUTE LINE WITH ANIMATED ICON */}
-                  <div style={{ flex: 1, minWidth: "180px", display: "flex", flexDirection: "column", alignItems: "center", padding: "0 10px" }}>
-                    <div style={{ fontSize: "0.74rem", color: "#38BDF8", fontWeight: 700, marginBottom: "4px" }}>
+                  {/* ROUTE LINE (CLEAN GRADIENT LINE WITHOUT CENTER BADGE OBSCURING DISTANCE) */}
+                  <div style={{ flex: 1, minWidth: "180px", display: "flex", flexDirection: "column", alignItems: "center", padding: "0 14px" }}>
+                    <div style={{ fontSize: "0.76rem", color: "#38BDF8", fontWeight: 700, marginBottom: "8px", background: "rgba(56, 189, 248, 0.12)", border: "1px solid rgba(56, 189, 248, 0.25)", padding: "2px 10px", borderRadius: "999px" }}>
                       ~{transitPricing.distanceKm.toLocaleString("en-IN")} km ({transportationMode.toUpperCase()})
                     </div>
-                    <div style={{ width: "100%", height: "2px", background: "linear-gradient(90deg, #38BDF8 0%, #34D399 50%, #38BDF8 100%)", position: "relative" }}>
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "-12px",
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          background: "#0F172A",
-                          borderRadius: "50%",
-                          padding: "4px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          border: "1px solid rgba(56, 189, 248, 0.4)",
-                        }}
-                      >
-                        <img
-                          src={
-                            transportationMode === "Train"
-                              ? "/logo/train.png"
-                              : transportationMode === "Flight" || transportationMode === "Airline"
-                              ? "/logo/plane.png"
-                              : transportationMode === "Bike"
-                              ? "/logo/bike.png"
-                              : transportationMode === "Bicycle" || transportationMode === "Cycling"
-                              ? "/logo/bicycle.png"
-                              : "/logo/car.png"
-                          }
-                          alt={transportationMode}
-                          style={{ width: "18px", height: "18px", objectFit: "contain" }}
-                        />
-                      </div>
-                    </div>
+                    <div style={{ width: "100%", height: "2px", background: "linear-gradient(90deg, #38BDF8 0%, #34D399 50%, #38BDF8 100%)", borderRadius: "2px" }} />
                   </div>
 
                   {/* DESTINATION */}
@@ -3434,6 +3299,9 @@ function PlannerContent() {
                     )}
                     {(transportationMode === "Flight" || transportationMode === "Airline") && (
                       <span>Economy Air: <b style={{ color: "#38BDF8" }}>₹{transitPricing.flight.economyMinFare.toLocaleString("en-IN")}</b> / passenger · Est. ~{transitPricing.flight.approxDurationHours} hrs</span>
+                    )}
+                    {transportationMode === "Bus" && (
+                      <span>Intercity Coach / Sleeper: <b style={{ color: "#A855F7" }}>~₹{transitPricing.bus.nonAcMinFare.toLocaleString("en-IN")} - ₹{transitPricing.bus.acSleeperMinFare.toLocaleString("en-IN")}</b> / passenger · Est. ~{transitPricing.bus.approxDurationHours} hrs</span>
                     )}
                     {transportationMode === "Car" && (
                       <span>Highway Transit: <b style={{ color: "#F59E0B" }}>~₹{transitPricing.car.fuelAndTollsApprox.toLocaleString("en-IN")}</b> fuel/tolls · {transitPricing.car.drivingHours} hrs driving</span>
@@ -3752,15 +3620,13 @@ function PlannerContent() {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "8px",
                       flex: 1,
                       background: "rgba(255, 255, 255, 0.05)",
                       border: "1px solid rgba(255, 255, 255, 0.12)",
                       borderRadius: "999px",
-                      padding: "6px 14px",
+                      padding: "6px 16px",
                     }}
                   >
-                    <Sparkles size={14} color="#38BDF8" />
                     <input
                       type="text"
                       value={customInterestInput}

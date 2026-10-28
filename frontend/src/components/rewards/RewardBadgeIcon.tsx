@@ -106,8 +106,8 @@ export function resolveRewardSlug(
 
   if (icon) {
     const cleanIcon = icon.trim();
-    if (cleanIcon.startsWith("/rewards/") || cleanIcon.endsWith(".svg")) {
-      const match = cleanIcon.match(/\/rewards\/([^.]+)\.svg/);
+    if (cleanIcon.startsWith("/rewards/") || cleanIcon.endsWith(".svg") || cleanIcon.endsWith(".png")) {
+      const match = cleanIcon.match(/\/rewards\/([^.]+)\.(svg|png)/);
       if (match && match[1]) return match[1] as RewardSlug;
     }
     if (REWARD_MAP_BY_EMOJI[cleanIcon]) {
@@ -145,7 +145,7 @@ export default function RewardBadgeIcon({
   style = {},
 }: RewardBadgeIconProps) {
   const slug = resolveRewardSlug(icon, id, title);
-  const src = `/rewards/${slug}.svg`;
+  const src = `/rewards/${slug}.png`;
 
   return (
     <div
@@ -172,6 +172,7 @@ export default function RewardBadgeIcon({
         alt={title || slug}
         width={size}
         height={size}
+        unoptimized={true}
         priority={id === 1 || id === 15}
         style={{
           width: "100%",

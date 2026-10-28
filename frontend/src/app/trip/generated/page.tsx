@@ -32,7 +32,6 @@ import {
   Clock,
   Compass,
   Navigation,
-  Globe,
   Coffee,
   Luggage,
   Shield,
@@ -942,11 +941,10 @@ export default function GeneratedTripPage() {
                 backdropFilter: "blur(14px)",
                 border: "1px solid rgba(255, 255, 255, 0.20)",
                 borderRadius: "10px",
-                padding: "7px 12px",
+                padding: "7px 14px",
                 boxShadow: "0 4px 16px rgba(0, 0, 0, 0.35)",
               }}
             >
-              <Globe size={15} color="#38BDF8" />
               <span style={{ fontSize: "0.80rem", color: "#94A3B8", fontWeight: 600 }}>
                 Currency:
               </span>
