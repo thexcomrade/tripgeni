@@ -477,10 +477,10 @@ function PlannerContent() {
   const searchParams = useSearchParams();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [origin, setOrigin] = useState("Ernakulam (Kochi)");
+  const [origin, setOrigin] = useState("Ernakulam");
   const [destination, setDestination] = useState("");
   const [isMultiCity, setIsMultiCity] = useState(false);
-  const [multiStops, setMultiStops] = useState<string[]>(["Munnar", "Thekkady", "Alleppey"]);
+  const [multiStops, setMultiStops] = useState<string[]>(["", ""]);
   // Date-based duration (From/To calendar)
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
@@ -1169,8 +1169,9 @@ function PlannerContent() {
                       type="button"
                       onClick={() => {
                         setIsMultiCity(false);
-                        if (multiStops.length > 0 && multiStops[0]) {
-                          setDestination(multiStops[0]);
+                        const firstStop = multiStops.find((s) => s.trim());
+                        if (firstStop) {
+                          setDestination(firstStop);
                         }
                       }}
                       style={{
@@ -1196,19 +1197,24 @@ function PlannerContent() {
                       type="button"
                       onClick={() => {
                         setIsMultiCity(true);
-                        if (multiStops.length === 0 || multiStops.every((s) => !s.trim())) {
+                        const filledStops = multiStops.filter((s) => s.trim());
+                        if (filledStops.length === 0) {
                           const currentClean = destination
                             .split(/[,➔\->]+|\s+to\s+|\s+via\s+/i)
                             .map((s) => s.trim())
                             .filter(Boolean);
                           if (currentClean.length > 1) {
                             setMultiStops(currentClean);
+                            setDestination(currentClean.join(" ➔ "));
+                          } else if (currentClean.length === 1) {
+                            setMultiStops([currentClean[0], ""]);
+                            setDestination(currentClean[0]);
                           } else {
-                            setMultiStops(["Munnar", "Thekkady", "Alleppey"]);
-                            setDestination("Munnar ➔ Thekkady ➔ Alleppey");
+                            setMultiStops(["", ""]);
+                            setDestination("");
                           }
                         } else {
-                          setDestination(multiStops.filter(Boolean).join(" ➔ "));
+                          setDestination(filledStops.join(" ➔ "));
                         }
                       }}
                       style={{
@@ -1325,7 +1331,13 @@ function PlannerContent() {
                                 .split(/[,➔\->]+|\s+to\s+|\s+via\s+/i)
                                 .map((s) => s.trim())
                                 .filter(Boolean);
-                              if (stops.length > 0) setMultiStops(stops);
+                              if (stops.length > 1) {
+                                setMultiStops(stops);
+                              } else if (stops.length === 1) {
+                                setMultiStops([stops[0], ""]);
+                              } else {
+                                setMultiStops(["", ""]);
+                              }
                               setIsMultiCity(true);
                             }}
                             style={{
@@ -1365,7 +1377,7 @@ function PlannerContent() {
                           }}
                         >
                           <Route size={14} color="#C084FC" />
-                          Multi-City Stops Corridor ({multiStops.filter(Boolean).length} Stops)
+                          Multi-City Stops Corridor ({multiStops.filter(Boolean).length > 0 ? `${multiStops.filter(Boolean).length} Stops` : "Add Stops"})
                         </label>
                         <span
                           style={{
@@ -1429,13 +1441,7 @@ function PlannerContent() {
                                   setMultiStops(updated);
                                   setDestination(updated.filter(Boolean).join(" ➔ "));
                                 }}
-                                placeholder={
-                                  idx === 0
-                                    ? "Stop 1: e.g. Munnar"
-                                    : idx === 1
-                                    ? "Stop 2: e.g. Thekkady"
-                                    : `Stop ${idx + 1}: e.g. Alleppey`
-                                }
+                                placeholder={`Stop ${idx + 1}: Enter destination city...`}
                                 className="input-base"
                                 style={{
                                   paddingLeft: "14px",
@@ -1444,36 +1450,40 @@ function PlannerContent() {
                                 }}
                               />
                             </div>
-                            {multiStops.length > 2 && (
-                              <button
-                                type="button"
-                                onClick={() => {
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (multiStops.length > 1) {
                                   const updated = multiStops.filter((_, i) => i !== idx);
                                   setMultiStops(updated);
                                   setDestination(updated.filter(Boolean).join(" ➔ "));
-                                }}
-                                title="Remove this stop"
-                                style={{
-                                  background: "rgba(239, 68, 68, 0.15)",
-                                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                                  color: "#F87171",
-                                  borderRadius: "8px",
-                                  width: "36px",
-                                  height: "36px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  cursor: "pointer",
-                                  flexShrink: 0,
-                                }}
-                              >
-                                <Trash2 size={15} />
-                              </button>
-                            )}
+                                } else {
+                                  setMultiStops([""]);
+                                  setDestination("");
+                                }
+                              }}
+                              title="Remove this stop"
+                              style={{
+                                background: "rgba(239, 68, 68, 0.15)",
+                                border: "1px solid rgba(239, 68, 68, 0.3)",
+                                color: "#F87171",
+                                borderRadius: "8px",
+                                width: "36px",
+                                height: "36px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                cursor: "pointer",
+                                flexShrink: 0,
+                                transition: "all 0.15s ease",
+                              }}
+                            >
+                              <Trash2 size={15} />
+                            </button>
                           </div>
                         ))}
 
-                        {multiStops.length < 6 && (
+                        {multiStops.length < 8 && (
                           <button
                             type="button"
                             onClick={() => {
@@ -3709,9 +3719,17 @@ function PlannerContent() {
                   size="md"
                   rightIcon={<ArrowRight size={16} />}
                   onClick={() => {
-                    if (currentStep === 1 && !destination.trim()) {
-                      setError("Please enter a destination to proceed.");
-                      return;
+                    if (currentStep === 1) {
+                      if (isMultiCity) {
+                        const validStops = multiStops.map((s) => s.trim()).filter(Boolean);
+                        if (validStops.length === 0) {
+                          setError("Please enter at least one destination stop to proceed.");
+                          return;
+                        }
+                      } else if (!destination.trim()) {
+                        setError("Please enter a destination to proceed.");
+                        return;
+                      }
                     }
                     setError("");
                     setCurrentStep(currentStep + 1);

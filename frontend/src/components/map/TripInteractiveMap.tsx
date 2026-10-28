@@ -1173,7 +1173,7 @@ const map = leafletMapRef.current;
                 style={{ width: "34px", height: "34px", borderRadius: "8px", background: "rgba(15, 23, 42, 0.90)", border: "1px solid rgba(255, 255, 255, 0.2)", color: "#FFFFFF", fontSize: "16px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
                 title="Zoom In"
               >
-                +
+                ✚
               </button>
               <button
                 type="button"
@@ -1181,7 +1181,7 @@ const map = leafletMapRef.current;
                 style={{ width: "34px", height: "34px", borderRadius: "8px", background: "rgba(15, 23, 42, 0.90)", border: "1px solid rgba(255, 255, 255, 0.2)", color: "#FFFFFF", fontSize: "16px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
                 title="Zoom Out"
               >
-                −
+                ▬
               </button>
               <button
                 type="button"
@@ -1189,7 +1189,7 @@ const map = leafletMapRef.current;
                 style={{ width: "34px", height: "34px", borderRadius: "8px", background: "rgba(15, 23, 42, 0.90)", border: "1px solid rgba(255, 255, 255, 0.2)", color: "#38BDF8", fontSize: "14px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
                 title="Reset Route View"
               >
-                ⌖
+                ⛶
               </button>
             </div>
 

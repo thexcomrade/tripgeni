@@ -354,29 +354,28 @@ export default function HomePage() {
           </div>
 
           <h1
-            className="animate-blur-fade-up hero-main-title"
-            style={{
-              animationDelay: "300ms",
-              fontFamily:
-                "'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              fontSize: "clamp(2.4rem, 5.2vw, 4.3rem)",
-              fontWeight: 800,
-              lineHeight: 1.16,
-              letterSpacing: "-0.025em",
-              maxWidth: "1050px",
-              margin: "0 auto 22px auto",
-              textAlign: "center",
-              color: "#FFFFFF",
-              textShadow: "0 2px 10px rgba(0, 0, 0, 0.65)",
-              WebkitFontSmoothing: "antialiased",
-              MozOsxFontSmoothing: "grayscale",
-            }}
-          >
-            Plan Extraordinary Journeys with
-            <br />
-            <span className="text-intelligent-cyan">Intelligent</span>{" "}
-            <span className="text-precision-gold">Precision</span>
-          </h1>
+  className="animate-blur-fade-up hero-main-title"
+  style={{
+    animationDelay: "300ms",
+    fontFamily: "'Cormorant Garamond', Georgia, serif",
+    fontSize: "clamp(3rem, 6vw, 5.2rem)",
+    fontWeight: 700,
+    lineHeight: 1.05,
+    letterSpacing: "-0.02em",
+    maxWidth: "1100px",
+    margin: "0 auto 22px auto",
+    textAlign: "center",
+    color: "#FFFFFF",
+    textShadow: "0 3px 12px rgba(0, 0, 0, 0.45)",
+    WebkitFontSmoothing: "antialiased",
+    MozOsxFontSmoothing: "grayscale",
+  }}
+>
+  Plan Extraordinary Journeys with
+  <br />
+  <span className="text-intelligent-cyan">Intelligent</span>{" "}
+  <span className="text-precision-gold">Precision</span>
+</h1>
 
           <p
             className="animate-blur-fade-up hero-subtitle-bright"
