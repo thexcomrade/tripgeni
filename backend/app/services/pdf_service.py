@@ -677,15 +677,31 @@ class TripPDFGenerator:
 
         stays_table_data = []
 
+        def _format_item(item: Any) -> str:
+            if isinstance(item, dict):
+                name = item.get("name", "Curated Spot")
+                r = item.get("rating")
+                p = item.get("price") or item.get("price_per_night") or item.get("price_per_meal")
+                h = item.get("highlight") or item.get("description", "")
+                meta_parts = []
+                if r:
+                    meta_parts.append(f"★ {r} Google" if "★" not in str(r) else str(r))
+                if p:
+                    meta_parts.append(str(p))
+                meta_str = f" ({', '.join(meta_parts)})" if meta_parts else ""
+                hl_str = f" — {h}" if h else ""
+                return f"{name}{meta_str}{hl_str}"
+            return str(item)
+
         if hotels:
             stays_table_data.append([
                 Paragraph("<b>Recommended Stays</b>", self.body_bold),
-                Paragraph("<br/>".join([f"• {h}" for h in hotels[:4]]), self.body_style),
+                Paragraph("<br/>".join([f"• {_format_item(h)}" for h in hotels[:6]]), self.body_style),
             ])
         if restaurants:
             stays_table_data.append([
                 Paragraph("<b>Regional Dining & Eateries</b>", self.body_bold),
-                Paragraph("<br/>".join([f"• {r}" for r in restaurants[:4]]), self.body_style),
+                Paragraph("<br/>".join([f"• {_format_item(r)}" for r in restaurants[:6]]), self.body_style),
             ])
         if cuisines:
             stays_table_data.append([

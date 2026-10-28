@@ -361,7 +361,7 @@ export default function HomePage() {
     fontSize: "clamp(3.2rem, 6vw, 5.5rem)",
     fontWeight: 700,
     lineHeight: 1.08,
-    letterSpacing: "-0.025em",
+    letterSpacing: "0.9px",
     maxWidth: "1250px",
     margin: "0 auto 22px auto",
     textAlign: "center",

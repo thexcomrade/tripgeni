@@ -863,8 +863,8 @@ function PlannerContent() {
           style={{
             fontSize: "clamp(2rem, 4vw, 3rem)",
             fontWeight: 900,
-            color: "#FFFFFF",
-            letterSpacing: "-0.5px",
+            color: "#4bc7f8",
+            letterSpacing: "0.49px",
           }}
         >
           Craft Your Bespoke Itinerary

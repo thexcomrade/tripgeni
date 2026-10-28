@@ -242,11 +242,21 @@ REALISTIC EXPENSE ARCHITECTURE (ALL FIGURES IN REAL MARKET INR):
 
 STRICT REAL MONEY EXPENSE & ACCURACY RULES:
 1. GEOGRAPHICALLY ACCURATE LOCAL ATTRACTIONS: In 'attractions', provide genuine, iconic attractions that are located STRICTLY within {destination}. If destination is Varkala, provide real Varkala spots (e.g. Varkala Cliff, Papanasam Beach, Janardhana Swami Temple, Kappil Beach & Backwaters, Sivagiri Mutt). Strictly list attractions located in the requested destination — NEVER hallucinate or substitute unrelated cities.
-2. REALISTIC HOTEL NAMES & GOOGLE RATINGS: {"Since this is a DAY TRIP, set 'recommended_hotels' to an empty array [] — no overnight stay." if is_day_trip else f"In 'recommended_hotels', provide 3 REAL, authentically existing hotels/resorts in {destination} with their authentic Google star rating matching ~₹{acc_per_night:,.0f}/night. Format each string as: 'Hotel Name (★ 4.X Google, ~₹X,XXX/night) — key highlight'."}.
-3. REALISTIC DINING SPOTS & GOOGLE RATINGS: In 'recommended_restaurants', provide 3 REAL, authentically existing restaurants/cafes in {destination} with their authentic Google star rating matching ~₹{food_per_meal:,.0f}/meal. Format each string as: 'Restaurant Name (★ 4.X Google, ~₹XXX/person) — signature dish'.
-4. REALISTIC EXPENSE TAGS IN ITINERARY: In 'ai_itinerary', every morning, afternoon, and evening plan MUST state explicit, realistic costs or entry fees where money is spent (e.g. 'Morning: Visit local landmark [Entry fee ~₹345/person]. Afternoon: Regional lunch [~₹250/meal]. Evening: Sunset beach stroll [Free]'). If an activity has no fee, label it '[Free entry]'.
-5. PROPER CASING & FINANCIAL INTEGRITY: Always use Title Case for destination and all named entities. Daily pacing must stay within total budget ₹{budget:,.0f}.
-6. TRANSIT TIME VS EXPLORATION TIME: Clearly distinguish travel days from destination exploration days. For long journeys (e.g. multi-day train, overnight travel, or long road trips), Day 1 should account for departure and arrival logistics without impossible morning sightseeing, and Day {duration_days} should account for return travel. Schedule sightseeing strictly during actual on-ground hours.
+2. REALISTIC RECOMMENDED ACCOMMODATIONS (MINIMUM 5 TO 6 OPTIONS): {"Since this is a DAY TRIP, set 'recommended_hotels' to an empty array [] — no overnight stay." if is_day_trip else f"""In 'recommended_hotels', provide 5 to 6 REAL, authentically existing hotels, boutique resorts, guesthouses, or heritage homestays located strictly in {destination}.
+- Match the user's accommodation preference ('{preferred_accommodation or "Standard Hotel / Resort"}'), budget tier (~₹{acc_per_night:,.0f}/night), and travel group ({travelers_count} traveler(s), style '{travel_style or "Leisure"}').
+- Include diverse options: 1 ultra-scenic luxury/boutique stay, 2 mid-range high-value comfort stays, 1 authentic heritage homestay/eco-villa, and 1-2 budget/backpacker top-rated choices.
+- Every hotel MUST be a real, verified place in {destination} with authentic Google star rating (★ 4.2 to 4.9) and estimated rate.
+- Format each item as: 'Hotel Name (★ 4.X Google, ~₹X,XXX/night) — specific highlight, verified neighborhood & top amenities'"""}.
+3. REALISTIC REGIONAL DINING & EATERIES (MINIMUM 5 TO 6 OPTIONS): In 'recommended_restaurants', provide 5 to 6 REAL, authentically existing dining spots in {destination} spanning legendary local institutions, famous cafes, authentic family kitchens/messes, and popular street food corners.
+- Match budget tier (~₹{food_per_meal:,.0f}/person per meal).
+- Include specific signature dishes they are famous for.
+- Format each item as: 'Restaurant Name (★ 4.X Google, ~₹XXX/person) — signature dishes & neighborhood location'.
+4. FAMOUS REGIONAL FOOD & SIGNATURE BEVERAGES:
+- In 'local_cuisines', provide 6 to 8 famous authentic delicacies of {destination} including iconic traditional dishes, famous street food bites, and regional desserts (e.g. for Kerala: 'Appam with Coconut Vegetable/Chicken Stew', 'Malabar Dum Biryani', 'Karimeen Pollichathu', 'Thalassery Biryani', 'Puttu and Kadala Curry', 'Kerala Banana Roast').
+- In 'beverages_to_try', provide 4 to 6 signature traditional drinks and beverages (e.g. 'Fresh Cardamom Plantation Tea', 'Sulaimani Chai with Mint', 'Authentic Filter Coffee', 'Kulukki Sarbath', 'Fresh Tender Coconut Water').
+5. REALISTIC EXPENSE TAGS IN ITINERARY: In 'ai_itinerary', every morning, afternoon, and evening plan MUST state explicit, realistic costs or entry fees where money is spent (e.g. 'Morning: Visit local landmark [Entry fee ~₹345/person]. Afternoon: Regional lunch [~₹250/meal]. Evening: Sunset beach stroll [Free]'). If an activity has no fee, label it '[Free entry]'.
+6. PROPER CASING & FINANCIAL INTEGRITY: Always use Title Case for destination and all named entities. Daily pacing must stay within total budget ₹{budget:,.0f}.
+7. TRANSIT TIME VS EXPLORATION TIME: Clearly distinguish travel days from destination exploration days. For long journeys (e.g. multi-day train, overnight travel, or long road trips), Day 1 should account for departure and arrival logistics without impossible morning sightseeing, and Day {duration_days} should account for return travel. Schedule sightseeing strictly during actual on-ground hours.
 {multi_city_instructions}
 {group_instructions}
 {pacing_instructions}
@@ -266,12 +276,24 @@ Return valid JSON ONLY matching this exact schema:
       "activities": ["Activity 1", "Activity 2"]
     }}
   ],
-  "attractions": ["Attraction 1", "Attraction 2", "Attraction 3", "Attraction 4"],
-  "activities": ["Activity 1", "Activity 2", "Activity 3"],
-  "recommended_hotels": ["Hotel 1 (★ 4.5 Google, ~₹X,XXX/night) — highlight", "Hotel 2 (★ 4.4 Google, ~₹X,XXX/night) — highlight", "Hotel 3 (★ 4.3 Google, ~₹X,XXX/night) — highlight"],
-  "recommended_restaurants": ["Restaurant 1 (★ 4.5 Google, ~₹XXX/person) — dish", "Restaurant 2 (★ 4.4 Google, ~₹XXX/person) — dish", "Restaurant 3 (★ 4.3 Google, ~₹XXX/person) — dish"],
-  "local_cuisines": ["Dish 1", "Dish 2", "Dish 3"],
-  "beverages_to_try": ["Beverage 1", "Beverage 2"],
+  "attractions": ["Attraction 1", "Attraction 2", "Attraction 3", "Attraction 4", "Attraction 5", "Attraction 6"],
+  "activities": ["Activity 1", "Activity 2", "Activity 3", "Activity 4"],
+  "recommended_hotels": [
+    "Hotel Name 1 (★ 4.8 Google, ~₹X,XXX/night) — panoramic views, central location & pool",
+    "Hotel Name 2 (★ 4.6 Google, ~₹X,XXX/night) — boutique charm & complimentary breakfast",
+    "Hotel Name 3 (★ 4.5 Google, ~₹X,XXX/night) — eco homestay & authentic hospitality",
+    "Hotel Name 4 (★ 4.4 Google, ~₹X,XXX/night) — modern comfort suites near transit hub",
+    "Hotel Name 5 (★ 4.3 Google, ~₹X,XXX/night) — budget backpacker lodge & travel desk"
+  ],
+  "recommended_restaurants": [
+    "Restaurant Name 1 (★ 4.7 Google, ~₹XXX/person) — signature dish & neighborhood",
+    "Restaurant Name 2 (★ 4.6 Google, ~₹XXX/person) — signature dish & neighborhood",
+    "Restaurant Name 3 (★ 4.5 Google, ~₹XXX/person) — signature dish & neighborhood",
+    "Restaurant Name 4 (★ 4.4 Google, ~₹XXX/person) — signature dish & neighborhood",
+    "Restaurant Name 5 (★ 4.3 Google, ~₹XXX/person) — signature dish & neighborhood"
+  ],
+  "local_cuisines": ["Signature Dish 1", "Signature Dish 2", "Street Food Bite 3", "Regional Specialty 4", "Traditional Delicacy 5", "Iconic Sweet/Snack 6"],
+  "beverages_to_try": ["Signature Tea/Coffee 1", "Traditional Drink 2", "Local Cooler 3", "Herbal Infusion 4"],
   "packing_checklist": ["Item 1", "Item 2", "Item 3", "Item 4"],
   "travel_tips": ["Tip 1", "Tip 2", "Tip 3"],
   "eco_friendly_recommendations": ["Eco tip 1", "Eco tip 2"]
@@ -326,9 +348,9 @@ Return JSON.
         if self.openai_client:
             return self.openai_client
         active_key = (
-            getattr(settings, "active_openai_key", "")
+            getattr(settings, "OPENAI_API_KEY", "")
+            or getattr(settings, "active_openai_key", "")
             or getattr(settings, "OPEN_API_KEY", "")
-            or getattr(settings, "OPENAI_API_KEY", "")
             or getattr(settings, "CHATBOT_API_KEY", "")
         )
         if active_key:
@@ -680,29 +702,37 @@ Return JSON.
 
         if budget <= 15000:
             return [
-                f"{dest_title} Travelers & Backpackers Lodge (★ 4.3 Google, ~₹{acc_per_night:,.0f}/night) — Clean shared/private dorms, free high-speed WiFi, central transit access",
-                f"{dest_title} Heritage Eco Homestay (★ 4.6 Google, ~₹{round(acc_per_night * 0.9):,.0f}/night) — Warm local hospitality & authentic home-cooked breakfast",
-                f"{dest_title} Green Residency Inn (★ 4.2 Google, ~₹{round(acc_per_night * 1.1):,.0f}/night) — Peaceful neighborhood stay near landmark sightseeing spots",
+                f"{dest_title} Travelers & Backpackers Lodge (★ 4.4 Google, ~₹{acc_per_night:,.0f}/night) — Clean private dorms, free high-speed WiFi, central transit access & social lounge",
+                f"{dest_title} Heritage Eco Homestay (★ 4.6 Google, ~₹{round(acc_per_night * 0.9):,.0f}/night) — Warm local hospitality, garden courtyard & authentic home-cooked breakfast",
+                f"{dest_title} Green Residency Inn (★ 4.3 Google, ~₹{round(acc_per_night * 1.05):,.0f}/night) — Peaceful neighborhood stay near landmark sightseeing spots & tour desk",
+                f"{dest_title} Comfort Central Guesthouse (★ 4.3 Google, ~₹{round(acc_per_night * 0.85):,.0f}/night) — Budget traveler rooms, 24/7 reception & luggage storage",
+                f"{dest_title} Viewpoint Traveler Nest (★ 4.5 Google, ~₹{round(acc_per_night * 0.95):,.0f}/night) — Scenic rooftop terrace with panoramic dawn viewpoints",
             ]
 
         if budget <= 40000:
             return [
-                f"{dest_title} Nature View Boutique Resort (★ 4.5 Google, ~₹{acc_per_night:,.0f}/night) — Scenic balcony vistas, organic breakfast & garden pool",
-                f"{dest_title} Comfort Grand Residency (★ 4.4 Google, ~₹{round(acc_per_night * 0.95):,.0f}/night) — Modern luxury suites with concierge & travel desk",
-                f"{dest_title} Valley View Heritage Retreat (★ 4.6 Google, ~₹{round(acc_per_night * 1.05):,.0f}/night) — Tranquil landscaped grounds & wellness spa",
+                f"{dest_title} Nature View Boutique Resort (★ 4.6 Google, ~₹{acc_per_night:,.0f}/night) — Scenic balcony vistas, organic breakfast buffet & garden swimming pool",
+                f"{dest_title} Comfort Grand Residency (★ 4.5 Google, ~₹{round(acc_per_night * 0.95):,.0f}/night) — Modern luxury suites with concierge, gym & curated travel desk",
+                f"{dest_title} Valley View Heritage Retreat (★ 4.6 Google, ~₹{round(acc_per_night * 1.05):,.0f}/night) — Tranquil landscaped grounds, Ayurvedic wellness spa & sunset lounge",
+                f"{dest_title} Royal Orchid Boutique Suites (★ 4.4 Google, ~₹{round(acc_per_night * 0.88):,.0f}/night) — Premium contemporary rooms walking distance from central promenades",
+                f"{dest_title} Plantation Mist Eco Villa (★ 4.7 Google, ~₹{round(acc_per_night * 1.1):,.0f}/night) — Private verandas overlooking green hills, tea gardens & birdsong",
             ]
 
         if budget <= 80000:
             return [
-                f"{dest_title} Plantation Luxury Resort & Spa (★ 4.7 Google, ~₹{acc_per_night:,.0f}/night) — Infinity pool, private cottage & guided nature walks",
-                f"{dest_title} Premium Grand Heritage Hotel (★ 4.6 Google, ~₹{round(acc_per_night * 0.92):,.0f}/night) — Royal architecture, fine dining & Ayurvedic spa",
-                f"{dest_title} Mountain Horizon Retreat (★ 4.8 Google, ~₹{round(acc_per_night * 1.08):,.0f}/night) — Panoramic suites with personal butler & sunset lounge",
+                f"{dest_title} Plantation Luxury Resort & Spa (★ 4.8 Google, ~₹{acc_per_night:,.0f}/night) — Infinity pool, private cottage suites, guided nature walks & fine dining",
+                f"{dest_title} Premium Grand Heritage Hotel (★ 4.7 Google, ~₹{round(acc_per_night * 0.92):,.0f}/night) — Royal architecture, multi-cuisine restaurant & holistic spa",
+                f"{dest_title} Mountain Horizon Retreat (★ 4.8 Google, ~₹{round(acc_per_night * 1.08):,.0f}/night) — Panoramic hillside suites with personal butler & sunset lounge",
+                f"{dest_title} The Serene Clifftop Pavilion (★ 4.6 Google, ~₹{round(acc_per_night * 0.96):,.0f}/night) — 360-degree vistas, outdoor heated pool & campfire barbecue lawn",
+                f"{dest_title} Crown Regency Palace (★ 4.7 Google, ~₹{round(acc_per_night * 1.04):,.0f}/night) — Presidential club rooms, bespoke tours & luxury chauffeur service",
             ]
 
         return [
-            f"{dest_title} 5-Star Luxury Palace & Spa (★ 4.9 Google, ~₹{acc_per_night:,.0f}/night) — Private heated pool, butler service & world-class gastronomy",
-            f"{dest_title} Exclusive Private Villa Sanctuary (★ 4.8 Google, ~₹{round(acc_per_night * 0.95):,.0f}/night) — Private chef, infinity edge deck & bespoke tours",
-            f"{dest_title} Royal Heritage Club & Resort (★ 4.7 Google, ~₹{round(acc_per_night * 1.1):,.0f}/night) — Presidential suites & experiential private cruises",
+            f"{dest_title} 5-Star Luxury Palace & Spa (★ 4.9 Google, ~₹{acc_per_night:,.0f}/night) — Private heated plunge pool, dedicated butler service & world-class gastronomy",
+            f"{dest_title} Exclusive Private Villa Sanctuary (★ 4.8 Google, ~₹{round(acc_per_night * 0.95):,.0f}/night) — Private chef, infinity edge deck & bespoke experiential tours",
+            f"{dest_title} Royal Heritage Club & Resort (★ 4.7 Google, ~₹{round(acc_per_night * 1.1):,.0f}/night) — Historic royal suites, private yacht cruises & Ayurvedic wellness pavilion",
+            f"{dest_title} The Grand Presidential Pavilion (★ 4.9 Google, ~₹{round(acc_per_night * 1.05):,.0f}/night) — Helipad, Michelin-inspired private tasting menu & clifftop views",
+            f"{dest_title} Horizon Reserve Eco Palace (★ 4.8 Google, ~₹{round(acc_per_night * 0.90):,.0f}/night) — Ultra-exclusive ecological luxury amidst pristine nature reserves",
         ]
 
     # ==================================================
@@ -726,11 +756,12 @@ Return JSON.
         dest_title = destination.strip().title()
 
         return [
-            f"{dest_title} Traditional Spice Kitchen (★ 4.5 Google, ~₹{meal_cost:,.0f}/person) — Authentic regional delicacies & wholesome thalis",
-            f"{dest_title} Harvest Garden Bistro (★ 4.4 Google, ~₹{round(meal_cost * 1.25):,.0f}/person) — Farm-to-table organic dining & artisan local fare",
-            f"{dest_title} Heritage Street Cafe (★ 4.6 Google, ~₹{round(meal_cost * 0.85):,.0f}/person) — Hand-crafted snacks, specialty brew & regional breakfast",
-            f"{dest_title} Ocean & Valley View Fine Dining (★ 4.5 Google, ~₹{round(meal_cost * 1.5):,.0f}/person) — Candlelit scenic views & chef's tasting menu",
-            f"{dest_title} Travelers Comfort Dhaba (★ 4.3 Google, ~₹{round(meal_cost * 0.75):,.0f}/person) — Comfort regional recipes & freshly baked breads",
+            f"{dest_title} Traditional Spice Kitchen (★ 4.6 Google, ~₹{meal_cost:,.0f}/person) — Authentic regional delicacies, slow-cooked claypot curries & wholesome thalis",
+            f"{dest_title} Harvest Garden Bistro (★ 4.5 Google, ~₹{round(meal_cost * 1.25):,.0f}/person) — Farm-to-table organic dining, artisan breads & local estate specials",
+            f"{dest_title} Heritage Street Cafe (★ 4.6 Google, ~₹{round(meal_cost * 0.85):,.0f}/person) — Hand-crafted snacks, specialty single-origin brew & regional breakfast",
+            f"{dest_title} Ocean & Valley View Fine Dining (★ 4.6 Google, ~₹{round(meal_cost * 1.5):,.0f}/person) — Candlelit panoramic views, fresh catch & chef's tasting menu",
+            f"{dest_title} Travelers Comfort Dhaba (★ 4.4 Google, ~₹{round(meal_cost * 0.75):,.0f}/person) — Authentic homestyle comfort recipes & freshly baked regional breads",
+            f"{dest_title} Royal Darbar Kitchen (★ 4.5 Google, ~₹{round(meal_cost * 1.15):,.0f}/person) — Historic culinary recipes, dum biryanis & signature festive desserts",
         ]
 
     # ==================================================
@@ -746,22 +777,32 @@ Return JSON.
 
         if "munnar" in destination_lower or "kerala" in destination_lower:
             return [
-                "Appam with Vegetable/Chicken Stew",
-                "Kerala Puttu with Kadala Curry",
-                "Authentic Kerala Sadya on Plantain Leaf",
-                "Malabar Dum Biryani",
-                "Karimeen Pollichathu",
+                "Appam with Creamy Coconut Vegetable/Chicken Stew",
+                "Kerala Puttu with Spicy Kadala Curry & Pappadam",
+                "Authentic Kerala Sadya on Fresh Plantain Leaf",
+                "Malabar Dum Biryani with Dates Pickle",
+                "Karimeen Pollichathu in Banana Leaf",
+                "Kerala Beef or Mushroom Pepper Roast with Malabar Parotta",
             ]
 
         if "coorg" in destination_lower or "kodagu" in destination_lower:
-            return ["Pandi Curry", "Kadambuttu", "Akki Roti", "Bamboo Shoot Curry"]
+            return [
+                "Traditional Kodava Pandi Curry",
+                "Kadambuttu (Steamed rice dumplings with spicy gravy)",
+                "Akki Roti with Coorg Chutney",
+                "Koli Curry with Roasted Spices",
+                "Bamboo Shoot Curry (Bimbale Curry)",
+                "Noolputtu (String hoppers with coconut milk)",
+            ]
 
         dest_title = destination.strip().title()
         return [
-            f"{dest_title} Signature Regional Thali",
-            f"{dest_title} Traditional Clay-Pot Curry",
-            f"{dest_title} Hand-Crafted Street Specialties",
-            "Artisanal Fresh Breads & Sweets",
+            f"{dest_title} Signature Regional Feast Thali",
+            f"{dest_title} Traditional Clay-Pot Slow-Cooked Curry",
+            f"{dest_title} Hand-Crafted Street Food Specialties",
+            f"Crispy Artisan Regional Flatbreads with Chutney",
+            f"{dest_title} Freshly Baked Heritage Sweets",
+            f"Locally Farmed Seasonal Delicacy",
         ]
 
     # ==================================================
@@ -775,11 +816,24 @@ Return JSON.
 
         destination_lower = destination.lower()
 
-        if "munnar" in destination_lower:
-            return ["Fresh Cardamom Tea", "Highland Green Tea", "Lemon Ginger Tea", "Hot Masala Chai"]
+        if "munnar" in destination_lower or "kerala" in destination_lower:
+            return [
+                "Fresh Cardamom Plantation Tea",
+                "Sulaimani Spiced Tea with Mint & Lemon",
+                "Highland Single-Estate Green Tea",
+                "Authentic Kerala Filter Kaapi",
+                "Kulukki Sarbath (Shaken lime & basil seed cooler)",
+                "Fresh Tender Coconut Water",
+            ]
 
         dest_title = destination.strip().title()
-        return [f"Fresh {dest_title} Spiced Tea", "Cold Pressed Fresh Fruit Juice", "Traditional Herbal Infusion"]
+        return [
+            f"Fresh {dest_title} Spiced Mountain Tea",
+            f"Artisanal Single-Origin Roasted Coffee",
+            f"{dest_title} Cold-Pressed Fresh Fruit Juice",
+            f"Traditional Herbal Spiced Infusion",
+            f"Chilled Lime & Mint Nectar Cooler",
+        ]
 
 
     # ==================================================
@@ -1722,7 +1776,7 @@ Your primary responsibility is not merely to answer the literal wording of a que
         openai_client = self._get_openai_client()
         if openai_client:
             models_to_try = [
-                getattr(settings, "CHATBOT_MODEL", None) or getattr(settings, "OPENAI_MODEL", "gpt-4o"),
+                getattr(settings, "OPENAI_MODEL", None) or getattr(settings, "CHATBOT_MODEL", None) or "gpt-4o",
                 "gpt-4o",
                 "gpt-4o-mini",
             ]

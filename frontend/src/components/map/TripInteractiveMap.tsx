@@ -1,4 +1,5 @@
 "use client";
+import { matchRealLandmark, getCachedGeocode, saveCachedGeocode, getOrganicCityOffset } from "../../utils/realLandmarks";
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
@@ -384,6 +385,7 @@ export default function TripInteractiveMap({
   const [selectedStopIdx, setSelectedStopIdx] = useState<number>(0);
   const [mode, setMode] = useState<"drive" | "transit" | "walk">("drive");
   const [activeTab, setActiveTab] = useState<"route" | "bookings">("route");
+  const [resolvedCoordsMap, setResolvedCoordsMap] = useState<Record<string, { lat: number; lon: number }>>({});
   const [dynamicCoords, setDynamicCoords] = useState<{
     lat: number;
     lon: number;
@@ -437,6 +439,74 @@ export default function TripInteractiveMap({
       cancelled = true;
     };
   }, [destination]);
+
+  // Asynchronously resolve real landmark GPS coordinates via OpenStreetMap Nominatim
+  useEffect(() => {
+    let active = true;
+    const cleanDest = (destination || "").trim();
+    if (!cleanDest) return;
+
+    const toGeocode: string[] = [];
+
+    (dayPlans || []).forEach((plan) => {
+      const acts: string[] = Array.isArray(plan.activities) && plan.activities.length > 0
+        ? plan.activities
+        : [
+            plan.morning?.activity || plan.morning,
+            plan.afternoon?.activity || plan.afternoon,
+            plan.evening?.activity || plan.evening,
+          ].filter(Boolean);
+
+      acts.forEach((act) => {
+        if (!act) return;
+        const noTime = act.replace(/^\d{1,2}:\d{2}\s*(?:AM|PM)?\s*[•\-–]\s*/i, "").split(".")[0].trim();
+        if (!noTime || noTime.length < 3) return;
+        const key = noTime.toLowerCase();
+
+        // If already in state or in real catalog, skip
+        if (resolvedCoordsMap[key] || matchRealLandmark(noTime, cleanDest)) return;
+
+        const cached = getCachedGeocode(`${key}_${cleanDest}`);
+        if (cached) {
+          setResolvedCoordsMap((prev) => ({ ...prev, [key]: cached }));
+          return;
+        }
+
+        toGeocode.push(noTime);
+      });
+    });
+
+    if (toGeocode.length === 0) return;
+
+    // Staggered background geocoding (respects OSM Nominatim rate limits)
+    let delay = 350;
+    toGeocode.slice(0, 8).forEach((place) => {
+      setTimeout(async () => {
+        if (!active) return;
+        try {
+          const query = `${place}, ${cleanDest}`;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+            { headers: { "Accept-Language": "en" } }
+          );
+          const data = await res.json();
+          if (active && Array.isArray(data) && data.length > 0) {
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+            if (!isNaN(lat) && !isNaN(lon)) {
+              saveCachedGeocode(`${place.toLowerCase()}_${cleanDest}`, { lat, lon });
+              setResolvedCoordsMap((prev) => ({ ...prev, [place.toLowerCase()]: { lat, lon } }));
+            }
+          }
+        } catch {}
+      }, delay);
+      delay += 800;
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [dayPlans, destination]);
 
   const coords = useMemo(() => {
     if (dynamicCoords) return dynamicCoords;
@@ -533,119 +603,108 @@ export default function TripInteractiveMap({
 
       let stops: MasterMapStop[] = [];
 
-      // A. Verified real landmarks
-      if (dayPresetKey && DESTINATION_LANDMARKS[dayPresetKey]) {
-        const cityDays = DESTINATION_LANDMARKS[dayPresetKey];
-        const dayLandmarks = cityDays[dIdx % cityDays.length] || [];
-        if (dayLandmarks.length > 0) {
-          const countToTake = Math.min(dynamicCount, dayLandmarks.length);
-          stops = dayLandmarks.slice(0, countToTake).map((lm, sIdx) => {
-            return {
-              id: sIdx + 1,
-              overallIndex: runningGlobalIndex++,
-              name: cleanName(rawActivities[sIdx] || lm.name, lm.name),
-              type: lm.type,
-              category: lm.category,
-              lat: lm.lat,
-              lon: lm.lon,
-              time: lm.time,
-              duration: lm.duration,
-              detail: lm.desc,
-              dayIndex: dIdx,
-              dayLabel: `Day ${dayNum}`,
-            };
-          });
+      const times = ["09:00 AM", "11:30 AM", "02:15 PM", "04:45 PM", "06:45 PM", "08:30 PM"];
+      const categories: ("start" | "sight" | "culture" | "market")[] = [
+        "start",
+        "sight",
+        "culture",
+        "market",
+        "sight",
+        "market",
+      ];
+      const durations = ["1.5 hrs", "2 hrs", "1.5 hrs", "2 hrs", "1.5 hrs", "1.5 hrs"];
 
-          // If AI planned more activities than preset landmarks, extend smoothly along the corridor
-          if (dynamicCount > dayLandmarks.length) {
-            const lastLm = dayLandmarks[dayLandmarks.length - 1];
-            for (let extIdx = dayLandmarks.length; extIdx < dynamicCount; extIdx++) {
-              const deltaLat = Number(((extIdx - dayLandmarks.length + 1) * 0.009).toFixed(5));
-              const deltaLon = Number(((extIdx - dayLandmarks.length + 1) * 0.008).toFixed(5));
-              const actName = rawActivities[extIdx] || `${destination} Artisan Promenade`;
-              stops.push({
-                id: extIdx + 1,
-                overallIndex: runningGlobalIndex++,
-                name: cleanName(actName, actName),
-                type: "Evening Scenic & Dining",
-                category: "market",
-                lat: Number((lastLm.lat + deltaLat).toFixed(5)),
-                lon: Number((lastLm.lon + deltaLon).toFixed(5)),
-                time: extIdx === 4 ? "06:30 PM" : "08:15 PM",
-                duration: "1.5 hrs",
-                detail: `Authentic evening promenade, local cuisine tasting, and ambient night views of ${destination}.`,
-                dayIndex: dIdx,
-                dayLabel: `Day ${dayNum}`,
-              });
+      // 1. Build stops directly from the AI activity plans with REAL GPS coordinates
+      stops = Array.from({ length: dynamicCount }, (_, sIdx) => {
+        let fallbackName = `${destination} Stop ${sIdx + 1}`;
+        let fallbackType = "Sightseeing Point";
+        let fallbackDesc = `Scenic attraction in ${destination}.`;
+
+        if (sIdx === 0) {
+          fallbackName = `${destination} Central Heritage & Gateway`;
+          fallbackType = "Historic Gateway";
+        } else if (sIdx === 1) {
+          fallbackName = `${destination} Scenic Vista & Nature Sanctuary`;
+          fallbackType = "Sightseeing & Nature";
+        } else if (sIdx === 2) {
+          fallbackName = `${destination} Cultural Landmark & Temple`;
+          fallbackType = "Culture & Heritage";
+        } else if (sIdx === 3) {
+          fallbackName = `${destination} Sunset Promenade & Lakefront`;
+          fallbackType = "Sunset Vista";
+        } else if (sIdx === 4) {
+          fallbackName = `${destination} Traditional Craft & Artisan Bazaar`;
+          fallbackType = "Local Bazaar & Handicrafts";
+        } else {
+          fallbackName = `${destination} Regional Culinary Experience`;
+          fallbackType = "Signature Dining & Culture";
+        }
+
+        const rawAct = rawActivities[sIdx] || fallbackName;
+        const name = cleanName(rawAct, fallbackName);
+        const nameKey = name.toLowerCase();
+
+        // 2. Resolve real GPS coordinates:
+        // Priority 1: Dynamic geocoded coordinates from Nominatim
+        // Priority 2: Built-in verified catalog of 200+ top landmarks
+        // Priority 3: City preset landmarks if configured
+        // Priority 4: Realistic organic city wander (NO radiating spoke rays)
+        let resolvedLat = dayCoords.lat;
+        let resolvedLon = dayCoords.lon;
+        let resolvedType = fallbackType;
+        let resolvedCat = categories[sIdx % categories.length];
+        let resolvedDetail = fallbackDesc;
+
+        if (resolvedCoordsMap[nameKey]) {
+          resolvedLat = resolvedCoordsMap[nameKey].lat;
+          resolvedLon = resolvedCoordsMap[nameKey].lon;
+          resolvedType = "Verified Landmark";
+          resolvedDetail = `Authentic geographical attraction in ${destination}.`;
+        } else {
+          const matched = matchRealLandmark(name, dayCityName || destination);
+          if (matched) {
+            resolvedLat = matched.lat;
+            resolvedLon = matched.lon;
+            resolvedType = matched.type;
+            resolvedCat = matched.category;
+            resolvedDetail = matched.desc || `Verified historic landmark in ${destination}.`;
+          } else if (dayPresetKey && DESTINATION_LANDMARKS[dayPresetKey]) {
+            const cityDays = DESTINATION_LANDMARKS[dayPresetKey];
+            const dayLandmarks = cityDays[dIdx % cityDays.length] || [];
+            if (dayLandmarks[sIdx]) {
+              resolvedLat = dayLandmarks[sIdx].lat;
+              resolvedLon = dayLandmarks[sIdx].lon;
+              resolvedType = dayLandmarks[sIdx].type;
+              resolvedCat = dayLandmarks[sIdx].category;
+              resolvedDetail = dayLandmarks[sIdx].desc;
+            } else {
+              const organic = getOrganicCityOffset(name, sIdx, dIdx, dayCoords.lat, dayCoords.lon);
+              resolvedLat = organic.lat;
+              resolvedLon = organic.lon;
             }
+          } else {
+            // Realistic organic dispersion around the city (wandering trail, never straight radial spokes)
+            const organic = getOrganicCityOffset(name, sIdx, dIdx, dayCoords.lat, dayCoords.lon);
+            resolvedLat = organic.lat;
+            resolvedLon = organic.lon;
           }
         }
-      }
 
-      // B. Intelligent progressive forward arc for unlisted cities (Strictly non-backtracking 1..N stops)
-      if (stops.length === 0) {
-        const baseLat = dayCoords.lat;
-        const baseLon = dayCoords.lon;
-        const dayAngle = dIdx * 1.35 + 0.35; // Dedicated geometric corridor per day
-
-        const times = ["09:00 AM", "11:30 AM", "02:15 PM", "04:45 PM", "06:45 PM", "08:30 PM"];
-        const categories: ("start" | "sight" | "culture" | "market")[] = [
-          "start",
-          "sight",
-          "culture",
-          "market",
-          "sight",
-          "market",
-        ];
-        const durations = ["1.5 hrs", "2 hrs", "1.5 hrs", "2 hrs", "1.5 hrs", "1.5 hrs"];
-
-        stops = Array.from({ length: dynamicCount }, (_, sIdx) => {
-          // Strictly progressive forward radius to ensure one point leads naturally to the next without backtracking
-          const r = Number((sIdx === 0 ? 0.000 : 0.012 * sIdx + 0.003).toFixed(5));
-          const theta = dayAngle + sIdx * 0.18;
-          const lat = Number((baseLat + r * Math.cos(theta)).toFixed(5));
-          const lon = Number((baseLon + r * Math.sin(theta)).toFixed(5));
-
-          let fallbackName = `${destination} Activity ${sIdx + 1}`;
-          let fallbackType = "Sightseeing Point";
-          if (sIdx === 0) {
-            fallbackName = `${destination} Historic Center & Gateway`;
-            fallbackType = "Historic Gateway";
-          } else if (sIdx === 1) {
-            fallbackName = `${destination} Botanical Sanctuary & Vista`;
-            fallbackType = "Sightseeing & Nature";
-          } else if (sIdx === 2) {
-            fallbackName = `${destination} Cultural Heritage Museum`;
-            fallbackType = "Culture & Heritage";
-          } else if (sIdx === 3) {
-            fallbackName = `${destination} Sunset Promenade & Waterfront`;
-            fallbackType = "Sunset Vista";
-          } else if (sIdx === 4) {
-            fallbackName = `${destination} Twilight Artisan Market`;
-            fallbackType = "Local Bazaar & Handicrafts";
-          } else {
-            fallbackName = `${destination} Starlit Riverfront Dining`;
-            fallbackType = "Signature Dining & Culture";
-          }
-
-          const name = cleanName(rawActivities[sIdx] || fallbackName, fallbackName);
-
-          return {
-            id: sIdx + 1,
-            overallIndex: runningGlobalIndex++,
-            name,
-            type: fallbackType,
-            category: categories[sIdx % categories.length],
-            lat,
-            lon,
-            time: times[sIdx % times.length],
-            duration: durations[sIdx % durations.length],
-            detail: `Progressive travel stop ${sIdx + 1} curated for seamless forward journey pacing in ${destination}.`,
-            dayIndex: dIdx,
-            dayLabel: `Day ${dayNum}`,
-          };
-        });
-      }
+        return {
+          id: sIdx + 1,
+          overallIndex: runningGlobalIndex++,
+          name,
+          type: resolvedType,
+          category: resolvedCat,
+          lat: resolvedLat,
+          lon: resolvedLon,
+          time: times[sIdx % times.length],
+          duration: durations[sIdx % durations.length],
+          detail: resolvedDetail,
+          dayIndex: dIdx,
+          dayLabel: `Day ${dayNum}`,
+        };
+      });
 
       const dayDist = 14 + ((dIdx * 6) % 12);
       return {
@@ -695,15 +754,14 @@ if (!leafletMapRef.current) {
     fadeAnimation: true,
   }).setView([coords.lat, coords.lon], coords.zoom || 12);
 
-  // Clean, high-performance CARTO Voyager raster map tiles (public free tier, zero watermark)
-  const tileUrl = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+  // Clean, high-performance OpenStreetMap raster map tiles (100% free, zero watermark)
+  const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   L.tileLayer(tileUrl, {
     maxZoom: 19,
-    subdomains: "abcd",
-    crossOrigin: true,
+    subdomains: ["a", "b", "c"],
     attribution:
-      '&copy; <a href="https://carto.com/" target="_blank" rel="noreferrer">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
+      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
   }).addTo(map);
 
   // User disabled map zoom buttons

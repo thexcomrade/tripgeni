@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     OPENAI_MODEL: str = Field(default="gpt-4o")
     CHATBOT_MODEL: str = Field(default="gpt-4o")
     OPENWEATHER_API_KEY: str = Field(default="")
+    CARTO_API_KEY: str = Field(default="")
 
     @property
     def active_openai_key(self) -> str:
@@ -49,8 +50,7 @@ class Settings(BaseSettings):
             or ""
         ).strip()
 
-    CORS_ORIGINS: str = Field(
-    default="https://tripgenius-kohl.vercel.app,http://localhost:3000,http://127.0.0.1:3000")
+    CORS_ORIGINS: str = Field(default="*")
 
     LOG_LEVEL: str = Field(default="INFO")
 
@@ -81,8 +81,11 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins_list(self) -> list[str]:
+        raw = self.CORS_ORIGINS.strip()
+        if raw == "*" or not raw:
+            return ["*"]
         return [
-            origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()
+            origin.strip() for origin in raw.split(",") if origin.strip()
         ]
 
     @property

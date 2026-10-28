@@ -219,26 +219,106 @@ class TripService {
         `Artisan Street & Local Craft Market`,
         `Sunset Horizons & Lake Promenade`,
       ],
-      recommended_hotels: [
-        `${dest} Grand Heritage Resort & Spa (★★★★☆ - 4.6)`,
-        `Cloud Mist Valley Boutique Stay (★★★★☆ - 4.5)`,
-        `Eco Canopy Green Retreat (★★★★☆ - 4.7)`,
-      ],
-      recommended_restaurants: [
-        `${dest} Spice Garden Traditional Kitchen`,
-        `Panorama Cliffside Bistro & Cafe`,
-        `Claypot Authentic Regional Diner`,
-      ],
-      local_cuisines: [
-        "Authentic Regional Thali & Claypot Specialties",
-        "Handmade Flatbreads with Fresh Ground Spices",
-        "Locally Harvested Spiced Tea & Filter Coffee",
-      ],
-      beverages_to_try: [
-        "Locally Sourced Cardamom Spiced Tea",
-        "Fresh Tender Coconut Water",
-        "Highland Roast Brewed Coffee",
-      ],
+      recommended_hotels: (() => {
+        const destKey = dest.toLowerCase();
+        const accPerNight = Math.max(800, Math.round(stayCost / Math.max(1, duration - 1)));
+        if (destKey.includes("miami")) {
+          return [
+            "1 Hotel South Beach (★ 4.6 Google, ~$550/night) — Eco-luxury oceanfront sanctuary with 4 pools & rooftop adult lounge",
+            "The Setai, Miami Beach (★ 4.8 Google, ~$850/night) — Asian-inspired ultra-luxury oceanfront retreat with 3 temperature-controlled pools",
+            "Fontainebleau Miami Beach (★ 4.3 Google, ~$320/night) — Iconic mid-century coastal resort with LIV nightclub & oceanfront cabanas",
+            "EAST Miami (★ 4.5 Google, ~$280/night) — Modern high-rise luxury hotel in Brickell with Sugar rooftop cocktail lounge",
+            "Loews Miami Beach Hotel (★ 4.5 Google, ~$360/night) — Vibrant oceanfront resort in the heart of South Beach Art Deco District",
+            "Freehand Miami (★ 4.3 Google, ~$65/night) — Hip boutique hotel & design hostel in Mid-Beach featuring the Broken Shaker courtyard",
+          ];
+        }
+        if (destKey.includes("munnar")) {
+          return [
+            "Fragrant Nature Munnar (★ 4.6 Google, ~₹7,500/night) — 5-star mountain luxury resort with panoramic valley vistas & cozy fireplaces",
+            "The Leaf Munnar Resort (★ 4.5 Google, ~₹5,800/night) — Sprawling tea garden cottages with an infinity swimming pool",
+            "Blanket Luxury Hotel & Spa (★ 4.7 Google, ~₹8,800/night) — Premium eco-luxury retreat situated right beside Attukad waterfalls",
+            "Tea County Munnar (★ 4.4 Google, ~₹4,500/night) — Scenic KTDC heritage resort nestled between two lush green hills",
+            "Elixir Hills Suites Resort & Spa (★ 4.6 Google, ~₹6,500/night) — Luxury rainforest suite resort amidst pristine cardamom plantations",
+            "Zostel Munnar (★ 4.3 Google, ~₹1,150/night) — Backpacker favorite nestled high in the mist-shrouded tea hills",
+          ];
+        }
+        return [
+          `${dest} Boutique Nature Resort & Spa (★ 4.7 Google, ~₹${accPerNight.toLocaleString()}/night) — Scenic balcony vistas, swimming pool & artisan breakfast`,
+          `${dest} Grand Heritage Residency (★ 4.5 Google, ~₹${Math.round(accPerNight * 0.95).toLocaleString()}/night) — Modern luxury suites with travel concierge`,
+          `${dest} Valley View Eco Homestay (★ 4.6 Google, ~₹${Math.round(accPerNight * 0.85).toLocaleString()}/night) — Warm local hospitality & authentic organic home meals`,
+          `${dest} Central Comfort Suites (★ 4.4 Google, ~₹${Math.round(accPerNight * 1.05).toLocaleString()}/night) — Contemporary rooms walking distance from landmark sights`,
+          `${dest} Travelers & Backpackers Hub (★ 4.3 Google, ~₹${Math.round(accPerNight * 0.45).toLocaleString()}/night) — Social lounge, high-speed WiFi & tour desk`,
+        ];
+      })(),
+      recommended_restaurants: (() => {
+        const destKey = dest.toLowerCase();
+        if (destKey.includes("miami")) {
+          return [
+            "Joe's Stone Crab (★ 4.6 Google, ~$110/person) — Historic 1913 South Beach institution famous for jumbo stone crab claws, hash browns & Key lime pie",
+            "Versailles Restaurant (Little Havana) (★ 4.5 Google, ~$25/person) — The world's most famous Cuban dining spot; Ropa Vieja & Cortadito",
+            "Carbone Miami (South of Fifth) (★ 4.5 Google, ~$150/person) — Glamorous retro Italian-American dining; Spicy Rigatoni Vodka & Veal Parmesan",
+            "Coyo Taco (Wynwood) (★ 4.4 Google, ~$20/person) — Authentic handmade Mexican street tacos, fresh guacamole, and hidden speakeasy lounge",
+            "La Carreta (Calle Ocho) (★ 4.4 Google, ~$22/person) — Authentic traditional Cuban comfort food, Vaca Frita, Picadillo & sweet plantains",
+            "Time Out Market Miami (★ 4.5 Google, ~$35/person) — Curated South Beach culinary food hall featuring top Miami chefs & craft cocktails",
+          ];
+        }
+        if (destKey.includes("munnar")) {
+          return [
+            "Rapsy Restaurant Munnar (★ 4.2 Google, ~₹220/person) — Historic town favorite famed for flaky Malabar parottas, beef fry & Spanish omelettes",
+            "Saravana Bhavan Munnar (★ 4.3 Google, ~₹160/person) — Authentic pure vegetarian South Indian thalis and crisp ghee roast dosas",
+            "Copper Castle Restaurant (★ 4.4 Google, ~₹480/person) — Panoramic valley-view dining featuring authentic Kerala spice-infused dishes",
+            "Guru's Restaurant Munnar (★ 4.3 Google, ~₹240/person) — Wholesome regional meals, appam stew, and freshly caught stream fish fry",
+            "Silver Spoon Restaurant Munnar (★ 4.3 Google, ~₹260/person) — Wholesome regional meals, fresh stream fish tawa fry & appams",
+          ];
+        }
+        return [
+          `${dest} Traditional Spice Kitchen (★ 4.6 Google, ~₹350/person) — Authentic slow-cooked regional recipes & wholesome feast thalis`,
+          `${dest} Harvest Organic Bistro (★ 4.5 Google, ~₹450/person) — Farm-to-table dining, freshly prepared artisan breads & local specials`,
+          `${dest} Heritage Street Cafe (★ 4.6 Google, ~₹250/person) — Hand-crafted snacks, specialty single-origin brew & regional breakfast`,
+          `${dest} Scenic Panorama Fine Dining (★ 4.6 Google, ~₹650/person) — Candlelit panoramic vistas, fresh catch & chef's tasting menu`,
+          `${dest} Travelers Comfort Kitchen (★ 4.4 Google, ~₹200/person) — Authentic homestyle comfort recipes & freshly baked regional breads`,
+        ];
+      })(),
+      local_cuisines: (() => {
+        const destKey = dest.toLowerCase();
+        if (destKey.includes("miami")) {
+          return [
+            "Authentic Pressed Cuban Sandwich with Roast Pork, Glazed Ham & Swiss Cheese",
+            "Florida Stone Crab Claws with Tangy Mustard Dipping Sauce",
+            "Crispy Cuban Vaca Frita (Shredded flank steak seared with lime and onions)",
+            "Fresh Citrus Ceviche with Crispy Plantain Tostones",
+            "Classic Florida Key Lime Pie with Torched Meringue",
+            "Warm Pastelitos de Guayaba (Guava pastries)",
+          ];
+        }
+        return [
+          `${dest} Signature Regional Feast Thali`,
+          `${dest} Traditional Clay-Pot Slow-Cooked Curry`,
+          `${dest} Hand-Crafted Street Food Delicacies`,
+          `Crisp Artisan Breads with Hand-Pounded Chutneys`,
+          `${dest} Freshly Baked Heritage Sweets`,
+          `Locally Sourced Seasonal Specialty`,
+        ];
+      })(),
+      beverages_to_try: (() => {
+        const destKey = dest.toLowerCase();
+        if (destKey.includes("miami")) {
+          return [
+            "Authentic Cuban Cortadito (Sweetened espresso with steamed milk)",
+            "Fresh Mint & Lime Mojito",
+            "Guarapo (Freshly pressed sugarcane juice poured over crushed ice)",
+            "Café Cubano / Colada",
+            "Tropical Mango Coconut Water Smoothie",
+          ];
+        }
+        return [
+          `Fresh ${dest} Spiced Mountain Tea`,
+          `Artisanal Single-Origin Roasted Coffee`,
+          `Cold-Pressed Fresh Regional Fruit Juice`,
+          `Traditional Herbal Spiced Infusion`,
+          `Chilled Mint & Lime Nectar Cooler`,
+        ];
+      })(),
       packing_checklist: [
         "Light breathable cottons + evening layer",
         "Comfortable walking / trekking shoes",

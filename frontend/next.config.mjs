@@ -2,6 +2,12 @@
 const isDev = process.env.NODE_ENV === 'development';
 
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_CARTO_API_KEY:
+      process.env.NEXT_PUBLIC_CARTO_API_KEY || process.env.CARTO_API_KEY || '',
+    CARTO_API_KEY:
+      process.env.NEXT_PUBLIC_CARTO_API_KEY || process.env.CARTO_API_KEY || '',
+  },
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
