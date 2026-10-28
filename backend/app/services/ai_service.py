@@ -98,10 +98,16 @@ class AIService:
 
         # OpenAI ChatGPT client initialization
         self.openai_client = None
-        if getattr(settings, "OPENAI_API_KEY", None):
+        active_key = (
+            getattr(settings, "active_openai_key", "")
+            or getattr(settings, "OPEN_API_KEY", "")
+            or getattr(settings, "OPENAI_API_KEY", "")
+            or getattr(settings, "CHATBOT_API_KEY", "")
+        )
+        if active_key:
             try:
                 import openai
-                self.openai_client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+                self.openai_client = openai.OpenAI(api_key=active_key)
                 logger.info("OpenAI ChatGPT client initialized successfully.")
             except Exception as e:
                 logger.warning("Failed to initialize OpenAI client: %s", e)
@@ -316,6 +322,24 @@ Destination:
 Return JSON.
 """
 
+    def _get_openai_client(self):
+        if self.openai_client:
+            return self.openai_client
+        active_key = (
+            getattr(settings, "active_openai_key", "")
+            or getattr(settings, "OPEN_API_KEY", "")
+            or getattr(settings, "OPENAI_API_KEY", "")
+            or getattr(settings, "CHATBOT_API_KEY", "")
+        )
+        if active_key:
+            try:
+                import openai
+                self.openai_client = openai.OpenAI(api_key=active_key)
+                return self.openai_client
+            except Exception as e:
+                logger.warning("Failed to initialize OpenAI client: %s", e)
+        return None
+
     # ==================================================
     # Gemini Communication Layer
     # ==================================================
@@ -324,10 +348,11 @@ Return JSON.
         last_error = None
 
         # Priority 1: OpenAI ChatGPT API (gpt-4o / gpt-4o-mini)
-        if self.openai_client:
+        client = self._get_openai_client()
+        if client:
             for attempt in range(self.MAX_RETRIES):
                 try:
-                    response = self.openai_client.chat.completions.create(
+                    response = client.chat.completions.create(
                         model=getattr(settings, "OPENAI_MODEL", "gpt-4o"),
                         messages=[
                             {
@@ -1633,7 +1658,7 @@ Return JSON.
                     + "\n\n"
                 )
 
-        prompt = f"""You are PADAYAPPA, the charismatic, world-wise, warm, and extraordinarily knowledgeable personal AI Travel Companion and Trip Architect on Trip Geni (inspired by interactive virtual companions like ROG Omni, making travelers feel accompanied, understood, and confident).
+        prompt = f"""You are TRIPZY (also warmly known as BUJJI), the clever, energetic, world-wise, and extraordinarily knowledgeable robot travel companion and mascot on Trip Geni (inspired by interactive virtual companions like ROG Omni, making travelers feel accompanied, understood, and confident).
 You possess deep, authentic intelligence about travel across India (from the ancient ghats of Varanasi, tea hills of Munnar, serene waters of Varkala and Thenkasi, to Himachal, Rajasthan, Karnataka, and Goa) and worldwide (Paris, Tokyo, Bali, Swiss Alps, New York, and beyond).
 
 ================================================================================
@@ -1671,7 +1696,7 @@ Your primary responsibility is not merely to answer the literal wording of a que
      * 🏨 **Verified Recommended Stays**: with authentic names and realistic nightly rates in Indian Rupees (₹)
      * 🍲 **Iconic Dining & Food Spots**: exact local spots and signature dishes
      * 💰 **Estimated Budget Breakdown (in ₹)**: transparent itemized costs (accommodation, local transit, meals, activities)
-     * 💡 **Padayappa's Insider Secret**: crowd-beating timings, hidden gems, or local etiquette
+     * 💡 **Tripzy's Insider Secret**: crowd-beating timings, hidden gems, or local etiquette
      * ❓ **Validation & Practical Next Step**: Provide an actionable next step and check: "Does this pace and budget match what you had in mind, or should we adjust any of the days or hotel styles?"
 
 5. SPECIFIC QUESTIONS (Food, Weather, Stays, Transit, Costs):
@@ -1679,7 +1704,7 @@ Your primary responsibility is not merely to answer the literal wording of a que
 
 6. COMMUNICATION RULES & PERSONA:
    - Friendly, warm, charismatic, and analytical.
-   - If the traveler has ALREADY been greeted in the conversation, NEVER repeat "Namaskaram" or formal greetings. Talk naturally and directly like a close friend.
+   - If the traveler has ALREADY been greeted in the conversation, NEVER repeat greetings. Talk naturally and directly like a close friend.
    - If this is the very first turn and traveler says hi/hello, greet warmly with "{greeting_prefix}".
    - Always quote all prices, tickets, stays, and budgets in Indian Rupees (₹).
    - Never invent false bookings or claim actions were performed when they were not.
@@ -1693,25 +1718,61 @@ Your primary responsibility is not merely to answer the literal wording of a que
 
 {rag_context}"""
 
-        # 4. Attempt Gemini generation with fast timeout; fall back seamlessly to RAG engine on any rate limit or delay
-        for model in self.fallback_models:
-            try:
-                config = {"max_output_tokens": 5000, "temperature": 0.75}
-                response = self.client.models.generate_content(
-                    model=model, contents=prompt, config=config
-                )
-                if response and response.text:
-                    reply_text = response.text.strip()
-                    if not already_greeted and not reply_text.startswith("Namaskaram"):
-                        reply_text = f"{greeting_prefix}\n\n{reply_text}"
-                    return {"reply": reply_text, "source": "gemini_2_engine"}
-            except Exception as err:
-                logger.warning(
-                    "Gemini generation attempt with %s failed: %s", model, err
-                )
-                continue
+        # 4. Priority 1: High-Intelligence OpenAI Chat Completion
+        openai_client = self._get_openai_client()
+        if openai_client:
+            models_to_try = [
+                getattr(settings, "CHATBOT_MODEL", None) or getattr(settings, "OPENAI_MODEL", "gpt-4o"),
+                "gpt-4o",
+                "gpt-4o-mini",
+            ]
+            seen_models = set()
+            for o_model in [m for m in models_to_try if m and not (m in seen_models or seen_models.add(m))]:
+                try:
+                    chat_messages = [{"role": "system", "content": prompt}]
+                    if history and isinstance(history, list):
+                        for turn in history[-6:]:
+                            r = "user" if turn.get("role") == "user" else "assistant"
+                            c = str(turn.get("content", "")).strip()
+                            if c:
+                                chat_messages.append({"role": r, "content": c})
+                    chat_messages.append({"role": "user", "content": user_message})
 
-        # 5. High-Precision Offline Travel Engine Fallback
+                    response = openai_client.chat.completions.create(
+                        model=o_model,
+                        messages=chat_messages,
+                        temperature=0.72,
+                        max_tokens=1500,
+                    )
+                    if response and response.choices and response.choices[0].message.content:
+                        reply_text = response.choices[0].message.content.strip()
+                        if not already_greeted and not reply_text.startswith("Hey") and not reply_text.startswith("Namaskaram"):
+                            reply_text = f"{greeting_prefix}\n\n{reply_text}"
+                        return {"reply": reply_text, "source": f"openai_{o_model}"}
+                except Exception as err:
+                    logger.warning("OpenAI chat generation attempt with %s failed: %s", o_model, err)
+                    continue
+
+        # 5. Priority 2: Gemini Generation Fallback (if Gemini client is configured)
+        if self.client:
+            for model in self.fallback_models:
+                try:
+                    config = {"max_output_tokens": 5000, "temperature": 0.75}
+                    response = self.client.models.generate_content(
+                        model=model, contents=prompt, config=config
+                    )
+                    if response and response.text:
+                        reply_text = response.text.strip()
+                        if not already_greeted and not reply_text.startswith("Hey") and not reply_text.startswith("Namaskaram"):
+                            reply_text = f"{greeting_prefix}\n\n{reply_text}"
+                        return {"reply": reply_text, "source": "gemini_2_engine"}
+                except Exception as err:
+                    logger.warning(
+                        "Gemini generation attempt with %s failed: %s", model, err
+                    )
+                    continue
+
+        # 6. Priority 3: High-Precision Offline Travel RAG Engine Fallback
         return tourism_rag.generate_grounded_response(
             user_message, history, user_name=user_name
         )

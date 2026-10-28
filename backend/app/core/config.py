@@ -34,8 +34,20 @@ class Settings(BaseSettings):
 
     GEMINI_API_KEY: str = Field(default="")
     OPENAI_API_KEY: str = Field(default="")
+    OPEN_API_KEY: str = Field(default="")
+    CHATBOT_API_KEY: str = Field(default="")
     OPENAI_MODEL: str = Field(default="gpt-4o")
+    CHATBOT_MODEL: str = Field(default="gpt-4o")
     OPENWEATHER_API_KEY: str = Field(default="")
+
+    @property
+    def active_openai_key(self) -> str:
+        return (
+            self.OPENAI_API_KEY
+            or self.OPEN_API_KEY
+            or self.CHATBOT_API_KEY
+            or ""
+        ).strip()
 
     CORS_ORIGINS: str = Field(
     default="https://tripgenius-kohl.vercel.app,http://localhost:3000,http://127.0.0.1:3000")

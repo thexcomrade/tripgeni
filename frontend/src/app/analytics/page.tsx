@@ -194,7 +194,7 @@ export default function AnalyticsPage() {
         <div>
           <div style={{ display: "inline-flex", marginBottom: "8px" }}>
             <Badge variant="overlay" size="sm" icon={<BarChart3 size={13} color="#38BDF8" />}>
-              Next-Gen Travel AI Engine 3.0 Pro Analytics
+              Next-Gen Travel AI
             </Badge>
           </div>
           <h1

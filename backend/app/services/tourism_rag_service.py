@@ -1166,7 +1166,7 @@ class TourismRAGService:
         self, user_message: str, history: Optional[list] = None, user_name: Optional[str] = None
     ) -> dict[str, str]:
         """
-        Synthesizes a warm, conversational, 0-lag response in PADAYAPPA's authentic voice.
+        Synthesizes a warm, conversational, 0-lag response in BUJJI's authentic voice.
         Follows progressive multi-turn consultative discovery:
         1. Never repeats formal greetings if already greeted in history.
         2. Reacts with authentic delight: 'Oh, {Destination}!! 🌟' followed by a 2-line vivid description.
@@ -1190,7 +1190,7 @@ class TourismRAGService:
         display_name = (user_name or "").strip()
         greeting_prefix = (
             "" if already_greeted
-            else (f"Namaskaram {display_name}! 🙏\n\n" if display_name else "Namaskaram! 🙏\n\n")
+            else (f"Hey there {display_name}! 🐒\n\n" if display_name else "Hey there! 🐒\n\n")
         )
 
         # Collect history text for context
@@ -1210,7 +1210,7 @@ class TourismRAGService:
         if any(w in msg_lower for w in malayalam_greetings):
             return {
                 "reply": (
-                    f"Sugam thanne, macha! 🙏 PADAYAPPA here. Where are we heading today?\n\n"
+                    f"Sugam thanne, macha! 🙏 TRIPZY here. Where are we heading today?\n\n"
                     "Tell me your dream destination or how many days you have, and I'll analyze it and get your plan ready!"
                 ),
                 "source": "rag_knowledge_engine",
@@ -1231,7 +1231,7 @@ class TourismRAGService:
                 }
             return {
                 "reply": (
-                    f"Namaskaram {gname}! 🙏 PADAYAPPA here.\n\n"
+                    f"Hey there {gname}! 🤖 TRIPZY here.\n\n"
                     "Where would you like to travel today? Drop a destination (e.g. Munnar, Kashmir, Varanasi, Goa) or your timeframe, and I'll analyze it for you!"
                 ),
                 "source": "rag_knowledge_engine",
@@ -1446,7 +1446,7 @@ class TourismRAGService:
                 f"### 💰 Estimated Budget Guidelines (in ₹)\n"
                 f"• **Daily Average**: {budget_str}\n"
                 f"• **Transit Details**: {transit_str}\n\n"
-                f"### 💡 Padayappa's Local Insider Secret\n"
+                f"### 💡 Tripzy's Local Insider Secret\n"
                 f"{tip_str}\n\n"
                 f"Does this pace and budget match what you had in mind, or should we adjust the accommodation style (budget vs luxury) or duration? I can also generate your complete downloadable PDF itinerary!"
             )

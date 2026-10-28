@@ -48,21 +48,22 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
     onLoadSuccess?.();
   }, [scene, onLoadSuccess]);
 
-  // Subtle breathing and natural floating animation.
+  // Natural breathing and grounded interactive posture.
   useFrame((state) => {
     const model = group.current;
     if (!model) return;
 
     const t = state.clock.getElapsedTime();
     const breath = Math.sin(t * 2.2);
-    const baseScale = 0.94;
+    const baseScale = 1.15;
 
-    model.scale.y = baseScale * (1 + breath * 0.014);
-    model.scale.x = baseScale * (1 - breath * 0.007);
-    model.scale.z = baseScale * (1 + breath * 0.01);
+    model.scale.y = baseScale * (1 + breath * 0.012);
+    model.scale.x = baseScale * (1 - breath * 0.006);
+    model.scale.z = baseScale * (1 + breath * 0.008);
 
-    model.position.y = -0.06 + Math.sin(t * 1.8) * 0.028;
-    model.position.x = Math.sin(t * 0.9) * 0.015;
+    // Keep model firmly grounded at base line (no bouncing off the floor)
+    model.position.y = 0;
+    model.position.x = Math.sin(t * 0.9) * 0.008;
 
     // Subtle posture movement — horizontal pointer tracking only.
     const targetRoll = Math.sin(t * 0.9) * 0.012;
@@ -87,8 +88,8 @@ function MascotGLBModel({ onLoadSuccess }: MascotGLBModelProps) {
   });
 
   return (
-    <group ref={group} position={[0, -0.06, 0]} scale={0.94}>
-      <primitive object={scene} />
+    <group ref={group} position={[0, 0, 0]}>
+      <primitive object={scene} position={[0, -0.5095, 0]} />
     </group>
   );
 }
@@ -200,7 +201,7 @@ export default function Mascot3DCanvas({
       <Suspense fallback={fallback}>
         <Canvas
           shadows
-          camera={{ position: [0, 0.02, 4.3], fov: 32 }}
+          camera={{ position: [0, 0, 2.75], fov: 28 }}
           gl={{
             alpha: true,
             antialias: true,
@@ -240,11 +241,11 @@ export default function Mascot3DCanvas({
           />
 
           <ContactShadows
-            position={[0, -0.96, 0]}
-            opacity={0.78}
-            scale={2.0}
-            blur={1.6}
-            far={1.6}
+            position={[0, -0.59, 0]}
+            opacity={0.82}
+            scale={1.8}
+            blur={1.4}
+            far={1.2}
             resolution={256}
             color="#000000"
           />
@@ -257,6 +258,7 @@ export default function Mascot3DCanvas({
             rotateSpeed={0.85}
             minPolarAngle={Math.PI / 2}
             maxPolarAngle={Math.PI / 2}
+            target={[0, 0, 0]}
           />
         </Canvas>
       </Suspense>

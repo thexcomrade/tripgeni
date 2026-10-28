@@ -1183,9 +1183,18 @@ export default function DashboardPage() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  overflow: "hidden",
+                  border: "1px solid rgba(56, 189, 248, 0.35)",
                 }}
               >
-                <Bot size={20} color="#38BDF8" />
+                <img
+                  src="/images/tripzy.png"
+                  alt="Tripzy"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/images/tripzy.ico";
+                  }}
+                />
               </div>
               <div>
                 <h3
@@ -1195,10 +1204,10 @@ export default function DashboardPage() {
                     color: "#FFFFFF",
                   }}
                 >
-                  PADAYAPPA
+                  TALK WITH TRIPZY
                 </h3>
-                <p style={{ fontSize: "0.82rem", color: "#94A3B8" }}>
-                  AI Travel Companion
+                <p style={{ fontSize: "0.82rem", color: "#38BDF8" }}>
+                  Tripzy • AI Travel Companion
                 </p>
               </div>
             </div>
@@ -1210,8 +1219,8 @@ export default function DashboardPage() {
                 marginBottom: "18px",
               }}
             >
-              Have questions about local food trails, hidden spots, or train
-              connections? Ask PADAYAPPA anytime.
+              Have questions about local food trails, hidden spots, or travel
+              recommendations? Talk with Tripzy anytime.
             </p>
           </div>
 
@@ -1222,7 +1231,7 @@ export default function DashboardPage() {
               rightIcon={<ArrowRight size={14} />}
               style={{ width: "100%" }}
             >
-              Start Conversation
+              Talk with Tripzy
             </Button>
           </Link>
         </GlassCard>

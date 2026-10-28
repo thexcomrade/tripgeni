@@ -157,14 +157,16 @@ export default function AIChatPage() {
       try {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Thorough migration: replace all occurrences of DASAPPAN/Dasappan in any stored messages
+          // Thorough migration: replace all occurrences of legacy names in any stored messages
           const migrated = parsed.map((m: any) => ({
             ...m,
             content:
               typeof m.content === "string"
                 ? m.content
-                    .replace(/DASAPPAN/g, "PADAYAPPA")
-                    .replace(/Dasappan/g, "Padayappa")
+                    .replace(/DASAPPAN/g, "TRIPZY")
+                    .replace(/Dasappan/g, "Tripzy")
+                    .replace(/PADAYAPPA/g, "TRIPZY")
+                    .replace(/Padayappa/g, "Tripzy")
                 : m.content,
           }));
           localStorage.setItem("tripgenius_ai_chat", JSON.stringify(migrated));
@@ -180,7 +182,7 @@ export default function AIChatPage() {
       id: "welcome-msg",
       role: "assistant",
       content:
-        `Namaskaram ${name}! 🙏 PADAYAPPA here, your personal AI travel companion.\n\n` +
+        `Hey there ${name}! 🤖 TRIPZY here, your personal AI travel companion.\n\n` +
         `Where would you like to travel today? Drop a destination (e.g. Munnar, Kashmir, Varanasi, Goa), your duration, or budget — I'll analyze it and get your itinerary ready!`,
       timestamp: new Date().toISOString(),
     };
@@ -361,7 +363,7 @@ export default function AIChatPage() {
     }
   };
 
-  // Text-To-Speech (TTS Voice Narration with Padayappa Male Voice & Brisk Pace)
+  // Text-To-Speech (TTS Voice Narration with Bujji Friendly Voice & Brisk Pace)
   const handleSpeak = (text: string, msgId: string) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
       return;
@@ -388,11 +390,11 @@ export default function AIChatPage() {
 
     const utterance = new SpeechSynthesisUtterance(cleanSpeech);
     utterance.rate = 1.15; // Brisk, fluid, responsive reading pace
-    utterance.pitch = 0.98; // Grounded, warm male tone
+    utterance.pitch = 1.02; // Friendly, energetic tone
     utterance.lang = "en-US";
 
     const voices = window.speechSynthesis.getVoices();
-    // Prioritize authentic, clear male English voices suitable for Padayappa
+    // Prioritize authentic, clear English voices suitable for Bujji
     const maleVoice =
       voices.find(
         (v) =>
@@ -547,7 +549,7 @@ export default function AIChatPage() {
       // 5. Parse Recommended Stays
       const hotels: string[] = [];
       const staysSection = content.match(
-        /Recommended Stays[^\n]*\n([\s\S]*?)(?=\n\s*(?:###|\*\*Authentic|\*\*Food|\*\*Local|\*\*PADAYAPPA|---|$))/i,
+        /Recommended Stays[^\n]*\n([\s\S]*?)(?=\n\s*(?:###|\*\*Authentic|\*\*Food|\*\*Local|\*\*TRIPZY|\*\*BUJJI|\*\*PADAYAPPA|---|$))/i,
       );
       if (staysSection) {
         const stayLines = staysSection[1].split("\n");
@@ -596,7 +598,7 @@ export default function AIChatPage() {
 
         // Stop markers: end of day-by-day timeline
         if (
-          /^(?:###|\*\*|---\s*$)?\s*(?:Recommended Stays|Authentic Regional|Must-Try|Local Eateries|PADAYAPPA'S|Cost Breakdown|Weather)/i.test(
+          /^(?:###|\*\*|---\s*$)?\s*(?:Recommended Stays|Authentic Regional|Must-Try|Local Eateries|TRIPZY'S|BUJJI'S|PADAYAPPA'S|Cost Breakdown|Weather)/i.test(
             line,
           )
         ) {
@@ -949,7 +951,7 @@ export default function AIChatPage() {
       ].some((w) => lower === w || lower.startsWith(w + " "));
 
       if (isMalayalamGreeting) {
-        aiReply = `Sugam thanne, macha! 🙏 (Doing great!) PADAYAPPA here, your personal travel companion.\n\nReady for our next adventure! Where would you like to travel, or what travel experience would you like to plan?`;
+        aiReply = `Sugam thanne, macha! 🙏 (Doing great!) TRIPZY here, your personal travel companion.\n\nReady for our next adventure! Where would you like to travel, or what travel experience would you like to plan?`;
       } else if (
         greetingWords.some((g) => lower === g || lower.startsWith(g + " "))
       ) {
@@ -957,7 +959,7 @@ export default function AIChatPage() {
           aiReply = `Hello ${userName}! 😊 Ready for the next adventure.\n\nTell me your destination or whatever travel vibe is on your mind, and let's plan it out!`;
         } else {
           aiReply =
-            `Namaskaram ${userName}! 🙏 PADAYAPPA here, your personal AI travel companion and trip architect.\n\n` +
+            `Hey there ${userName}! 🤖 TRIPZY here, your personal AI travel companion and trip architect.\n\n` +
             `How may I help you today?\n\n` +
             `Tell me your dream destination, budget, or the travel vibe you have in mind, and I'll analyze it to craft the ideal plan with verified stays and costs in ₹.\n\n` +
             `❓ Where would you like to travel, or what can I help you plan?`;
@@ -1112,7 +1114,7 @@ export default function AIChatPage() {
             `• Legendary Banarasi Meetha Paan at Keshav Paan\n\n` +
             `### 💰 Estimated Budget (in ₹)\n` +
             `• Daily Average: ~₹1,800 – ₹3,200 per person/day (stays, meals, hand-rowed boats, and transit)\n\n` +
-            `### 💡 Padayappa's Local Insider Secret\n` +
+            `### 💡 Tripzy's Local Insider Secret\n` +
             `Always hire a hand-rowed wooden boat (₹400–₹600) rather than a motorboat at dawn. The silence on the misty river at 5:45 AM is unforgettable.\n\n` +
             `Does this pace and budget match what you had in mind, or should we adjust the accommodation style (budget vs luxury) or duration? I can also generate your complete downloadable PDF itinerary!`;
         } else {
@@ -1194,8 +1196,8 @@ export default function AIChatPage() {
             }}
           >
             <img
-              src="/images/das.ico"
-              alt="PADAYAPPA"
+              src="/images/tripzy.png"
+              alt="TALK WITH TRIPZY"
               style={{
                 width: "100%",
                 height: "100%",
@@ -1203,7 +1205,7 @@ export default function AIChatPage() {
                 borderRadius: "50%",
               }}
               onError={(e) => {
-                (e.target as HTMLImageElement).src = "/images/das.png";
+                (e.target as HTMLImageElement).src = "/images/tripzy.ico";
               }}
             />
           </div>
@@ -1217,7 +1219,7 @@ export default function AIChatPage() {
                   margin: 0,
                 }}
               >
-                PADAYAPPA
+                TALK WITH TRIPZY
               </h2>
               <span
                 style={{
@@ -1236,7 +1238,7 @@ export default function AIChatPage() {
                 margin: "2px 0 0 0",
               }}
             >
-              AI Travel Companion • Voice Enabled • Global Planning
+              Tripzy • AI Travel Companion • Voice Enabled • Global Planning
             </p>
           </div>
         </div>
@@ -1409,7 +1411,7 @@ export default function AIChatPage() {
                 lineHeight: 1.5,
               }}
             >
-              Ask PADAYAPPA anything about destinations worldwide, budgets,
+              Ask TRIPZY anything about destinations worldwide, budgets,
               stays, or tap any suggestion above to start fresh.
             </p>
           </div>
@@ -1445,8 +1447,8 @@ export default function AIChatPage() {
                   }}
                 >
                   <img
-                    src="/images/das.ico"
-                    alt="PADAYAPPA"
+                    src="/images/tripzy.png"
+                    alt="TRIPZY"
                     style={{
                       width: "100%",
                       height: "100%",
@@ -1454,7 +1456,7 @@ export default function AIChatPage() {
                       borderRadius: "50%",
                     }}
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = "/images/das.png";
+                      (e.target as HTMLImageElement).src = "/images/tripzy.ico";
                     }}
                   />
                 </div>
@@ -1674,8 +1676,8 @@ export default function AIChatPage() {
               }}
             >
               <img
-                src="/images/das.ico"
-                alt="PADAYAPPA"
+                src="/images/tripzy.png"
+                alt="TRIPZY"
                 style={{
                   width: "100%",
                   height: "100%",
@@ -1683,7 +1685,7 @@ export default function AIChatPage() {
                   borderRadius: "50%",
                 }}
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/images/das.png";
+                  (e.target as HTMLImageElement).src = "/images/tripzy.ico";
                 }}
               />
             </div>

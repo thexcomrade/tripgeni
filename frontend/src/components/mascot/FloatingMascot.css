@@ -1,14 +1,14 @@
 /* ============================================================
-   PADAYAPPA — Refined Medium-Compact 3D Companion (~3.5cm Height)
-   Slightly Bigger for Crisp Character Details & Balanced Presence
+   TALK WITH BUJJI — Interactive 3D Companion (Monkey Bujji)
+   Clean Ground Docking & Precise Alignment Above Model
    ============================================================ */
 
 .mascot-widget {
   position: fixed;
   right: 24px;
   bottom: 0px;
-  width: 105px;
-  height: 195px;
+  width: 120px;
+  height: 210px;
   z-index: 9998;
   display: flex;
   flex-direction: column;
@@ -40,11 +40,11 @@
   visibility: hidden !important;
 }
 
-/* 3D CHARACTER TRIGGER CONTAINER (Red Box Size: ~105px x 195px Full Body) */
+/* 3D CHARACTER TRIGGER CONTAINER (Docked at Screen Bottom) */
 .mascot-trigger {
   position: relative;
-  width: 105px;
-  height: 195px;
+  width: 120px;
+  height: 210px;
   padding: 0;
   border: none;
   outline: none;
@@ -60,13 +60,12 @@
   transition:
     transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
     filter 0.25s ease;
-  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.65));
-  animation: padayappa-idle-float 4.0s ease-in-out infinite;
+  filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.7));
 }
 
 .mascot-trigger:hover {
-  transform: translateY(-5px) scale(1.04);
-  filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.75));
+  transform: translateY(-2px) scale(1.02);
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.8));
 }
 
 /* Subtle click feedback without interfering with 3D canvas drag */
@@ -75,11 +74,11 @@
   outline-offset: 3px;
 }
 
-/* 3D IMAGE FRAME (Matches red box target ~100px x 190px) */
+/* 3D IMAGE FRAME */
 .mascot-image-wrapper {
   position: relative;
-  width: 100px;
-  height: 190px;
+  width: 120px;
+  height: 210px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,54 +94,65 @@
 
 /* PHOTOREALISTIC GROUND CONTACT SHADOW */
 .mascot-ground-shadow {
-  width: 72px;
-  height: 12px;
+  width: 86px;
+  height: 14px;
   background: radial-gradient(
     ellipse at center,
-    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.76) 0%,
     rgba(0, 0, 0, 0.38) 45%,
     transparent 75%
   );
   border-radius: 50%;
-  margin-top: -5px;
+  margin-top: -7px;
   pointer-events: none;
-  animation: padayappa-shadow-pulse 4.0s ease-in-out infinite;
 }
 
-/* PROPORTIONAL SPEECH BADGE (Cleanly anchored above head, centered) */
+/* PROPORTIONAL SPEECH BADGE (Cleanly anchored above Bujji's head, centered) */
 .mascot-speech-badge {
   position: absolute;
-  top: -14px;
-  right: 6px;
-  left: auto;
-  transform: none;
+  bottom: calc(100% + 8px);
+  top: auto;
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 10;
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
+  gap: 6px;
+  padding: 4px 12px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.94);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(56, 189, 248, 0.35);
   color: #f8fafc;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.50);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(56, 189, 248, 0.2);
   pointer-events: auto;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   animation: badge-appear 0.3s ease-out;
   max-width: calc(100vw - 36px);
 }
 
+.mascot-speech-badge::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px 5px 0 5px;
+  border-style: solid;
+  border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent;
+}
+
 .mascot-speech-badge:hover {
   background: rgba(30, 41, 59, 0.98);
-  border-color: rgba(255, 255, 255, 0.35);
-  transform: scale(1.04);
+  border-color: rgba(56, 189, 248, 0.65);
+  transform: translateX(-50%) translateY(-2px) scale(1.04);
 }
 
 .mascot-live-indicator {
@@ -184,12 +194,12 @@
 .assistant-panel {
   position: fixed;
   right: 20px;
-  bottom: 142px; /* Placed immediately above Padayappa - no empty gap */
+  bottom: 220px; /* Positioned cleanly right above Bujji (model is 210px at bottom: 0) */
   z-index: 9999;
   display: flex;
   flex-direction: column;
   width: min(390px, calc(100vw - 32px));
-  max-height: min(520px, calc(100vh - 160px));
+  max-height: min(540px, calc(100vh - 240px));
   min-height: 380px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -198,7 +208,7 @@
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   color: #f8fafc;
-  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(56, 189, 248, 0.15);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(56, 189, 248, 0.2);
   animation: panel-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -346,6 +356,8 @@
   border-bottom-right-radius: 4px;
 }
 
+.assistant-bubble.tripzy,
+.assistant-bubble.bujji,
 .assistant-bubble.padayappa {
   align-self: flex-start;
   background: rgba(30, 41, 59, 0.85);
@@ -484,9 +496,9 @@
 @media (max-width: 1024px) {
   .assistant-panel {
     right: 16px;
-    bottom: 138px;
+    bottom: 220px;
     width: min(360px, calc(100vw - 32px));
-    max-height: calc(100dvh - 155px);
+    max-height: calc(100dvh - 235px);
   }
 }
 
@@ -494,17 +506,27 @@
   .mascot-widget {
     right: 12px;
     bottom: 0px;
-    width: 80px;
-    height: 135px;
+    width: 95px;
+    height: 165px;
+  }
+
+  .mascot-trigger {
+    width: 95px;
+    height: 165px;
+  }
+
+  .mascot-image-wrapper {
+    width: 95px;
+    height: 165px;
   }
 
   .assistant-panel {
     right: 10px;
     left: 10px;
-    bottom: 125px;
+    bottom: 175px;
     width: calc(100vw - 20px);
-    max-height: calc(100dvh - 140px);
-    min-height: 340px;
+    max-height: calc(100dvh - 190px);
+    min-height: 320px;
     border-radius: 18px;
   }
 }
@@ -558,6 +580,8 @@
   justify-content: flex-end;
 }
 
+.assistant-row.tripzy,
+.assistant-row.bujji,
 .assistant-row.padayappa {
   justify-content: flex-start;
 }

@@ -366,7 +366,7 @@ export default function HomePage() {
               maxWidth: "960px",
               margin: "0 auto 20px auto",
               textAlign: "center",
-              color: "#FFFFFF",
+              color: "#e93c3c",
               textShadow:
                 "0 4px 24px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.95)",
             }}
@@ -382,7 +382,7 @@ export default function HomePage() {
             style={{
               animationDelay: "450ms",
               fontSize: "clamp(1.05rem, 2.1vw, 1.28rem)",
-              color: "#8ec4f9",
+              color: "#c4dbf3",
               maxWidth: "700px",
               margin: "0 auto 40px auto",
               lineHeight: 1.75,
@@ -416,7 +416,7 @@ export default function HomePage() {
                 "0 12px 36px rgba(0, 0, 0, 0.40), 0 0 24px rgba(14, 165, 233, 0.20)",
             }}
           >
-            <MapPin size={20} color="#38BDF8" style={{ flexShrink: 0 }} />
+            <MapPin size={20} color="#77ccf7" style={{ flexShrink: 0 }} />
             <input
               type="text"
               value={quickDestination}
@@ -429,7 +429,7 @@ export default function HomePage() {
                 backgroundColor: "transparent",
                 border: "none",
                 boxShadow: "none",
-                color: "#FFFFFF",
+                color: "#d5bb22",
                 fontSize: "1.05rem",
                 outline: "none",
               }}
@@ -454,7 +454,7 @@ export default function HomePage() {
               justifyContent: "center",
               gap: "clamp(16px, 3vw, 30px)",
               flexWrap: "wrap",
-              color: "#8ec4f9",
+              color: "#f3d73c",
               fontSize: "clamp(0.85rem, 1.2vw, 0.95rem)",
               textShadow: "0 2px 14px rgba(0, 0, 0, 0.85)",
             }}
@@ -481,14 +481,14 @@ export default function HomePage() {
               flexDirection: "column",
               alignItems: "center",
               gap: "6px",
-              color: "#94A3B8",
+              color: "#e9eedd",
               fontSize: "0.82rem",
               letterSpacing: "0.04em",
               textTransform: "uppercase",
             }}
           >
             <span>Explore Destinations & Intelligence</span>
-            <ChevronDown size={18} color="#38BDF8" />
+            <ChevronDown size={18} color="#a4dcf5" />
           </div>
         </section>
       </div>

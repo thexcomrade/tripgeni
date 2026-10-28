@@ -10,15 +10,15 @@ import "./FloatingMascot.css";
 
 interface ChatMessage {
   id: string;
-  sender: "user" | "padayappa";
+  sender: "user" | "tripzy" | "bujji" | "padayappa";
   text: string;
 }
 
-const PADAYAPPA_PROMPTS = [
-  "Padayappa AI ✨",
-  "Namaskaram! 🙏",
-  "Need a plan? 🌴",
-  "Ask Padayappa ✈️",
+const TRIPZY_PROMPTS = [
+  "TALK WITH TRIPZY ✨",
+  "Hey, I'm Tripzy! 🤖",
+  "Need travel ideas? 🌴",
+  "Ask Tripzy ✈️",
 ];
 
 const HIDE_PATHS = ["/login", "/register", "/forgot-password", "/reset-password"];
@@ -114,7 +114,7 @@ export default function FloatingMascot() {
   useEffect(() => {
     if (isOpen) return;
     const interval = setInterval(() => {
-      setSpeechIndex((prev) => (prev + 1) % PADAYAPPA_PROMPTS.length);
+      setSpeechIndex((prev) => (prev + 1) % TRIPZY_PROMPTS.length);
     }, 7000);
     return () => clearInterval(interval);
   }, [isOpen]);
@@ -182,8 +182,8 @@ export default function FloatingMascot() {
       setTimeout(() => {
         const loginPromptMsg: ChatMessage = {
           id: (Date.now() + 1).toString(),
-          sender: "padayappa",
-          text: "Namaskaram! 🙏 Please login to chat with me and create personalized itineraries with Trip Geni.",
+          sender: "tripzy",
+          text: "Hey there! 🤖 Please log in to chat with me and create personalized itineraries with Trip Geni.",
         };
         setMessages((prev) => [...prev, loginPromptMsg]);
         setIsLoading(false);
@@ -215,18 +215,18 @@ export default function FloatingMascot() {
       const aiReply =
         data.reply ||
         data.response ||
-        "Namaskaram! PADAYAPPA here. Where would you like to travel, or what would you like me to plan for you?";
+        "Hey there! 🤖 TRIPZY here. Where would you like to travel, or what would you like me to plan for you?";
 
-      const padayappaMsg: ChatMessage = {
+      const tripzyMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        sender: "padayappa",
+        sender: "tripzy",
         text: aiReply,
       };
 
-      setMessages((prev) => [...prev, padayappaMsg]);
+      setMessages((prev) => [...prev, tripzyMsg]);
     } catch {
       let fallbackText =
-        "Namaskaram! PADAYAPPA here. What destination do you have in mind?";
+        "Hey there! 🤖 TRIPZY here. What destination do you have in mind?";
       const lower = userText.toLowerCase();
       if (
         lower.includes("sugano") ||
@@ -234,21 +234,21 @@ export default function FloatingMascot() {
         lower.includes("sukham")
       ) {
         fallbackText =
-          "Sugam thanne, macha! 🙏 (Doing great!) Padayappa here, ready for our next adventure. Where are we heading next?";
+          "Sugam thanne, macha! 🙏 TRIPZY here, ready for our next adventure. Where are we heading next?";
       } else if (
         lower.includes("hi") ||
         lower.includes("hello") ||
         lower.includes("hey")
       ) {
         fallbackText =
-          "Namaskaram! 🙏 Ready to plan an unforgettable journey. Tell me your destination or travel vibe!";
+          "Hey there! 🤖 TRIPZY here, ready to plan an unforgettable journey. Tell me your destination or travel vibe!";
       } else {
         fallbackText =
-          "Namaskaram! For complete day-by-day itineraries with timings, food spots, and costs in ₹, jump right into my full chat room!";
+          "Hey! 🤖 For complete day-by-day itineraries with timings, food spots, and costs in ₹, jump right into my full chat room!";
       }
       const fallbackMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        sender: "padayappa",
+        sender: "tripzy",
         text: fallbackText,
       };
       setMessages((prev) => [...prev, fallbackMsg]);
@@ -265,14 +265,14 @@ export default function FloatingMascot() {
   return (
     <>
       {/* ============================================================
-          FLOATING 3D MASCOT WIDGET (PADAYAPPA - OMNI COMPANION)
+          FLOATING 3D MASCOT WIDGET (TRIPZY - OMNI COMPANION)
           ============================================================ */}
       <div className={`mascot-widget ${isNearFooter ? "mascot-faded-footer" : ""}`} aria-hidden={isNearFooter}>
         <div
           role="button"
           tabIndex={0}
           className="mascot-trigger"
-          aria-label={isOpen ? "Close Padayappa" : "Open Padayappa Assistant"}
+          aria-label={isOpen ? "Close Tripzy" : "TALK WITH TRIPZY"}
           aria-expanded={isOpen}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -281,7 +281,7 @@ export default function FloatingMascot() {
             }
           }}
         >
-          {/* OMNI SPEECH BADGE (Directly anchored & centered right above Padayappa) */}
+          {/* OMNI SPEECH BADGE (Directly anchored & centered right above Tripzy) */}
           {!isOpen && (
             <div
               className="mascot-speech-badge"
@@ -295,7 +295,7 @@ export default function FloatingMascot() {
               }}
             >
               <span className="mascot-live-indicator" />
-              <span>{PADAYAPPA_PROMPTS[speechIndex]}</span>
+              <span>{TRIPZY_PROMPTS[speechIndex]}</span>
             </div>
           )}
 
@@ -323,7 +323,7 @@ export default function FloatingMascot() {
 
 
       {/* ============================================================
-          PADAYAPPA LOGIN PROMPT MODAL FOR LOGGED-OUT VISITORS
+          TRIPZY LOGIN PROMPT MODAL FOR LOGGED-OUT VISITORS
           ============================================================ */}
       {showLoginModal && (
         <>
@@ -336,11 +336,11 @@ export default function FloatingMascot() {
           <div
             role="dialog"
             aria-modal="true"
-            aria-label="Login required to chat with Padayappa"
+            aria-label="Login required to chat with Tripzy"
             style={{
               position: "fixed",
-              bottom: "clamp(120px, 18vh, 180px)",
-              right: "clamp(20px, 4vw, 40px)",
+              bottom: "220px",
+              right: "20px",
               zIndex: 9999,
               width: "min(350px, calc(100vw - 40px))",
               background: "linear-gradient(145deg, rgba(18, 34, 56, 0.96), rgba(10, 23, 39, 0.98))",
@@ -371,10 +371,10 @@ export default function FloatingMascot() {
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "#FFFFFF" }}>
-                    Padayappa is waiting for you!
+                    Tripzy is waiting for you!
                   </h3>
                   <span style={{ fontSize: "11px", color: "#38C8F4", fontWeight: 600 }}>
-                    AI Travel Companion
+                    Tripzy • AI Travel Companion
                   </span>
                 </div>
               </div>
@@ -397,7 +397,7 @@ export default function FloatingMascot() {
             </div>
 
             <p style={{ margin: "0 0 18px 0", fontSize: "13px", color: "#CBD5E1", lineHeight: 1.5 }}>
-              Log in to unlock me and start planning your next adventure with Trip Geni.
+              Log in to unlock Tripzy and start planning your next adventure with Trip Geni.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
@@ -459,31 +459,31 @@ export default function FloatingMascot() {
       )}
 
       {/* ============================================================
-          PADAYAPPA ASSISTANT CONSOLE (ROG Omni Screen Console)
+          BUJJI ASSISTANT CONSOLE (ROG Omni Screen Console)
           ============================================================ */}
       {isOpen && (
         <section
           ref={panelRef}
           className={`assistant-panel ${isNearFooter ? "panel-faded-footer" : ""}`}
-          aria-label="Padayappa Virtual Assistant"
+          aria-label="TALK WITH TRIPZY Virtual Assistant"
         >
           {/* HEADER */}
           <header className="assistant-header">
             <div className="assistant-heading">
               <div className="assistant-avatar-badge">
                 <img
-                  src="/images/das.png"
-                  alt="Padayappa"
+                  src="/images/tripzy.png"
+                  alt="Tripzy"
                   style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }}
                   onError={(e) => {
-                    e.currentTarget.src = "/images/model.ico";
+                    e.currentTarget.src = "/images/tripzy.ico";
                   }}
                 />
                 <span className="mascot-live-indicator" />
               </div>
               <div className="assistant-heading-text">
-                <strong>PADAYAPPA</strong>
-                <small>AI Travel Companion</small>
+                <strong>TALK WITH TRIPZY</strong>
+                <small>Tripzy • AI Travel Companion</small>
               </div>
             </div>
 
@@ -514,19 +514,19 @@ export default function FloatingMascot() {
               <div className="assistant-intro-box">
                 <div className="assistant-mini-avatar">
                   <img
-                    src="/images/das.png"
-                    alt="Padayappa AI Companion"
+                    src="/images/tripzy.png"
+                    alt="Tripzy AI Companion"
                     style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }}
                     onError={(e) => {
-                      e.currentTarget.src = "/images/model.ico";
+                      e.currentTarget.src = "/images/tripzy.ico";
                     }}
                   />
                 </div>
 
-                <h3>Namaskaram! 🙏</h3>
+                <h3>Hey there! 🤖</h3>
 
                 <p>
-                  I'm <strong>PADAYAPPA</strong>, your personal AI travel
+                  I'm <strong>TRIPZY</strong>, your personal AI travel
                   companion. Ask me about destinations, budgets, stays, or
                   hidden spots!
                 </p>
@@ -568,49 +568,52 @@ export default function FloatingMascot() {
               </div>
             ) : (
               <div className="assistant-messages">
-                {messages.map((m) => (
-                  <div key={m.id} className={`assistant-row ${m.sender}`}>
-                    {m.sender === "padayappa" && (
-                      <div className="assistant-msg-avatar">
-                        <Image
-                          src="/images/das.png"
-                          alt="Padayappa"
-                          width={26}
-                          height={26}
-                          style={{ objectFit: "cover", borderRadius: "50%" }}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src =
-                              "/images/model.ico";
-                          }}
-                        />
+                {messages.map((m) => {
+                  const isAi = m.sender === "tripzy" || m.sender === "bujji" || m.sender === "padayappa";
+                  return (
+                    <div key={m.id} className={`assistant-row ${isAi ? "tripzy" : m.sender}`}>
+                      {isAi && (
+                        <div className="assistant-msg-avatar">
+                          <Image
+                            src="/images/tripzy.png"
+                            alt="Tripzy"
+                            width={26}
+                            height={26}
+                            style={{ objectFit: "cover", borderRadius: "50%" }}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src =
+                                "/images/tripzy.ico";
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div className={`assistant-bubble ${isAi ? "tripzy" : m.sender}`}>
+                        {m.text}
                       </div>
-                    )}
-                    <div className={`assistant-bubble ${m.sender}`}>
-                      {m.text}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {isLoading && (
-                  <div className="assistant-row padayappa">
+                  <div className="assistant-row tripzy">
                     <div className="assistant-msg-avatar">
                       <Image
-                        src="/images/das.png"
-                        alt="Padayappa"
+                        src="/images/tripzy.png"
+                        alt="Tripzy"
                         width={26}
                         height={26}
                         style={{ objectFit: "cover", borderRadius: "50%" }}
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
-                            "/images/model.ico";
+                            "/images/tripzy.ico";
                         }}
                       />
                     </div>
                     <div
-                      className="assistant-bubble padayappa"
+                      className="assistant-bubble tripzy"
                       style={{ opacity: 0.75 }}
                     >
-                      <em>Padayappa is thinking... ✈️</em>
+                      <em>Tripzy is thinking... 🤖</em>
                     </div>
                   </div>
                 )}
@@ -635,7 +638,7 @@ export default function FloatingMascot() {
                 color: "#cbd5e1",
               }}
             >
-              <span>🔒 Login to chat with Padayappa</span>
+              <span>🔒 Login to chat with Tripzy</span>
               <button
                 type="button"
                 onClick={() => router.push("/login")}
@@ -662,8 +665,8 @@ export default function FloatingMascot() {
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Ask Padayappa anything..."
-              aria-label="Ask Padayappa anything"
+              placeholder="Ask Tripzy anything..."
+              aria-label="Ask Tripzy anything"
               disabled={isLoading}
             />
 
