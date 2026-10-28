@@ -358,23 +358,43 @@ export default function HomePage() {
   style={{
     animationDelay: "300ms",
     fontFamily: "'Cormorant Garamond', Georgia, serif",
-    fontSize: "clamp(3rem, 6vw, 5.2rem)",
+    fontSize: "clamp(3.2rem, 6vw, 5.5rem)",
     fontWeight: 700,
-    lineHeight: 1.05,
-    letterSpacing: "-0.02em",
-    maxWidth: "1100px",
+    lineHeight: 1.08,
+    letterSpacing: "-0.025em",
+    maxWidth: "1250px",
     margin: "0 auto 22px auto",
     textAlign: "center",
     color: "#FFFFFF",
-    textShadow: "0 3px 12px rgba(0, 0, 0, 0.45)",
+    textShadow: "none",
     WebkitFontSmoothing: "antialiased",
     MozOsxFontSmoothing: "grayscale",
+    fontKerning: "normal",
+    fontVariantLigatures: "none",
   }}
 >
   Plan Extraordinary Journeys with
   <br />
-  <span className="text-intelligent-cyan">Intelligent</span>{" "}
-  <span className="text-precision-gold">Precision</span>
+  <span
+    className="text-intelligent-cyan"
+    style={{
+      color: "#00CFFF",
+      fontWeight: 700,
+      display: "inline-block",
+    }}
+  >
+    Intelligent
+  </span>{" "}
+  <span
+    className="text-precision-gold"
+    style={{
+      color: "#FFC928",
+      fontWeight: 700,
+      display: "inline-block",
+    }}
+  >
+    Precision
+  </span>
 </h1>
 
           <p
