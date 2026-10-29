@@ -1082,7 +1082,7 @@ function PlannerContent() {
                           ? "Detecting GPS..."
                           : detectedLocationName
                           ? `📍 Detected: ${detectedLocationName}`
-                          : "🎯 Auto-Detect My Location"}
+                          : "Auto-Detect My Location"}
                       </span>
                     </button>
                   </div>
