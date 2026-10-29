@@ -22,6 +22,7 @@ from app.schemas.auth_schema import (
     ChangePasswordRequest,
     SendPasswordOtpResponse,
     CurrentUserResponse,
+    UpdateProfileRequest,
     AuthenticationStatusResponse,
     LogoutResponse,
 )
@@ -104,13 +105,18 @@ def get_profile(
 
     try:
         user = service.get_authenticated_profile(user_id)
-        derived_username = user.email.split("@")[0] if user.email else "traveler"
+        derived_username = getattr(user, "username", None) or (user.email.split("@")[0] if user.email else "traveler")
 
         return CurrentUserResponse(
             id=user.id,
             full_name=user.full_name,
             username=derived_username,
             email=user.email,
+            bio=getattr(user, "bio", None),
+            country=getattr(user, "country", None),
+            date_of_birth=getattr(user, "date_of_birth", None),
+            base_location=getattr(user, "base_location", None),
+            travel_preferences=getattr(user, "travel_preferences", None),
             is_active=user.is_active,
             is_verified=user.is_verified,
             eco_travel_score=user.eco_travel_score,
@@ -120,6 +126,47 @@ def get_profile(
 
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
+
+
+@router.put("/profile", response_model=CurrentUserResponse)
+def update_profile(
+    payload: UpdateProfileRequest,
+    user_id: str = Depends(get_current_user_id),
+    service: AuthService = Depends(get_auth_service),
+) -> CurrentUserResponse:
+
+    try:
+        user = service.update_profile(
+            user_id=user_id,
+            full_name=payload.full_name,
+            username=payload.username,
+            bio=payload.bio,
+            date_of_birth=payload.date_of_birth,
+            base_location=payload.base_location,
+            country=payload.country,
+            travel_preferences=payload.travel_preferences,
+        )
+        derived_username = getattr(user, "username", None) or (user.email.split("@")[0] if user.email else "traveler")
+
+        return CurrentUserResponse(
+            id=user.id,
+            full_name=user.full_name,
+            username=derived_username,
+            email=user.email,
+            bio=getattr(user, "bio", None),
+            country=getattr(user, "country", None),
+            date_of_birth=getattr(user, "date_of_birth", None),
+            base_location=getattr(user, "base_location", None),
+            travel_preferences=getattr(user, "travel_preferences", None),
+            is_active=user.is_active,
+            is_verified=user.is_verified,
+            eco_travel_score=user.eco_travel_score,
+            total_trips=user.total_trips,
+            created_at=user.created_at,
+        )
+
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
 
 
 @router.post("/send-password-otp", response_model=SendPasswordOtpResponse)

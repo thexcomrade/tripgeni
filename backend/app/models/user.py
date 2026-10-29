@@ -34,6 +34,14 @@ class User(Base):
 
     country: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
+    username: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
+    date_of_birth: Mapped[str | None] = mapped_column(String(50), nullable=True)
+
+    base_location: Mapped[str | None] = mapped_column(String(150), nullable=True)
+
+    travel_preferences: Mapped[str | None] = mapped_column(Text, nullable=True)
+
     preferred_budget: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
     preferred_travel_style: Mapped[str | None] = mapped_column(

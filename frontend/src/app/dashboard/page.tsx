@@ -206,6 +206,255 @@ function getCityWeatherProfile(city: string) {
   };
 }
 
+// Smart World Clock & Travel Compass Component
+function SmartWorldClockAndCompass() {
+  const [activeTab, setActiveTab] = useState<"clock" | "compass">("clock");
+  const [time, setTime] = useState<Date>(new Date());
+  const [selectedCityIdx, setSelectedCityIdx] = useState(0);
+  const [compassHeading, setCompassHeading] = useState(42);
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (e.alpha !== null && e.alpha !== undefined) {
+        setCompassHeading(Math.round(e.alpha));
+      }
+    };
+    if (typeof window !== "undefined" && window.DeviceOrientationEvent) {
+      window.addEventListener("deviceorientation", handleOrientation);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("deviceorientation", handleOrientation);
+      }
+    };
+  }, []);
+
+  const worldCities = [
+    { name: "Dubai", country: "UAE", tz: "Asia/Dubai" },
+    { name: "London", country: "UK", tz: "Europe/London" },
+    { name: "Tokyo", country: "Japan", tz: "Asia/Tokyo" },
+    { name: "New York", country: "USA", tz: "America/New_York" },
+    { name: "Paris", country: "France", tz: "Europe/Paris" },
+    { name: "Singapore", country: "Singapore", tz: "Asia/Singapore" },
+    { name: "Sydney", country: "Australia", tz: "Australia/Sydney" },
+  ];
+
+  const formatTzTime = (tz: string) => {
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      }).format(time);
+    } catch {
+      return time.toLocaleTimeString();
+    }
+  };
+
+  const getTzHour = (tz: string) => {
+    try {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        hour: "numeric",
+        hour12: false,
+      }).formatToParts(time);
+      const h = parts.find((p) => p.type === "hour");
+      return h ? parseInt(h.value, 10) : 12;
+    } catch {
+      return 12;
+    }
+  };
+
+  const getCardinal = (deg: number) => {
+    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+    const index = Math.round(deg / 45) % 8;
+    return directions[index];
+  };
+
+  const currentHour = time.getHours();
+  const isDay = currentHour >= 6 && currentHour < 18;
+  const selectedCity = worldCities[selectedCityIdx];
+  const cityHour = getTzHour(selectedCity.tz);
+  const cityIsDay = cityHour >= 6 && cityHour < 18;
+
+  return (
+    <GlassCard style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "16px", minHeight: "360px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {activeTab === "clock" ? <Clock size={20} color="#38BDF8" /> : <Compass size={20} color="#14B8A6" />}
+          <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#FFFFFF" }}>
+            {activeTab === "clock" ? "Smart World Clock" : "Travel Compass"}
+          </h3>
+        </div>
+        <div style={{ display: "flex", background: "rgba(255, 255, 255, 0.06)", borderRadius: "999px", padding: "3px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+          <button
+            type="button"
+            onClick={() => setActiveTab("clock")}
+            style={{
+              padding: "5px 12px",
+              borderRadius: "999px",
+              fontSize: "0.78rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              background: activeTab === "clock" ? "linear-gradient(135deg, #0EA5E9, #14B8A6)" : "transparent",
+              color: activeTab === "clock" ? "#FFFFFF" : "#94A3B8",
+              border: "none",
+              transition: "all 0.2s ease",
+            }}
+          >
+            Clock
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("compass")}
+            style={{
+              padding: "5px 12px",
+              borderRadius: "999px",
+              fontSize: "0.78rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              background: activeTab === "compass" ? "linear-gradient(135deg, #0EA5E9, #14B8A6)" : "transparent",
+              color: activeTab === "compass" ? "#FFFFFF" : "#94A3B8",
+              border: "none",
+              transition: "all 0.2s ease",
+            }}
+          >
+            Compass
+          </button>
+        </div>
+      </div>
+
+      {activeTab === "clock" ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px", flex: 1, justifyContent: "space-between" }}>
+          <div style={{ background: "rgba(15, 23, 42, 0.65)", borderRadius: "14px", padding: "16px", border: "1px solid rgba(255, 255, 255, 0.07)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+              <span style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "1px", color: "#94A3B8", fontWeight: 700 }}>
+                Local Time
+              </span>
+              <span style={{ fontSize: "0.76rem", padding: "2px 8px", borderRadius: "999px", background: isDay ? "rgba(251, 191, 36, 0.15)" : "rgba(129, 140, 248, 0.15)", color: isDay ? "#FBBF24" : "#A5B4FC", border: `1px solid ${isDay ? "rgba(251, 191, 36, 0.3)" : "rgba(129, 140, 248, 0.3)"}` }}>
+                {isDay ? "☀️ Daytime" : "🌙 Nighttime"}
+              </span>
+            </div>
+            <div style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.2rem)", fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.5px", fontFamily: "monospace" }}>
+              {time.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true })}
+            </div>
+            <div style={{ fontSize: "0.82rem", color: "#38BDF8", marginTop: "4px" }}>
+              {time.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "short", day: "numeric" })} • {Intl.DateTimeFormat().resolvedOptions().timeZone}
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: "0.76rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.8px", fontWeight: 700, marginBottom: "8px" }}>
+              Compare Global Travel Hubs
+            </div>
+            <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "4px" }}>
+              {worldCities.map((city, idx) => {
+                const isSel = idx === selectedCityIdx;
+                return (
+                  <button
+                    key={city.name}
+                    type="button"
+                    onClick={() => setSelectedCityIdx(idx)}
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: "8px",
+                      background: isSel ? "rgba(14, 165, 233, 0.20)" : "rgba(255, 255, 255, 0.04)",
+                      border: isSel ? "1px solid rgba(56, 189, 248, 0.45)" : "1px solid rgba(255, 255, 255, 0.06)",
+                      color: isSel ? "#38BDF8" : "#CBD5E1",
+                      fontSize: "0.78rem",
+                      fontWeight: isSel ? 700 : 500,
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {city.name}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div style={{ marginTop: "10px", padding: "10px 14px", borderRadius: "10px", background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontSize: "0.92rem", fontWeight: 700, color: "#FFFFFF" }}>
+                  {selectedCity.name}, {selectedCity.country}
+                </div>
+                <div style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
+                  {selectedCity.tz} • {cityIsDay ? "☀️ Daylight" : "🌙 After Dusk"}
+                </div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#38BDF8", fontFamily: "monospace" }}>
+                  {formatTzTime(selectedCity.tz)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px", flex: 1, padding: "8px 0" }}>
+          <div
+            style={{
+              position: "relative",
+              width: "170px",
+              height: "170px",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, rgba(3, 7, 18, 0.8) 70%)",
+              border: "2px solid rgba(56, 189, 248, 0.35)",
+              boxShadow: "0 0 25px rgba(14, 165, 233, 0.2)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              userSelect: "none",
+            }}
+            onClick={() => setCompassHeading((prev) => (prev + 45) % 360)}
+            title="Click to rotate bearing"
+          >
+            <span style={{ position: "absolute", top: "6px", fontSize: "0.75rem", fontWeight: 800, color: "#EF4444" }}>N</span>
+            <span style={{ position: "absolute", right: "8px", fontSize: "0.75rem", fontWeight: 800, color: "#94A3B8" }}>E</span>
+            <span style={{ position: "absolute", bottom: "6px", fontSize: "0.75rem", fontWeight: 800, color: "#94A3B8" }}>S</span>
+            <span style={{ position: "absolute", left: "8px", fontSize: "0.75rem", fontWeight: 800, color: "#94A3B8" }}>W</span>
+
+            <div
+              style={{
+                position: "absolute",
+                width: "4px",
+                height: "120px",
+                transform: `rotate(${compassHeading}deg)`,
+                transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderBottom: "45px solid #EF4444" }} />
+              <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#FFFFFF", border: "2px solid #0EA5E9", zIndex: 2 }} />
+              <div style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderTop: "45px solid #38BDF8" }} />
+            </div>
+          </div>
+
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "1.3rem", fontWeight: 800, color: "#FFFFFF", letterSpacing: "0.5px" }}>
+              {String(compassHeading).padStart(3, "0")}° {getCardinal(compassHeading)}
+            </div>
+            <div style={{ fontSize: "0.78rem", color: "#38BDF8", marginTop: "2px" }}>
+              Tap dial to rotate • Live cardinal bearing
+            </div>
+          </div>
+        </div>
+      )}
+    </GlassCard>
+  );
+}
+
 export default function DashboardPage() {
   const router = useRouter();
 
@@ -769,14 +1018,17 @@ export default function DashboardPage() {
           value={totalTrips}
           icon={<Plane size={20} />}
           subtitle="Generated with AI engine"
-          onClick={() => router.push("/trip/history")}
+          onClick={() => router.push("/planner")}
         />
         <MetricCard
           title="Saved Escapes"
           value={savedTrips}
           icon={<Heart size={20} />}
-          subtitle="Saved in bucket list"
-          onClick={() => router.push("/favorites")}
+          subtitle="Saved in travel vault"
+          onClick={() => {
+            const el = document.getElementById("saved-itineraries-section");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
         />
         <MetricCard
           title="Eco Travel Score"
@@ -785,14 +1037,14 @@ export default function DashboardPage() {
           change="+5% vs avg"
           changeType="positive"
           subtitle="Sustainable travel impact"
-          onClick={() => router.push("/analytics")}
+          onClick={() => router.push("/planner")}
         />
         <MetricCard
-          title="Explorer Rank"
-          value="Level 3"
-          icon={<Award size={20} color="#FBBF24" />}
-          subtitle="Western Ghats Pathfinder"
-          onClick={() => router.push("/achievements")}
+          title="Travel Readiness"
+          value="Optimal"
+          icon={<Compass size={20} color="#38BDF8" />}
+          subtitle="Live route & weather sync"
+          onClick={() => router.push("/planner")}
         />
       </section>
 
@@ -805,608 +1057,23 @@ export default function DashboardPage() {
         }}
       >
         {/* LIVE WEATHER SNAPSHOT */}
-        <GlassCard
-          style={{
-            padding: "26px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            gap: "16px",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "14px",
-                flexWrap: "wrap",
-                gap: "8px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <CloudSun size={20} color="#FBBF24" />
-                <h3
-                  style={{
-                    fontSize: "1.1rem",
-                    fontWeight: 700,
-                    color: "#FFFFFF",
-                  }}
-                >
-                  Live Weather Intelligence
-                </h3>
-              </div>
-              <Badge variant="amber" size="sm">
-                {weatherLoading ? "Updating..." : "Real-time"}
-              </Badge>
-            </div>
-
-            {/* LOCATION SELECTOR: ACTIVE CITY & OTHER BUTTON */}
-            <div
-              ref={cityPickerRef}
-              style={{
-                position: "relative",
-                display: "inline-block",
-                marginBottom: "16px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  flexWrap: "wrap",
-                }}
-              >
-                {/* ACTIVE CHOSEN LOCATION PILL */}
-                <button
-                  type="button"
-                  onClick={() => setIsCityPickerOpen(!isCityPickerOpen)}
-                  style={{
-                    background: "rgba(14, 165, 233, 0.22)",
-                    border: "1px solid rgba(14, 165, 233, 0.55)",
-                    borderRadius: "8px",
-                    padding: "5px 12px",
-                    color: "#38BDF8",
-                    fontSize: "0.82rem",
-                    fontWeight: 700,
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    boxShadow: "0 0 14px rgba(14, 165, 233, 0.22)",
-                    cursor: "pointer",
-                  }}
-                  title="Click to change location"
-                >
-                  <MapPin size={13} color="#38BDF8" />
-                  <span>
-                    {weatherCity.toLowerCase() === "thiruvananthapuram"
-                      ? "Trivandrum"
-                      : weatherCity.charAt(0).toUpperCase() + weatherCity.slice(1)}
-                  </span>
-                </button>
-
-                {/* OTHER / CHOOSE LOCATION BUTTON */}
-                <button
-                  type="button"
-                  onClick={() => setIsCityPickerOpen(!isCityPickerOpen)}
-                  style={{
-                    background: isCityPickerOpen
-                      ? "rgba(255, 255, 255, 0.12)"
-                      : "rgba(255, 255, 255, 0.05)",
-                    border: isCityPickerOpen
-                      ? "1px solid rgba(56, 189, 248, 0.50)"
-                      : "1px solid rgba(255, 255, 255, 0.10)",
-                    borderRadius: "8px",
-                    padding: "5px 12px",
-                    color: isCityPickerOpen ? "#F8FAFC" : "#94A3B8",
-                    fontSize: "0.80rem",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    transition: "all 0.18s ease",
-                  }}
-                >
-                  <span>Other</span>
-                  <ChevronDown
-                    size={13}
-                    style={{
-                      transform: isCityPickerOpen ? "rotate(180deg)" : "none",
-                      transition: "transform 0.2s ease",
-                    }}
-                  />
-                </button>
-              </div>
-
-              {/* POPUP: CHOOSE OR SEARCH LOCATION */}
-              {isCityPickerOpen && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "calc(100% + 8px)",
-                    left: 0,
-                    zIndex: 60,
-                    width: "320px",
-                    background: "rgba(15, 23, 42, 0.97)",
-                    backdropFilter: "blur(24px)",
-                    WebkitBackdropFilter: "blur(24px)",
-                    border: "1px solid rgba(56, 189, 248, 0.35)",
-                    borderRadius: "14px",
-                    boxShadow:
-                      "0 18px 48px rgba(0, 0, 0, 0.60), 0 0 20px rgba(14, 165, 233, 0.20)",
-                    padding: "16px",
-                  }}
-                >
-                  {/* Header */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        color: "#E2E8F0",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                      }}
-                    >
-                      Choose Destination
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setIsCityPickerOpen(false)}
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        color: "#94A3B8",
-                        cursor: "pointer",
-                        padding: "2px",
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    >
-                      <X size={15} />
-                    </button>
-                  </div>
-
-                  {/* Search / Custom City Input */}
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (citySearchQuery.trim()) {
-                        switchCityWeather(citySearchQuery.trim());
-                      }
-                    }}
-                    style={{
-                      display: "flex",
-                      gap: "6px",
-                      marginBottom: "14px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        flex: 1,
-                        background: "rgba(255, 255, 255, 0.06)",
-                        border: "1px solid rgba(255, 255, 255, 0.12)",
-                        borderRadius: "8px",
-                        padding: "6px 10px",
-                      }}
-                    >
-                      <Search size={13} color="#94A3B8" />
-                      <input
-                        type="text"
-                        value={citySearchQuery}
-                        onChange={(e) => setCitySearchQuery(e.target.value)}
-                        placeholder="Type any city (e.g. Ooty)..."
-                        autoFocus
-                        style={{
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          color: "#FFFFFF",
-                          fontSize: "0.80rem",
-                          width: "100%",
-                        }}
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={!citySearchQuery.trim()}
-                      style={{
-                        background: citySearchQuery.trim()
-                          ? "linear-gradient(135deg, #0EA5E9, #2563EB)"
-                          : "rgba(255, 255, 255, 0.08)",
-                        color: citySearchQuery.trim() ? "#FFFFFF" : "#64748B",
-                        border: "none",
-                        borderRadius: "8px",
-                        padding: "0 12px",
-                        fontSize: "0.78rem",
-                        fontWeight: 600,
-                        cursor: citySearchQuery.trim() ? "pointer" : "default",
-                      }}
-                    >
-                      Set
-                    </button>
-                  </form>
-
-                  {/* Quick Pick Destinations */}
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "0.70rem",
-                        color: "#94A3B8",
-                        marginBottom: "8px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      POPULAR DESTINATIONS
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "6px",
-                        maxHeight: "150px",
-                        overflowY: "auto",
-                      }}
-                    >
-                      {POPULAR_WEATHER_CITIES.map((c) => {
-                        const isCurrent =
-                          weatherCity.toLowerCase().trim() === c.name.toLowerCase().trim() ||
-                          (c.name.toLowerCase() === "trivandrum" &&
-                            weatherCity.toLowerCase().trim() === "thiruvananthapuram");
-                        return (
-                          <button
-                            key={c.name}
-                            type="button"
-                            onClick={() => switchCityWeather(c.name)}
-                            style={{
-                              background: isCurrent
-                                ? "rgba(14, 165, 233, 0.3)"
-                                : "rgba(255, 255, 255, 0.05)",
-                              border: isCurrent
-                                ? "1px solid rgba(14, 165, 233, 0.6)"
-                                : "1px solid rgba(255, 255, 255, 0.08)",
-                              borderRadius: "6px",
-                              padding: "4px 9px",
-                              color: isCurrent ? "#38BDF8" : "#CBD5E1",
-                              fontSize: "0.76rem",
-                              fontWeight: isCurrent ? 700 : 500,
-                              cursor: "pointer",
-                              transition: "all 0.15s ease",
-                            }}
-                          >
-                            {c.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                justifyContent: "space-between",
-                marginBottom: "14px",
-              }}
-            >
-              <div>
-                <span
-                  style={{
-                    fontSize: "2.6rem",
-                    fontWeight: 800,
-                    color: "#FFFFFF",
-                  }}
-                >
-                  {weatherData.temperature}°C
-                </span>
-                <p style={{ color: "#94A3B8", fontSize: "0.9rem", marginTop: "2px" }}>
-                  {weatherData.city} • {weatherData.condition}
-                </p>
-                <p style={{ color: "#64748B", fontSize: "0.8rem" }}>
-                  {weatherData.description}
-                </p>
-              </div>
-              <div
-                style={{
-                  textAlign: "right",
-                  fontSize: "0.85rem",
-                  color: "#CBD5E1",
-                }}
-              >
-                <p>
-                  Humidity: <strong>{weatherData.humidity}%</strong>
-                </p>
-                <p>
-                  Wind: <strong>{weatherData.wind_speed} km/h</strong>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              background: "rgba(255, 255, 255, 0.04)",
-              padding: "12px 14px",
-              borderRadius: "12px",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-            }}
-          >
-            <p
-              style={{ color: "#38BDF8", fontSize: "0.85rem", fontWeight: 500 }}
-            >
-              💡 {weatherData.travel_recommendation ||
-                "Favorable weather conditions for travel exploration and outdoor activities."}
-            </p>
-          </div>
-        </GlassCard>
-
-        {/* AI TRAVEL COMPANION CARD */}
-        <GlassCard
-          style={{
-            padding: "26px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                marginBottom: "12px",
-              }}
-            >
-              <div
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "10px",
-                  background: "rgba(14, 165, 233, 0.15)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                  border: "1px solid rgba(56, 189, 248, 0.35)",
-                }}
-              >
-                <img
-                  src="/images/tripzy.png"
-                  alt="Tripzy"
-                  style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/images/tripzy.ico";
-                  }}
-                />
-              </div>
-              <div>
-                <h3
-                  style={{
-                    fontSize: "1.1rem",
-                    fontWeight: 700,
-                    color: "#FFFFFF",
-                  }}
-                >
-                  TALK WITH TRIPZY
-                </h3>
-                <p style={{ fontSize: "0.82rem", color: "#38BDF8" }}>
-                  Tripzy • AI Travel Companion
-                </p>
-              </div>
-            </div>
-            <p
-              style={{
-                color: "#CBD5E1",
-                fontSize: "0.92rem",
-                lineHeight: 1.6,
-                marginBottom: "18px",
-              }}
-            >
-              Have questions about local food trails, hidden spots, or travel
-              recommendations? Talk with Tripzy anytime.
-            </p>
-          </div>
-
-          <Link href="/ai-chat" style={{ textDecoration: "none" }}>
-            <Button
-              variant="outline"
-              size="md"
-              rightIcon={<ArrowRight size={14} />}
-              style={{ width: "100%" }}
-            >
-              Talk with Tripzy
-            </Button>
-          </Link>
-        </GlassCard>
+        <SmartWorldClockAndCompass />
       </section>
 
-      {/* CURATED RECOMMENDED DESTINATIONS */}
-      <section>
+      {/* SAVED FAVORITES & ITINERARIES */}
+      <section id="saved-itineraries-section">
         <SectionHeader
-          badge="Handpicked for You"
-          title="Curated Travel Escapes"
-          subtitle="Handpicked regional and international destinations with optimal travel windows and eco ratings."
+          badge="Your Travel Vault"
+          title="Saved Favorites & Itineraries"
+          subtitle="Your personalized trips and custom AI generated journeys."
           action={
-            <Link href="/explore" style={{ textDecoration: "none" }}>
+            <Link href="/planner" style={{ textDecoration: "none" }}>
               <Button
-                variant="ghost"
+                variant="primary"
                 size="sm"
-                rightIcon={<ChevronRight size={14} />}
+                leftIcon={<Sparkles size={14} />}
               >
-                View All (1,300+)
-              </Button>
-            </Link>
-          }
-        />
-
-        {/* REGION FILTER PILLS */}
-        <div
-          style={{
-            display: "flex",
-            gap: "8px",
-            marginBottom: "18px",
-            overflowX: "auto",
-            paddingBottom: "4px",
-          }}
-        >
-          {[
-            { id: "all", label: "All Destinations" },
-            { id: "india", label: "India & Regional" },
-            { id: "abroad", label: "International / Abroad" },
-          ].map((pill) => {
-            const isActive = destFilter === pill.id;
-            return (
-              <button
-                key={pill.id}
-                type="button"
-                onClick={() => setDestFilter(pill.id as any)}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  background: isActive
-                    ? "linear-gradient(135deg, #0EA5E9, #14B8A6)"
-                    : "rgba(255, 255, 255, 0.05)",
-                  border: isActive
-                    ? "1px solid rgba(14, 165, 233, 0.5)"
-                    : "1px solid rgba(255, 255, 255, 0.08)",
-                  color: isActive ? "#FFFFFF" : "#94A3B8",
-                  fontSize: "0.85rem",
-                  fontWeight: isActive ? 700 : 500,
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {pill.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "20px",
-          }}
-        >
-          {curatedDestinations
-            .filter((d) => destFilter === "all" || d.region === destFilter)
-            .map((dest) => (
-            <div
-              key={dest.name}
-              className="glass-card-interactive"
-              onClick={() =>
-                router.push(
-                  `/planner?destination=${encodeURIComponent(dest.name)}`,
-                )
-              }
-              style={{
-                overflow: "hidden",
-                borderRadius: "20px",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{ position: "relative", height: "180px", width: "100%" }}
-              >
-                <Image
-                  src={dest.image}
-                  alt={dest.name}
-                  fill
-                  sizes="300px"
-                  style={{ objectFit: "cover" }}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background:
-                      "linear-gradient(to top, rgba(3, 7, 18, 0.85) 0%, transparent 60%)",
-                  }}
-                />
-                <div
-                  style={{ position: "absolute", top: "12px", right: "12px" }}
-                >
-                  <Badge variant="eco" size="sm" icon={<Leaf size={10} />}>
-                    {dest.eco}
-                  </Badge>
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "14px",
-                    left: "16px",
-                    right: "16px",
-                  }}
-                >
-                  <h4
-                    style={{
-                      fontSize: "1.25rem",
-                      fontWeight: 800,
-                      color: "#FFFFFF",
-                    }}
-                  >
-                    {dest.name}
-                  </h4>
-                  <p style={{ color: "#CBD5E1", fontSize: "0.82rem" }}>
-                    {dest.state} • {dest.days}
-                  </p>
-                </div>
-              </div>
-              <div
-                style={{
-                  padding: "14px 16px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  background: "rgba(15, 23, 42, 0.5)",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "0.82rem",
-                    color: "#38BDF8",
-                    fontWeight: 600,
-                  }}
-                >
-                  Plan this escape
-                </span>
-                <ArrowRight size={14} color="#38BDF8" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* RECENT TRIPS HUB */}
-      <section>
-        <SectionHeader
-          badge="Your Archive"
-          title="Recent Itineraries"
-          subtitle="Review your generated trips or jump back into planning."
-          action={
-            <Link href="/trip/history" style={{ textDecoration: "none" }}>
-              <Button variant="secondary" size="sm">
-                Full History
+                Create New Trip
               </Button>
             </Link>
           }
@@ -1480,8 +1147,8 @@ export default function DashboardPage() {
           <GlassCard style={{ padding: "48px", textAlign: "center" }}>
             <div
               style={{
-                width: "54px",
-                height: "54px",
+                width: "56px",
+                height: "56px",
                 borderRadius: "16px",
                 background: "rgba(14, 165, 233, 0.12)",
                 display: "flex",
@@ -1489,13 +1156,14 @@ export default function DashboardPage() {
                 justifyContent: "center",
                 margin: "0 auto 16px auto",
                 color: "#38BDF8",
+                border: "1px solid rgba(56, 189, 248, 0.25)",
               }}
             >
-              <Plane size={24} />
+              <Plane size={26} />
             </div>
             <h3
               style={{
-                fontSize: "1.3rem",
+                fontSize: "1.35rem",
                 fontWeight: 700,
                 color: "#FFFFFF",
                 marginBottom: "8px",
@@ -1507,8 +1175,9 @@ export default function DashboardPage() {
               style={{
                 color: "#94A3B8",
                 fontSize: "0.95rem",
-                maxWidth: "450px",
+                maxWidth: "460px",
                 margin: "0 auto 24px auto",
+                lineHeight: 1.6,
               }}
             >
               Use our AI Planner to generate your first custom trip with live
@@ -1524,9 +1193,9 @@ export default function DashboardPage() {
               </Button>
             </Link>
           </GlassCard>
-          
         )}
       </section>
+
       <FloatingMascot />
     </div>
   );

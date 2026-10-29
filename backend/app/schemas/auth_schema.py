@@ -80,6 +80,16 @@ class RefreshTokenResponse(BaseModel):
     token_type: str = "Bearer"
 
 
+class UpdateProfileRequest(BaseModel):
+    full_name: str | None = None
+    username: str | None = None
+    bio: str | None = None
+    date_of_birth: str | None = None
+    base_location: str | None = None
+    country: str | None = None
+    travel_preferences: str | None = None
+
+
 class CurrentUserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -90,6 +100,16 @@ class CurrentUserResponse(BaseModel):
     username: str = "traveler"
 
     email: EmailStr
+
+    bio: str | None = None
+
+    country: str | None = None
+
+    date_of_birth: str | None = None
+
+    base_location: str | None = None
+
+    travel_preferences: str | None = None
 
     is_active: bool
 

@@ -16,6 +16,7 @@ interface UserProfile {
   email: string;
   bio: string;
   country: string;
+  date_of_birth?: string;
   profile_image: string;
   total_trips: number;
   saved_trips: number;
@@ -35,50 +36,7 @@ interface Achievement {
   progress?: string;
 }
 
-const DEFAULT_ACHIEVEMENTS: Achievement[] = [
-  {
-    id: 1,
-    title: "First Journey",
-    icon: "/rewards/pioneer-traveler.png",
-    description: "Generated your first AI-crafted travel itinerary",
-    unlocked: true,
-  },
-  {
-    id: 2,
-    title: "Eco Explorer",
-    icon: "/rewards/green-pathfinder.png",
-    description: "Maintained a sustainability score above 75%",
-    unlocked: true,
-  },
-  {
-    id: 3,
-    title: "Highland Trailblazer",
-    icon: "/rewards/western-ghats.png",
-    description: "Explored scenic hill stations like Munnar or Coorg",
-    unlocked: true,
-  },
-  {
-    id: 4,
-    title: "Budget Architect",
-    icon: "/rewards/frugal-nomad.png",
-    description: "Planned and paced trips within optimal budget tiers",
-    unlocked: false,
-  },
-  {
-    id: 5,
-    title: "Coastal Nomad",
-    icon: "/rewards/coastal-nomad.png",
-    description: "Planned beach and seaside journeys like Varkala",
-    unlocked: false,
-  },
-  {
-    id: 6,
-    title: "Global Voyager",
-    icon: "/rewards/global-voyager.png",
-    description: "Planned itineraries across multiple regional corridors",
-    unlocked: false,
-  },
-];
+const DEFAULT_ACHIEVEMENTS: Achievement[] = [];
 
 function generateTripGeniusId() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -109,13 +67,14 @@ export default function ProfilePage() {
     full_name: "Traveler",
     username: "traveler",
     email: "traveler@tripgenius.com",
-    bio: "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
-    country: "Trivandrum, Kerala, India",
+    bio: "",
+    country: "",
+    date_of_birth: "",
     profile_image: "",
-    total_trips: 3,
+    total_trips: 0,
     saved_trips: 0,
     eco_score: 92,
-    countries_visited: 3,
+    countries_visited: 1,
     is_verified: true,
     created_at: new Date().toISOString(),
     travel_preferences: [
@@ -157,72 +116,80 @@ export default function ProfilePage() {
         }
       }
 
-      if (token && storedUser) {
-        const parsed = JSON.parse(storedUser);
+      if (token) {
         setIsLoggedIn(true);
 
-        // Show user's saved trips count, or the 3 curated sample journeys
-        const liveTotalTrips = parsedSaved.length > 0 ? parsedSaved.length : 3;
+        // Fetch persisted profile from backend API
+        let remoteUser: any = null;
+        try {
+          const baseUrl =
+            typeof window !== "undefined"
+              ? `${window.location.protocol}//${window.location.hostname}:8000`
+              : "http://127.0.0.1:8000";
+          const res = await fetch(`${baseUrl}/api/auth/profile`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.ok) {
+            remoteUser = await res.json();
+          }
+        } catch (fetchErr) {
+          console.warn("Backend profile load fallback to cache:", fetchErr);
+        }
 
-        const name =
-          parsed.full_name &&
-          parsed.full_name !== "Traveler" &&
-          parsed.full_name !== "Sivya Babu"
-            ? parsed.full_name
-            : "Test Traveler";
+        const parsed = remoteUser || (storedUser ? JSON.parse(storedUser) : {});
+        const liveTotalTrips = parsedSaved.length > 0 ? parsedSaved.length : (parsed.total_trips || 0);
 
+        const name = parsed.full_name || "Traveler";
         const userEmail = parsed.email || "";
         const defaultHandle = userEmail ? userEmail.split("@")[0] : "traveler";
-        const resolvedUsername =
-          parsed.username &&
-          parsed.username !== "voyager" &&
-          parsed.username !== "sivyababu"
-            ? parsed.username
-            : defaultHandle;
+        const resolvedUsername = parsed.username || defaultHandle;
+        const resolvedEmail = parsed.email || "traveler@tripgenius.com";
+        const resolvedId = parsed.tripgenius_id || "TG-TR8842";
 
-        const resolvedEmail =
-          parsed.email && !parsed.email.includes("sivya")
-            ? parsed.email
-            : "traveler@tripgenius.com";
-
-        const resolvedId =
-          parsed.tripgenius_id && parsed.tripgenius_id !== "TG-SB8842"
-            ? parsed.tripgenius_id
-            : "TG-TR8842";
+        let parsedPrefs = [
+          "Scenic Highlands & Tea Hills",
+          "Coastal & Beach Escapes",
+          "Eco Tourism & Sustainable",
+          "Local Food & Street Dining",
+          "Peaceful Wellness Retreats",
+        ];
+        if (parsed.travel_preferences) {
+          try {
+            if (typeof parsed.travel_preferences === "string") {
+              const p = JSON.parse(parsed.travel_preferences);
+              if (Array.isArray(p)) parsedPrefs = p;
+            } else if (Array.isArray(parsed.travel_preferences)) {
+              parsedPrefs = parsed.travel_preferences;
+            }
+          } catch {}
+        }
 
         const profileData: UserProfile = {
-          uid: parsed.uid ?? generateUID(),
+          uid: parsed.id ?? parsed.uid ?? generateUID(),
           tripgenius_id: resolvedId,
-          full_name: parsed.full_name || name,
-          username: parsed.username || resolvedUsername,
-          email: parsed.email || resolvedEmail,
-          bio: parsed.bio !== undefined ? parsed.bio : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
-          country: parsed.country !== undefined ? parsed.country : "Trivandrum, Kerala, India",
+          full_name: name,
+          username: resolvedUsername,
+          email: resolvedEmail,
+          bio: parsed.bio || "",
+          country: parsed.country || parsed.base_location || "",
+          date_of_birth: parsed.date_of_birth || "",
           profile_image: image || parsed.profile_image || "",
           total_trips: liveTotalTrips,
           saved_trips: parsedSaved.length,
-          eco_score: parsed.eco_score ?? 92,
-          countries_visited: parsed.countries_visited ?? 3,
+          eco_score: parsed.eco_travel_score ?? parsed.eco_score ?? 92,
+          countries_visited: parsed.countries_visited ?? 1,
           is_verified: parsed.is_verified ?? true,
           created_at: parsed.created_at ?? new Date().toISOString(),
-          travel_preferences:
-            parsed.travel_preferences && parsed.travel_preferences.length > 0
-              ? parsed.travel_preferences
-              : [
-                  "Scenic Highlands & Tea Hills",
-                  "Coastal & Beach Escapes",
-                  "Eco Tourism & Sustainable",
-                  "Local Food & Street Dining",
-                  "Peaceful Wellness Retreats",
-                ],
+          travel_preferences: parsedPrefs,
         };
 
         setUser(profileData);
+        localStorage.setItem("tripgenius_user", JSON.stringify(profileData));
       } else {
-        // Fallback for guest visitor: faithfully preserve all user-edited fields
+        // Fallback for guest visitor
         if (storedUser) {
           const parsed = JSON.parse(storedUser);
-          const name = parsed.full_name || "Test Traveler";
+          const name = parsed.full_name || "Guest Traveler";
           const guestEmail = parsed.email || "";
           const guestHandle = guestEmail ? guestEmail.split("@")[0] : "traveler";
           const resolvedUsername = parsed.username || guestHandle;
@@ -234,14 +201,15 @@ export default function ProfilePage() {
             full_name: name,
             username: resolvedUsername,
             email: parsed.email || "traveler@tripgenius.com",
-            bio: parsed.bio !== undefined ? parsed.bio : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
-            country: parsed.country !== undefined ? parsed.country : "Trivandrum, Kerala, India",
+            bio: parsed.bio || "",
+            country: parsed.country || parsed.base_location || "",
+            date_of_birth: parsed.date_of_birth || "",
             profile_image: image || parsed.profile_image || "",
-            total_trips: parsedSaved.length > 0 ? parsedSaved.length : 3,
+            total_trips: parsedSaved.length,
             saved_trips: parsedSaved.length,
             eco_score: parsed.eco_score ?? 92,
-            countries_visited: parsed.countries_visited ?? 3,
-            is_verified: parsed.is_verified ?? true,
+            countries_visited: parsed.countries_visited ?? 1,
+            is_verified: false,
             created_at: parsed.created_at ?? new Date().toISOString(),
             travel_preferences:
               parsed.travel_preferences && parsed.travel_preferences.length > 0
@@ -259,9 +227,11 @@ export default function ProfilePage() {
         } else {
           setUser((prev) => ({
             ...prev,
-            full_name: "Test Traveler",
-            username: "thexcomrade",
-            tripgenius_id: "TG-TC8842",
+            full_name: "Guest Traveler",
+            username: "traveler",
+            bio: "",
+            country: "",
+            date_of_birth: "",
             saved_trips: parsedSaved.length,
           }));
         }
@@ -273,7 +243,7 @@ export default function ProfilePage() {
     }
   }
 
-  function handleProfileSave(updatedProfile: Partial<UserProfile>) {
+  async function handleProfileSave(updatedProfile: Partial<UserProfile>) {
     const updatedUser = {
       ...user,
       ...updatedProfile,
@@ -281,16 +251,44 @@ export default function ProfilePage() {
       city: (updatedProfile.country !== undefined ? updatedProfile.country : user.country || "").split(",")[0].trim(),
     };
     setUser(updatedUser);
+
     try {
       localStorage.setItem("tripgenius_user", JSON.stringify(updatedUser));
-      // Sync weather city with base location if user hasn't explicitly set a custom weather city override
       if (updatedProfile.country && updatedProfile.country.trim()) {
         const city = updatedProfile.country.split(",")[0].trim();
         if (city && !localStorage.getItem("tripgenius_weather_city_custom")) {
           localStorage.setItem("tripgenius_weather_city", city);
         }
       }
-    } catch {}
+
+      // Persist to backend if token exists
+      const token = localStorage.getItem("tripgenius_token");
+      if (token) {
+        const baseUrl =
+          typeof window !== "undefined"
+            ? `${window.location.protocol}//${window.location.hostname}:8000`
+            : "http://127.0.0.1:8000";
+        await fetch(`${baseUrl}/api/auth/profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            full_name: updatedUser.full_name,
+            username: updatedUser.username,
+            bio: updatedUser.bio,
+            date_of_birth: updatedUser.date_of_birth,
+            base_location: updatedUser.country,
+            country: updatedUser.country,
+            travel_preferences: JSON.stringify(updatedUser.travel_preferences),
+          }),
+        });
+      }
+    } catch (err) {
+      console.warn("Backend save warning:", err);
+    }
+
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("storage"));
     }
@@ -304,7 +302,7 @@ export default function ProfilePage() {
     setUser((prev) => ({
       ...prev,
       saved_trips: updated.length,
-      total_trips: updated.length > 0 ? updated.length : 3,
+      total_trips: updated.length,
     }));
   }
 
@@ -314,7 +312,7 @@ export default function ProfilePage() {
       travel_preferences: newPreferences,
     };
     setUser(updatedUser);
-    localStorage.setItem("tripgenius_user", JSON.stringify(updatedUser));
+    handleProfileSave(updatedUser);
   }
 
   if (loading) {
@@ -340,7 +338,6 @@ export default function ProfilePage() {
           onTabChange={setActiveTab}
           tripsCount={user.total_trips}
           savedCount={savedTripsList.length}
-          achievementsCount={achievements.filter((a) => a.unlocked).length}
         />
 
         <ProfileGrid

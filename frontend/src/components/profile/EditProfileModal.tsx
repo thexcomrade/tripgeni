@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Check, AtSign, MapPin, Sparkles, User as UserIcon } from "lucide-react";
+import { X, Check, AtSign, MapPin, Sparkles, User as UserIcon, Calendar } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface UserProfile {
@@ -12,6 +12,7 @@ interface UserProfile {
   email?: string;
   bio: string;
   country: string;
+  date_of_birth?: string;
   profile_image?: string;
   total_trips?: number;
   saved_trips?: number;
@@ -44,6 +45,19 @@ const AVAILABLE_PREFERENCES = [
   "Backpacking",
 ];
 
+function calculateAge(dobString?: string): number | null {
+  if (!dobString) return null;
+  const dob = new Date(dobString);
+  if (isNaN(dob.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age >= 0 ? age : null;
+}
+
 export default function EditProfileModal({
   isOpen,
   onClose,
@@ -55,17 +69,21 @@ export default function EditProfileModal({
     username: "traveler",
     bio: "",
     country: "",
+    date_of_birth: "",
     travel_preferences: [],
   });
+
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
 
     setUser({
-      full_name: initialUser.full_name || "Test Traveler",
+      full_name: initialUser.full_name || "Traveler",
       username: initialUser.username ? initialUser.username.replace(/^@+/, "") : "traveler",
-      bio: initialUser.bio !== undefined ? initialUser.bio : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries.",
-      country: initialUser.country !== undefined ? initialUser.country : "Trivandrum, Kerala, India",
+      bio: initialUser.bio !== undefined ? initialUser.bio : "",
+      country: initialUser.country !== undefined ? initialUser.country : "",
+      date_of_birth: initialUser.date_of_birth || "",
       travel_preferences:
         initialUser.travel_preferences && initialUser.travel_preferences.length > 0
           ? initialUser.travel_preferences
@@ -107,18 +125,58 @@ export default function EditProfileModal({
     }
   }
 
-  function handleSave() {
-    const cleanUsername = user.username.trim().replace(/^@+/, "") || "traveler";
-    const cleanFullName = user.full_name.trim() || "Test Traveler";
+  const todayStr = new Date().toISOString().split("T")[0];
+  const calculatedAge = calculateAge(user.date_of_birth);
 
-    onSave({
+  async function handleSave() {
+    setIsSaving(true);
+    const cleanUsername = user.username.trim().replace(/^@+/, "") || "traveler";
+    const cleanFullName = user.full_name.trim() || "Traveler";
+    const cleanBio = user.bio ? user.bio.trim() : "";
+    const cleanCountry = user.country ? user.country.trim() : "";
+    const cleanDob = user.date_of_birth ? user.date_of_birth.trim() : "";
+
+    const updatePayload: Partial<UserProfile> = {
       full_name: cleanFullName,
       username: cleanUsername,
-      bio: user.bio.trim(),
-      country: user.country.trim(),
+      bio: cleanBio,
+      country: cleanCountry,
+      date_of_birth: cleanDob,
       travel_preferences: user.travel_preferences,
-    });
+    };
 
+    // Persist to backend if logged in
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("tripgenius_token") : null;
+      if (token) {
+        const baseUrl = typeof window !== "undefined"
+          ? `${window.location.protocol}//${window.location.hostname}:8000`
+          : "http://127.0.0.1:8000";
+
+        await fetch(`${baseUrl}/api/auth/profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            full_name: cleanFullName,
+            username: cleanUsername,
+            bio: cleanBio,
+            date_of_birth: cleanDob,
+            base_location: cleanCountry,
+            country: cleanCountry,
+            travel_preferences: JSON.stringify(user.travel_preferences),
+          }),
+        });
+      }
+    } catch (err) {
+      console.warn("Backend profile sync notice:", err);
+    } finally {
+      setIsSaving(false);
+    }
+
+    onSave(updatePayload);
     toast.success(`Profile saved! Public handle set to @${cleanUsername}`);
     onClose();
   }
@@ -209,7 +267,7 @@ export default function EditProfileModal({
                   color: "#94A3B8",
                 }}
               >
-                Customize your public handle, bio, and travel passions
+                Customize your identity, birth date, bio, and travel passions
               </p>
             </div>
           </div>
@@ -256,129 +314,169 @@ export default function EditProfileModal({
             gap: "18px",
           }}
         >
-          {/* Full Name */}
-          <div>
-            <label
-              style={{
-                display: "block",
-                color: "#CBD5E1",
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                marginBottom: "6px",
-              }}
-            >
-              Full Name
-            </label>
-            <input
-              type="text"
-              value={user.full_name}
-              onChange={(event) => updateField("full_name", event.target.value)}
-              placeholder="e.g. Test Traveler"
-              style={{
-                width: "100%",
-                padding: "12px 14px",
-                borderRadius: "12px",
-                background: "rgba(15, 23, 42, 0.7)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                color: "#FFFFFF",
-                fontSize: "0.92rem",
-                outline: "none",
-                transition: "border-color 0.2s ease",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = "#0EA5E9")}
-              onBlur={(e) => (e.target.style.borderColor = "rgba(255, 255, 255, 0.12)")}
-            />
-          </div>
-
-          {/* Username (Handle) */}
-          <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "6px",
-              }}
-            >
+          {/* Full Name & Username in 2 Columns */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            <div>
               <label
                 style={{
+                  display: "block",
                   color: "#CBD5E1",
                   fontSize: "0.85rem",
                   fontWeight: 600,
+                  marginBottom: "6px",
+                }}
+              >
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={user.full_name}
+                onChange={(event) => updateField("full_name", event.target.value)}
+                placeholder="e.g. John Doe"
+                style={{
+                  width: "100%",
+                  padding: "12px 14px",
+                  borderRadius: "12px",
+                  background: "rgba(15, 23, 42, 0.7)",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  color: "#FFFFFF",
+                  fontSize: "0.92rem",
+                  outline: "none",
+                  transition: "border-color 0.2s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#0EA5E9")}
+                onBlur={(e) => (e.target.style.borderColor = "rgba(255, 255, 255, 0.12)")}
+              />
+            </div>
+
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  color: "#CBD5E1",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  marginBottom: "6px",
                 }}
               >
                 Username (Handle)
               </label>
-              <span
+              <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "14px",
+                    display: "flex",
+                    alignItems: "center",
+                    color: "#38BDF8",
+                    pointerEvents: "none",
+                  }}
+                >
+                  <AtSign size={16} />
+                </div>
+                <input
+                  type="text"
+                  value={user.username}
+                  onChange={(event) =>
+                    updateField(
+                      "username",
+                      event.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""),
+                    )
+                  }
+                  placeholder="traveler"
+                  style={{
+                    width: "100%",
+                    padding: "12px 14px 12px 38px",
+                    borderRadius: "12px",
+                    background: "rgba(15, 23, 42, 0.7)",
+                    border: "1px solid rgba(56, 189, 248, 0.35)",
+                    color: "#FFFFFF",
+                    fontSize: "0.92rem",
+                    fontWeight: 600,
+                    outline: "none",
+                    transition: "all 0.2s ease",
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = "#0EA5E9")}
+                  onBlur={(e) => (e.target.style.borderColor = "rgba(56, 189, 248, 0.35)")}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Date of Birth & Calculated Age */}
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "16px" }}>
+            <div>
+              <label
                 style={{
-                  fontSize: "0.74rem",
-                  color: "#38BDF8",
-                  background: "rgba(14, 165, 233, 0.12)",
-                  padding: "2px 8px",
-                  borderRadius: "999px",
+                  display: "block",
+                  color: "#CBD5E1",
+                  fontSize: "0.85rem",
                   fontWeight: 600,
+                  marginBottom: "6px",
                 }}
               >
-                Public Traveler ID
-              </span>
+                Date of Birth
+              </label>
+              <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                <input
+                  type="date"
+                  max={todayStr}
+                  value={user.date_of_birth || ""}
+                  onChange={(event) => updateField("date_of_birth", event.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "12px 14px",
+                    borderRadius: "12px",
+                    background: "rgba(15, 23, 42, 0.7)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    color: "#FFFFFF",
+                    fontSize: "0.92rem",
+                    outline: "none",
+                    transition: "border-color 0.2s ease",
+                    colorScheme: "dark",
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = "#0EA5E9")}
+                  onBlur={(e) => (e.target.style.borderColor = "rgba(255, 255, 255, 0.12)")}
+                />
+              </div>
+              <p style={{ margin: "4px 0 0", fontSize: "0.74rem", color: "#64748B" }}>
+                Future dates blocked. Used for age verification and travel profiles.
+              </p>
             </div>
 
-            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-              <div
+            <div>
+              <label
                 style={{
-                  position: "absolute",
-                  left: "14px",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "#38BDF8",
-                  pointerEvents: "none",
+                  display: "block",
+                  color: "#CBD5E1",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  marginBottom: "6px",
                 }}
               >
-                <AtSign size={16} />
-              </div>
+                Age (Calculated)
+              </label>
               <input
                 type="text"
-                value={user.username}
-                onChange={(event) =>
-                  updateField(
-                    "username",
-                    event.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""),
-                  )
-                }
-                placeholder="traveler"
+                readOnly
+                value={calculatedAge !== null ? `${calculatedAge} years old` : "Auto-computed"}
                 style={{
                   width: "100%",
-                  padding: "12px 14px 12px 38px",
+                  padding: "12px 14px",
                   borderRadius: "12px",
-                  background: "rgba(15, 23, 42, 0.7)",
-                  border: "1px solid rgba(56, 189, 248, 0.35)",
-                  color: "#FFFFFF",
-                  fontSize: "0.95rem",
-                  fontWeight: 600,
-                  letterSpacing: "0.3px",
+                  background: "rgba(255, 255, 255, 0.04)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  color: calculatedAge !== null ? "#38BDF8" : "#64748B",
+                  fontSize: "0.92rem",
+                  fontWeight: 700,
+                  cursor: "not-allowed",
                   outline: "none",
-                  transition: "all 0.2s ease",
-                  boxShadow: "0 0 12px rgba(14, 165, 233, 0.1)",
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = "#0EA5E9";
-                  e.target.style.boxShadow = "0 0 16px rgba(14, 165, 233, 0.25)";
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = "rgba(56, 189, 248, 0.35)";
-                  e.target.style.boxShadow = "0 0 12px rgba(14, 165, 233, 0.1)";
                 }}
               />
+              <p style={{ margin: "4px 0 0", fontSize: "0.74rem", color: "#64748B" }}>
+                Automatically derived from Date of Birth.
+              </p>
             </div>
-            <p
-              style={{
-                margin: "5px 0 0",
-                fontSize: "0.76rem",
-                color: "#94A3B8",
-              }}
-            >
-              Displayed as <strong style={{ color: "#38BDF8" }}>@{user.username || "traveler"}</strong> across the platform, travel cards, and AI chat.
-            </p>
           </div>
 
           {/* Bio */}
@@ -392,13 +490,13 @@ export default function EditProfileModal({
                 marginBottom: "6px",
               }}
             >
-              Bio & Travel Style
+              Bio & Travel Passions
             </label>
             <textarea
               value={user.bio}
               onChange={(event) => updateField("bio", event.target.value)}
               rows={3}
-              placeholder="Tell other travelers about your travel passions..."
+              placeholder="Tell other travelers about your authentic travel passions and favorite spots..."
               style={{
                 width: "100%",
                 padding: "12px 14px",
@@ -418,7 +516,7 @@ export default function EditProfileModal({
             />
           </div>
 
-          {/* Country / Base Location */}
+          {/* Base Location / Country */}
           <div>
             <label
               style={{
@@ -429,7 +527,7 @@ export default function EditProfileModal({
                 marginBottom: "6px",
               }}
             >
-              Base Location / Country
+              Base Location / Origin City
             </label>
             <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
               <div
@@ -448,7 +546,7 @@ export default function EditProfileModal({
                 type="text"
                 value={user.country}
                 onChange={(event) => updateField("country", event.target.value)}
-                placeholder="Trivandrum, Kerala, India"
+                placeholder="e.g. Kochi, Kerala, India"
                 style={{
                   width: "100%",
                   padding: "12px 14px 12px 38px",
@@ -483,20 +581,14 @@ export default function EditProfileModal({
                   fontWeight: 600,
                 }}
               >
-                Travel Preferences ({user.travel_preferences.length} selected)
+                Travel Preferences & Styles
               </label>
-              <span style={{ fontSize: "0.74rem", color: "#94A3B8" }}>
-                Click to toggle
+              <span style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
+                {user.travel_preferences.length} selected
               </span>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "8px",
-              }}
-            >
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {AVAILABLE_PREFERENCES.map((preference) => {
                 const isSelected = user.travel_preferences.includes(preference);
                 return (
@@ -591,6 +683,7 @@ export default function EditProfileModal({
             <button
               type="button"
               onClick={handleSave}
+              disabled={isSaving}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -602,7 +695,7 @@ export default function EditProfileModal({
                 color: "#FFFFFF",
                 fontSize: "0.88rem",
                 fontWeight: 700,
-                cursor: "pointer",
+                cursor: isSaving ? "wait" : "pointer",
                 boxShadow: "0 4px 14px rgba(14, 165, 233, 0.35)",
                 transition: "all 0.15s ease",
               }}
@@ -610,7 +703,7 @@ export default function EditProfileModal({
               onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
             >
               <Check size={15} />
-              <span>Save Changes</span>
+              <span>{isSaving ? "Saving..." : "Save Changes"}</span>
             </button>
           </div>
         </div>

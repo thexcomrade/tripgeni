@@ -94,6 +94,7 @@ export default function AIChatPage() {
   const [isInsecureContext, setIsInsecureContext] = useState(false);
   const [currentHost, setCurrentHost] = useState("");
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [speechLang, setSpeechLang] = useState<"en-IN" | "ml-IN" | "ta-IN" | "hi-IN">("en-IN");
   const [downloadingPdfId, setDownloadingPdfId] = useState<string | null>(null);
   const [autoSendCountdown, setAutoSendCountdown] = useState<number | null>(
     null,
@@ -271,12 +272,7 @@ export default function AIChatPage() {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.lang =
-        typeof navigator !== "undefined" &&
-        navigator.language &&
-        navigator.language.startsWith("en")
-          ? navigator.language
-          : "en-IN";
+      recognition.lang = speechLang;
 
       const SILENCE_TIMEOUT = 1500; // 1.5 seconds - optimal natural voice-assistant experience
       let silenceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -389,40 +385,52 @@ export default function AIChatPage() {
       .trim();
 
     const utterance = new SpeechSynthesisUtterance(cleanSpeech);
-    utterance.rate = 1.15; // Brisk, fluid, responsive reading pace
-    utterance.pitch = 1.02; // Friendly, energetic tone
-    utterance.lang = "en-US";
+    utterance.rate = 1.12;
+    utterance.pitch = 1.02;
+
+    const isMalayalam = /[\u0D00-\u0D7F]/.test(cleanSpeech);
+    const isTamil = /[\u0B80-\u0BFF]/.test(cleanSpeech);
+    const isHindi = /[\u0900-\u097F]/.test(cleanSpeech);
+
+    let targetLang = "en-IN";
+    if (isMalayalam) targetLang = "ml-IN";
+    else if (isTamil) targetLang = "ta-IN";
+    else if (isHindi) targetLang = "hi-IN";
+
+    utterance.lang = targetLang;
 
     const voices = window.speechSynthesis.getVoices();
-    // Prioritize authentic, clear English voices suitable for Bujji
-    const maleVoice =
-      voices.find(
-        (v) =>
-          v.lang.startsWith("en") &&
-          (v.name.toLowerCase().includes("male") ||
-            v.name.toLowerCase().includes("david") ||
-            v.name.toLowerCase().includes("george") ||
-            v.name.toLowerCase().includes("guy") ||
-            v.name.toLowerCase().includes("mark") ||
-            v.name.toLowerCase().includes("prabhat") ||
-            v.name.toLowerCase().includes("ravi") ||
-            v.name.toLowerCase().includes("google uk english male") ||
-            v.name.toLowerCase().includes("natural") ||
-            v.name.toLowerCase().includes("ryan")),
-      ) ||
-      voices.find(
-        (v) =>
-          v.lang.startsWith("en") &&
-          !v.name.toLowerCase().includes("female") &&
-          !v.name.toLowerCase().includes("zira") &&
-          !v.name.toLowerCase().includes("samantha") &&
-          !v.name.toLowerCase().includes("victoria") &&
-          !v.name.toLowerCase().includes("karen"),
-      ) ||
-      voices.find((v) => v.lang.startsWith("en"));
+    let matchingVoice: SpeechSynthesisVoice | undefined;
 
-    if (maleVoice) {
-      utterance.voice = maleVoice;
+    if (isMalayalam) {
+      matchingVoice = voices.find((v) => v.lang.startsWith("ml") || v.lang.includes("ml-IN") || v.name.toLowerCase().includes("malayalam"));
+    } else if (isTamil) {
+      matchingVoice = voices.find((v) => v.lang.startsWith("ta") || v.lang.includes("ta-IN") || v.name.toLowerCase().includes("tamil"));
+    } else if (isHindi) {
+      matchingVoice = voices.find((v) => v.lang.startsWith("hi") || v.lang.includes("hi-IN") || v.name.toLowerCase().includes("hindi"));
+    }
+
+    if (!matchingVoice) {
+      matchingVoice =
+        voices.find((v) => v.lang.startsWith("en-IN") || v.lang.includes("en_IN")) ||
+        voices.find(
+          (v) =>
+            v.lang.startsWith("en") &&
+            (v.name.toLowerCase().includes("male") ||
+              v.name.toLowerCase().includes("david") ||
+              v.name.toLowerCase().includes("george") ||
+              v.name.toLowerCase().includes("guy") ||
+              v.name.toLowerCase().includes("mark") ||
+              v.name.toLowerCase().includes("prabhat") ||
+              v.name.toLowerCase().includes("ravi") ||
+              v.name.toLowerCase().includes("natural") ||
+              v.name.toLowerCase().includes("ryan")),
+        ) ||
+        voices.find((v) => v.lang.startsWith("en"));
+    }
+
+    if (matchingVoice) {
+      utterance.voice = matchingVoice;
     }
 
     utterance.onend = () => setSpeakingId(null);
@@ -1869,6 +1877,51 @@ export default function AIChatPage() {
           </div>
         </div>
       )}
+
+      {/* MULTILINGUAL SPEECH/VOICE LANGUAGE SELECTOR */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "8px",
+          padding: "0 4px",
+          marginTop: "6px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span style={{ fontSize: "0.75rem", color: "#94A3B8", fontWeight: 600 }}>Voice Input:</span>
+          {[
+            { id: "en-IN", label: "EN / Manglish" },
+            { id: "ml-IN", label: "മലയാളം" },
+            { id: "ta-IN", label: "தமிழ்" },
+            { id: "hi-IN", label: "हिंदी" },
+          ].map((l) => {
+            const isSel = speechLang === l.id;
+            return (
+              <button
+                key={l.id}
+                type="button"
+                onClick={() => setSpeechLang(l.id as any)}
+                style={{
+                  padding: "3px 10px",
+                  borderRadius: "999px",
+                  fontSize: "0.74rem",
+                  fontWeight: isSel ? 700 : 500,
+                  background: isSel ? "rgba(14, 165, 233, 0.22)" : "rgba(255, 255, 255, 0.05)",
+                  border: isSel ? "1px solid rgba(56, 189, 248, 0.45)" : "1px solid rgba(255, 255, 255, 0.08)",
+                  color: isSel ? "#38BDF8" : "#94A3B8",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                {l.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* CHAT INPUT COMPOSER WITH VOICE MIC BUTTON */}
       <form

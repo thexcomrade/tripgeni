@@ -205,3 +205,37 @@ class AuthService:
             raise ValueError("User not found")
 
         return user
+
+    def update_profile(
+        self,
+        user_id: str,
+        full_name: str | None = None,
+        username: str | None = None,
+        bio: str | None = None,
+        date_of_birth: str | None = None,
+        base_location: str | None = None,
+        country: str | None = None,
+        travel_preferences: str | None = None,
+    ) -> User:
+        user = self.get_user_by_id(user_id)
+        if not user:
+            raise ValueError("User not found")
+
+        if full_name is not None:
+            user.full_name = full_name.strip()
+        if username is not None:
+            user.username = username.strip()
+        if bio is not None:
+            user.bio = bio.strip()
+        if date_of_birth is not None:
+            user.date_of_birth = date_of_birth.strip()
+        if base_location is not None:
+            user.base_location = base_location.strip()
+        if country is not None:
+            user.country = country.strip()
+        if travel_preferences is not None:
+            user.travel_preferences = travel_preferences.strip()
+
+        self.db.commit()
+        self.db.refresh(user)
+        return user

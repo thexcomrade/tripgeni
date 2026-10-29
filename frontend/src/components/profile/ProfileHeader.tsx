@@ -358,7 +358,7 @@ export default function ProfileHeader({
               !user.bio.includes("Healthcare Professional") &&
               !user.bio.includes("Dr. Sivya Menon")
                 ? user.bio
-                : "Passionate traveler based in Trivandrum / Kochi. Loves mindful journeys, peaceful coastal getaways, and exploring authentic cultural sanctuaries."}
+                : ""}
             </p>
 
             {/* TAGS & LOCATION */}
@@ -386,7 +386,7 @@ export default function ProfileHeader({
                 }}
               >
                 <MapPin size={13} color="#FB7185" />
-                {user.country || "Trivandrum, Kerala, India"}
+                {user.country || "Location not specified"}
               </span>
 
               <span

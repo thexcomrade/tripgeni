@@ -1690,10 +1690,40 @@ Return JSON.
                 user_message, history, user_name=user_name
             )
 
-        # 2. Retrieve verified RAG facts from local knowledge base
+        # 2. Retrieve verified RAG facts from local knowledge base & detect language
         rag_context = tourism_rag.retrieve_context_for_query(
             user_message, history
         )
+
+        user_lang = tourism_rag.detect_language(user_message) if hasattr(tourism_rag, "detect_language") else "english"
+        language_instruction = ""
+        if user_lang == "manglish":
+            language_instruction = (
+                "8. MANDATORY LANGUAGE: MANGLISH (Malayalam written in English Alphabet)\n"
+                "The user is speaking in MANGLISH (e.g. 'Kochi to Delhi flight price ethraya? approx ethra time edukkum?').\n"
+                "YOU MUST RESPOND IN NATURAL, FLUENT MANGLISH using the English alphabet!\n"
+                "Do NOT respond in English or Malayalam script. Answer naturally in Manglish like: 'Kochi-il ninnu Delhi-kku direct flight-il ethaand 3 hours 10 mins edukkum...'.\n"
+                "Provide accurate distance, travel time, train numbers and classes, realistic fare ranges, and direct booking links."
+            )
+        elif user_lang == "malayalam":
+            language_instruction = (
+                "8. MANDATORY LANGUAGE: MALAYALAM SCRIPT\n"
+                "The user asked in MALAYALAM SCRIPT. YOU MUST RESPOND IN NATURAL MALAYALAM SCRIPT (മലയാളത്തിൽ മറുപടി നൽകുക)."
+            )
+        elif user_lang == "tamil":
+            language_instruction = (
+                "8. MANDATORY LANGUAGE: TAMIL\n"
+                "The user asked in TAMIL. YOU MUST RESPOND IN TAMIL (தமிழിൽ பதில் அளிக்கவும்)."
+            )
+        elif user_lang == "hindi":
+            language_instruction = (
+                "8. MANDATORY LANGUAGE: HINDI\n"
+                "The user asked in HINDI. YOU MUST RESPOND IN HINDI (हिंदी में उत्तर दें)."
+            )
+
+        if any(w in msg_lower for w in ["short aayi", "churukki", "brief", "short", "summarize", "2 line", "one line"]):
+            language_instruction += "\n9. LENGTH CONSTRAINT: The user asked for a short reply. Answer in 2 to 3 concise, information-packed sentences maximum."
+
 
         # 3. Format history for context
         history_formatted = ""
@@ -1767,6 +1797,8 @@ Your primary responsibility is not merely to answer the literal wording of a que
    - Keep replies SHORT, PITHY, and goal-oriented (1 to 2 short paragraphs max, or crisp bullet points).
    - NEVER generate repetitive boilerplate, long rambling lectures, or unwanted text walls.
    - Understand the user's intent immediately. As soon as a destination or duration is known, summarize key requirements in 1-2 sentences and guide the traveler straight to final itinerary generation in the Planner!
+
+{language_instruction}
 
 {history_formatted}Traveler: "{user_message}"
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Compass, Bookmark, Award, Sliders } from "lucide-react";
+import { Compass, Bookmark, Sliders } from "lucide-react";
 
 interface ProfileTabsProps {
   activeTab: string;
@@ -25,12 +25,6 @@ const TABS = [
     countKey: "saved",
   },
   {
-    id: "achievements",
-    label: "Achievements",
-    icon: Award,
-    countKey: "achievements",
-  },
-  {
     id: "preferences",
     label: "Travel Styles",
     icon: Sliders,
@@ -42,13 +36,10 @@ export default function ProfileTabs({
   onTabChange,
   tripsCount,
   savedCount,
-  achievementsCount,
 }: ProfileTabsProps) {
   const getCount = (key?: string) => {
     if (key === "trips" && typeof tripsCount === "number") return tripsCount;
     if (key === "saved" && typeof savedCount === "number") return savedCount;
-    if (key === "achievements" && typeof achievementsCount === "number")
-      return achievementsCount;
     return undefined;
   };
 
@@ -101,22 +92,17 @@ export default function ProfileTabs({
             >
               <Icon size={16} color={isActive ? "#38BDF8" : "#94A3B8"} />
               <span>{tab.label}</span>
-
               {typeof count === "number" && (
                 <span
                   style={{
-                    fontSize: "0.72rem",
-                    padding: "2px 7px",
+                    padding: "2px 8px",
                     borderRadius: "999px",
-                    fontFamily: "monospace",
+                    fontSize: "0.74rem",
                     fontWeight: 700,
                     background: isActive
-                      ? "rgba(14, 165, 233, 0.25)"
+                      ? "rgba(14, 165, 233, 0.4)"
                       : "rgba(255, 255, 255, 0.08)",
-                    color: isActive ? "#38BDF8" : "#94A3B8",
-                    border: isActive
-                      ? "1px solid rgba(14, 165, 233, 0.35)"
-                      : "1px solid transparent",
+                    color: isActive ? "#FFFFFF" : "#CBD5E1",
                   }}
                 >
                   {count}

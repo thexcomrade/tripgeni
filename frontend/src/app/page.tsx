@@ -357,11 +357,11 @@ export default function HomePage() {
   className="animate-blur-fade-up hero-main-title"
   style={{
     animationDelay: "300ms",
-    fontFamily: "'Cormorant Garamond', Georgia, serif",
+    fontFamily: "'Playfair Display', Georgia, serif",
     fontSize: "clamp(3.2rem, 6vw, 5.5rem)",
     fontWeight: 700,
     lineHeight: 1.05,
-    letterSpacing: "0.9px",
+    letterSpacing: "0.02em",
     maxWidth: "1300px",
     margin: "0 auto 22px auto",
     textAlign: "center",
@@ -381,9 +381,10 @@ export default function HomePage() {
       color: "#00CFFF",
       fontWeight: 700,
       display: "inline-block",
+      letterSpacing: "0.025em",
     }}
   >
-    Intelligent
+    Intelli<span style={{ display: "inline-block", transform: "scaleX(1.12)", transformOrigin: "center", margin: "0 0.5px" }}>g</span>ent
   </span>{" "}
   <span
     className="text-precision-gold"

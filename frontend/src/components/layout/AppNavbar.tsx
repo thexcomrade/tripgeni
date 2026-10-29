@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -8,16 +8,11 @@ import {
   Compass,
   Sparkles,
   LayoutDashboard,
-  History,
-  Heart,
   Bot,
-  BarChart3,
-  Award,
   Bell,
   User,
   Menu,
   X,
-  ChevronDown,
   LogOut,
 } from "lucide-react";
 
@@ -25,9 +20,7 @@ export default function AppNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
-  const moreRef = useRef<HTMLDivElement>(null);
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("Traveler");
   const [scrolled, setScrolled] = useState(false);
@@ -55,27 +48,18 @@ export default function AppNavbar() {
     };
     window.addEventListener("scroll", handleScroll);
 
-    const handleClickOutside = (event: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(event.target as Node)) {
-        setMoreOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
+
 
     return () => {
       window.removeEventListener("storage", checkAuth);
       window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("mousedown", handleClickOutside);
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
+
     };
   }, []);
 
   // Close menus on route change
   useEffect(() => {
     setMobileMenuOpen(false);
-    setMoreOpen(false);
   }, [pathname]);
 
   const handleLogout = () => {
@@ -91,13 +75,6 @@ export default function AppNavbar() {
     { name: "Explore", href: "/explore" },
     { name: "AI Chat", href: "/ai-chat" },
     { name: "Dashboard", href: "/dashboard" },
-    { name: "Favorites", href: "/favorites" },
-  ];
-
-  const moreNav = [
-    { name: "Analytics", href: "/analytics", icon: BarChart3 },
-    { name: "Achievements", href: "/achievements", icon: Award },
-    { name: "Trip History", href: "/trip/history", icon: History },
   ];
 
   const isHome = pathname === "/";
@@ -117,15 +94,20 @@ export default function AppNavbar() {
           right: 0,
           width: "100%",
           zIndex: 100,
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
+          backdropFilter: scrolled ? "blur(24px)" : "blur(16px)",
+          WebkitBackdropFilter: scrolled ? "blur(24px)" : "blur(16px)",
           background: scrolled
-            ? "rgba(3, 7, 18, 0.90)"
+            ? "rgba(3, 7, 18, 0.92)"
             : isHome
               ? "rgba(3, 7, 18, 0.35)"
-              : "rgba(3, 7, 18, 0.85)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-          transition: "background 0.3s ease, border-color 0.3s ease",
+              : "rgba(3, 7, 18, 0.82)",
+          boxShadow: scrolled
+            ? "0 12px 32px -10px rgba(0, 0, 0, 0.65), 0 1px 0 0 rgba(255, 255, 255, 0.10)"
+            : "none",
+          borderBottom: scrolled
+            ? "1px solid rgba(255, 255, 255, 0.10)"
+            : "1px solid rgba(255, 255, 255, 0.05)",
+          transition: "all 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
       <div
@@ -204,13 +186,14 @@ export default function AppNavbar() {
                   fontWeight: active ? 700 : 500,
                   whiteSpace: "nowrap",
                   flexShrink: 0,
-                  color: active ? "#38BDF8" : "#CBD5E1",
+                  color: active ? "#38BDF8" : "#E2E8F0",
                   background: active
-                    ? "rgba(14, 165, 233, 0.12)"
+                    ? "linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(20, 184, 166, 0.12))"
                     : "transparent",
                   border: active
-                    ? "1px solid rgba(14, 165, 233, 0.25)"
+                    ? "1px solid rgba(56, 189, 248, 0.40)"
                     : "1px solid transparent",
+                  boxShadow: active ? "0 0 16px -2px rgba(14, 165, 233, 0.35)" : "none",
                   transition: "all 0.2s ease",
                   textDecoration: "none",
                   animationDelay: isHome ? `${100 + idx * 50}ms` : undefined,
@@ -221,145 +204,7 @@ export default function AppNavbar() {
             );
           })}
 
-          {/* MORE APPS DROPDOWN */}
-          <div
-            ref={moreRef}
-            style={{ position: "relative" }}
-            onMouseEnter={() => {
-              if (hoverTimeoutRef.current) {
-                clearTimeout(hoverTimeoutRef.current);
-                hoverTimeoutRef.current = null;
-              }
-              setMoreOpen(true);
-            }}
-            onMouseLeave={() => {
-              hoverTimeoutRef.current = setTimeout(() => {
-                setMoreOpen(false);
-              }, 250);
-            }}
-          >
-            {(() => {
-              const isMoreActive = moreNav.some((item) => isActive(item.href));
-              return (
-                <>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (hoverTimeoutRef.current) {
-                        clearTimeout(hoverTimeoutRef.current);
-                        hoverTimeoutRef.current = null;
-                      }
-                      setMoreOpen((prev) => !prev);
-                    }}
-                    aria-expanded={moreOpen}
-                    aria-haspopup="true"
-                    style={{
-                      padding: "8px 12px",
-                      borderRadius: "10px",
-                      fontSize: "clamp(0.8rem, 0.9vw, 0.9rem)",
-                      fontWeight: isMoreActive ? 700 : 500,
-                      color: isMoreActive || moreOpen ? "#38BDF8" : "#CBD5E1",
-                      background:
-                        isMoreActive || moreOpen
-                          ? "rgba(14, 165, 233, 0.14)"
-                          : "transparent",
-                      border:
-                        isMoreActive || moreOpen
-                          ? "1px solid rgba(14, 165, 233, 0.3)"
-                          : "1px solid transparent",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      transition: "all 0.2s ease",
-                      userSelect: "none",
-                    }}
-                  >
-                    <span>More</span>
-                    <ChevronDown
-                      size={14}
-                      style={{
-                        transition: "transform 0.2s ease",
-                        transform: moreOpen ? "rotate(180deg)" : "none",
-                      }}
-                    />
-                  </button>
-
-                  {moreOpen && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "100%",
-                        right: 0,
-                        paddingTop: "6px",
-                        zIndex: 9999,
-                        minWidth: "220px",
-                      }}
-                      onMouseEnter={() => {
-                        if (hoverTimeoutRef.current) {
-                          clearTimeout(hoverTimeoutRef.current);
-                          hoverTimeoutRef.current = null;
-                        }
-                      }}
-                    >
-                      <div
-                        style={{
-                          background: "rgba(15, 23, 42, 0.98)",
-                          backdropFilter: "blur(24px)",
-                          WebkitBackdropFilter: "blur(24px)",
-                          border: "1px solid rgba(255, 255, 255, 0.16)",
-                          borderRadius: "14px",
-                          padding: "6px",
-                          boxShadow: "0 20px 48px rgba(0, 0, 0, 0.70)",
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "2px",
-                        }}
-                      >
-                        {moreNav.map((item) => {
-                          const Icon = item.icon;
-                          const active = isActive(item.href);
-                          return (
-                            <Link
-                              key={item.href}
-                              href={item.href}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setMoreOpen(false);
-                              }}
-                              className="more-dropdown-link" 
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                                padding: "10px 14px",
-                                borderRadius: "8px",
-                                color: active ? "#38BDF8" : "#E2E8F0",
-                                background: active
-                                  ? "rgba(14, 165, 233, 0.14)"
-                                  : "transparent",
-                                fontSize: "0.88rem",
-                                fontWeight: active ? 600 : 500,
-                                textDecoration: "none",
-                                transition: "all 0.15s ease",
-                              }}
-                            >
-                              <Icon
-                                size={16}
-                                color={active ? "#38BDF8" : "#94A3B8"}
-                              />
-                              <span>{item.name}</span>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </>
-              );
-            })()}
-          </div>
+          
         </nav>
 
         {/* RIGHT ACTION CONTROLS (RIGHT) */}
@@ -666,7 +511,7 @@ export default function AppNavbar() {
             >
               Main Navigation
             </span>
-            {[...mainNav, ...moreNav].map((item) => {
+            {mainNav.map((item) => {
               const active = isActive(item.href);
               return (
                 <Link
