@@ -1,5 +1,7 @@
 "use client";
 
+import { getApiBaseUrl } from "../../utils/apiConfig";
+
 import FloatingMascot from "../../components/mascot/FloatingMascot";
 import SmartWorldClockAndCompass from "../../components/dashboard/SmartWorldClockAndCompass";
 
@@ -375,10 +377,7 @@ export default function DashboardPage() {
     const fetchWeather = async () => {
       setWeatherLoading(true);
       try {
-        const baseUrl =
-          typeof window !== "undefined"
-            ? `${window.location.protocol}//${window.location.hostname}:8000`
-            : "http://127.0.0.1:8000";
+        const baseUrl = getApiBaseUrl();
 
         const res = await fetch(
           `${baseUrl}/api/weather?city=${encodeURIComponent(weatherCity)}`,

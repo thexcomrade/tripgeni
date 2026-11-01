@@ -1,5 +1,7 @@
 "use client";
 
+import { getApiBaseUrl } from "../../utils/apiConfig";
+
 import { useEffect, useState } from "react";
 import { X, Check, AtSign, MapPin, Sparkles, User as UserIcon, Calendar } from "lucide-react";
 import toast from "react-hot-toast";
@@ -149,9 +151,7 @@ export default function EditProfileModal({
     try {
       const token = typeof window !== "undefined" ? localStorage.getItem("tripgenius_token") : null;
       if (token) {
-        const baseUrl = typeof window !== "undefined"
-          ? `${window.location.protocol}//${window.location.hostname}:8000`
-          : "http://127.0.0.1:8000";
+        const baseUrl = getApiBaseUrl();
 
         await fetch(`${baseUrl}/api/auth/profile`, {
           method: "PUT",

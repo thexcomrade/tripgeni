@@ -1,5 +1,7 @@
 "use client";
 
+import { getApiBaseUrl } from "../../utils/apiConfig";
+
 import { useEffect, useState } from "react";
 import ProfileHeader from "../../components/profile/ProfileHeader";
 import ProfileTabs from "../../components/profile/ProfileTabs";
@@ -116,19 +118,34 @@ export default function ProfilePage() {
         }
       }
 
+      // Instant render from local cache if available (0ms cold start)
+      if (storedUser) {
+        try {
+          const cached = JSON.parse(storedUser);
+          setUser((prev) => ({
+            ...prev,
+            ...cached,
+            saved_trips: parsedSaved.length,
+            total_trips: parsedSaved.length > 0 ? parsedSaved.length : (cached.total_trips || 0),
+          }));
+          setLoading(false);
+        } catch {}
+      }
+
       if (token) {
         setIsLoggedIn(true);
 
         // Fetch persisted profile from backend API
         let remoteUser: any = null;
         try {
-          const baseUrl =
-            typeof window !== "undefined"
-              ? `${window.location.protocol}//${window.location.hostname}:8000`
-              : "http://127.0.0.1:8000";
+          const baseUrl = getApiBaseUrl();
+          const controller = new AbortController();
+          const timer = setTimeout(() => { try { controller.abort(); } catch {} }, 3500);
           const res = await fetch(`${baseUrl}/api/auth/profile`, {
             headers: { Authorization: `Bearer ${token}` },
+            signal: controller.signal,
           });
+          clearTimeout(timer);
           if (res.ok) {
             remoteUser = await res.json();
           }
@@ -264,10 +281,7 @@ export default function ProfilePage() {
       // Persist to backend if token exists
       const token = localStorage.getItem("tripgenius_token");
       if (token) {
-        const baseUrl =
-          typeof window !== "undefined"
-            ? `${window.location.protocol}//${window.location.hostname}:8000`
-            : "http://127.0.0.1:8000";
+        const baseUrl = getApiBaseUrl();
         await fetch(`${baseUrl}/api/auth/profile`, {
           method: "PUT",
           headers: {
