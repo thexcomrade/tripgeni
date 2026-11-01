@@ -14,7 +14,7 @@ import re
 DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     "thenkasi": {
         "canonical_name": "Thenkasi & Courtallam",
-        "aliases": ["thenkasi", "tenkasi", "courtallam", "kourtallam", "kutralam", "kuttralam", "ayikudi", "shenkottai"],
+        "aliases": ["thenkasi", "tenkasi", "courtallam", "kourtallam", "kutralam", "kuttralam", "ayikudi", "shenkottai", "തെങ്കാശി", "കുറ്റാലം", "തെன்காசி", "குற்றாலம்", "तेनकासी"],
         "region": "Tamil Nadu (Western Ghats Foothills / Kerala Border)",
         "tagline": "The Spa of South India & Gateway to the Western Ghats",
         "vibe": "Rejuvenating waterfalls, temple heritage, mist-wrapped foothills, and famous border food",
@@ -68,7 +68,7 @@ DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     },
     "munnar": {
         "canonical_name": "Munnar",
-        "aliases": ["munnar", "munar", "devikulam", "mattupetty", "kolukkumalai", "marayoor"],
+        "aliases": ["munnar", "munar", "devikulam", "mattupetty", "kolukkumalai", "marayoor", "മുന്നാർ", "മൂന്നാർ", "മുന്നാറ", "മൂന്നാറ", "മുன்னார்", "முன்னாரு", "मुन्नार"],
         "region": "Idukki District, Kerala",
         "tagline": "The Emerald Tea Hills of the Western Ghats",
         "vibe": "Endless tea plantations, misty mountain passes, cool climate, and rare wildlife",
@@ -117,7 +117,7 @@ DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     },
     "vattavada": {
         "canonical_name": "Vattavada",
-        "aliases": ["vattavada", "koviloor", "pambadum shola", "chilanthiyar"],
+        "aliases": ["vattavada", "koviloor", "pambadum shola", "chilanthiyar", "വട്ടവട", "வட்டவடா", "वट्टावडा"],
         "region": "Idukki District, Kerala (near Munnar / Tamil Nadu border)",
         "tagline": "Kerala's Organic Strawberry & Winter Vegetable Bowl",
         "vibe": "Pristine mountain village, terrace farming, apple & strawberry orchards, pine forests, and cool nights",
@@ -1167,12 +1167,16 @@ def calculate_haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -
 
 def detect_language(text: str) -> str:
     import re
-    if re.search(r"[ഀ-ൿ]", text):
-        return "malayalam"
-    if re.search(r"[஀-௿]", text):
-        return "tamil"
-    if re.search(r"[ऀ-ॿ]", text):
-        return "hindi"
+    ml_count = len(re.findall(r"[\u0D00-\u0D7F]", text))
+    ta_count = len(re.findall(r"[\u0B80-\u0BFF]", text))
+    hi_count = len(re.findall(r"[\u0900-\u097F]", text))
+
+    script_counts = [("malayalam", ml_count), ("tamil", ta_count), ("hindi", hi_count)]
+    script_counts.sort(key=lambda x: x[1], reverse=True)
+
+    if script_counts[0][1] > 0:
+        return script_counts[0][0]
+
     text_lower = text.lower()
     manglish_markers = [
         "ethraya", "ethra", "undo", "varan", "povan", "nalla", "evide",
@@ -1181,7 +1185,18 @@ def detect_language(text: str) -> str:
         "sugano", "sugamano", "sukham", "macha", "machane", "entha",
         "enthe", "engane", "eppo", "vannal", "edukkum", "tharam", "parayu",
         "njan", "njn", "ningal", "ivide", "avide", "korachu", "churukki",
-        "aano", "aanu", "thanne", "alle", "nokk", "ariyaan"
+        "aano", "aanu", "thanne", "alle", "nokk", "ariyaan",
+        "enikku", "enikk", "venam", "veenam", "kittum", "undakam",
+        "cheyth", "cheyyam", "cheyyano", "cheyyuka", "cheythitu",
+        "pokunnu", "poyittu", "varunnu", "vannu", "vannal",
+        "paranju", "parayam", "parayano",
+        "okke", "onnum", "enthu", "enth", "ennodu", "enne",
+        "nammude", "nammal", "ningalude", "avaru", "avarude",
+        "sherikkum", "adipoli", "njngal", "ithu", "itu",
+        "aavum", "aakum", "mathi", "thirichu",
+        "evidekk", "angott", "ingott",
+        "kaananam", "kollallo", "thonnunnu",
+        "kure", "koode", "koodi", "enna", "enthinanu",
     ]
     tokens = set(re.findall(r"\w+", text_lower))
     if any(m in tokens or m in text_lower for m in manglish_markers):
@@ -1358,14 +1373,15 @@ class TourismRAGService:
         self.kb = DESTINATION_KNOWLEDGE_BASE
 
     def resolve_destination(self, text: str) -> Optional[dict[str, Any]]:
-        """Extract and match destination entity from user text or context."""
+        """Extract and match destination entity from user text or context across languages."""
         cleaned = re.sub(r"[^\w\s]", " ", text.lower())
-        tokens = cleaned.split()
+        raw_lower = text.lower()
 
         # Check multi-word and single-word aliases
         for dest_key, data in self.kb.items():
-            for alias in data["aliases"]:
-                if alias in cleaned:
+            for alias in data.get("aliases", []):
+                a_low = alias.lower()
+                if a_low in raw_lower or a_low in cleaned:
                     return data
 
         return None
@@ -1458,6 +1474,7 @@ class TourismRAGService:
                     break
 
         full_context = f"{history_text} {msg_lower}"
+        lang = detect_language(user_message)
 
         # 1. Greeting check
         malayalam_greetings = ["sugano", "sugamano", "sukhamano", "sukham", "sugam", "kollam", "macha", "machane", "entha", "enthe"]
@@ -1672,45 +1689,99 @@ class TourismRAGService:
         )
 
         if active_dest_name:
-            # Check for travelers
+            # Check for travelers across languages
             travelers_match = re.search(
-                r"\b(\d+)\s*(?:people|persons?|travelers?|pax|adults?|members?)\b",
-                full_context
+                r"(\d+)\s*(?:people|persons?|travelers?|pax|adults?|members?|പേർ|ആളുകൾ|நபர்கள்|लोग)",
+                full_context,
+                re.IGNORECASE
             )
-            has_solo = any(w in full_context for w in ["solo", "alone", "myself", "just me", "single"])
-            has_couple = any(w in full_context for w in ["couple", "two of us", "2 of us", "with my wife", "with my husband", "with my partner"])
-            has_family = any(w in full_context for w in ["family", "kids", "parents"])
-            has_friends = any(w in full_context for w in ["friends", "buddies", "college", "colleagues"])
+            has_solo = any(w in full_context for w in ["solo", "alone", "myself", "just me", "single", "തനിച്ച്", "ഒറ്റയ്ക്ക്", "தனியாக", "अकेले"])
+            has_couple = any(w in full_context for w in ["couple", "two of us", "2 of us", "with my wife", "with my husband", "with my partner", "ഭാര്യയോടൊപ്പം", "ഭർത്താവിനൊപ്പം", "தம்பதியர்", "कपल", "पत्नी के साथ"])
+            has_family = any(w in full_context for w in ["family", "kids", "parents", "കുടുംബം", "കുട്ടികൾ", "குடும்பம்", "परिवार", "बच्चों"])
+            has_friends = any(w in full_context for w in ["friends", "buddies", "college", "colleagues", "സുഹൃത്തുക്കൾ", "കൂട്ടുകാർ", "நண்பர்கள்", "दोस्तों"])
             has_travelers = bool(travelers_match or has_solo or has_couple or has_family or has_friends or (
-                "traveler" in last_assistant_msg and re.search(r"^\b\d+\b$", msg_lower)
+                ("traveler" in last_assistant_msg or "days" in last_assistant_msg) and re.search(r"^\d+$", msg_lower.strip())
             ))
 
-            # Check for days / duration
-            days_match = re.search(r"\b(\d+)\s*(?:day|days|d|night|nights|n)\b", full_context)
-            has_days = bool(days_match or (
-                "how many days" in last_assistant_msg and re.search(r"^\b\d+\b$", msg_lower)
-            ))
-            num_days = int(days_match.group(1)) if days_match else (
-                int(msg_lower.strip()) if ("how many days" in last_assistant_msg and msg_lower.strip().isdigit()) else None
-            )
+            # Multilingual Day / Duration Detection
+            days_match = re.search(r"(\d+)[\s-]*(?:day|days|d|night|nights|n|ദിവസ|നാൾ|நாட்|दिन|രാത്രി|இரவு)", full_context, re.IGNORECASE)
+            multilingual_num_words = {
+                "ഒരു": 1, "ഒന്ന്": 1, "രണ്ട്": 2, "രണ്ടു": 2, "മൂന്ന്": 3, "മൂന്നു": 3,
+                "നാല്": 4, "നാലു": 4, "അഞ്ച്": 5, "അഞ്ചു": 5, "ആറ്": 6, "ഏഴ്": 7,
+                "ஒரு": 1, "இரண்டு": 2, "மூன்று": 3, "நான்கு": 4, "ஐந்து": 5,
+                "एक": 1, "दो": 2, "तीन": 3, "चार": 4, "पांच": 5, "पाँच": 5,
+                "one": 1, "two": 2, "three": 3, "four": 4, "five": 5
+            }
+            num_days = None
+            if days_match:
+                num_days = int(days_match.group(1))
+            else:
+                for w, n in multilingual_num_words.items():
+                    if w in full_context and any(d_term in full_context for d_term in ["ദിവസ", "നാൾ", "நாட்", "दिन", "day"]):
+                        num_days = n
+                        break
+                if not num_days and ("how many days" in last_assistant_msg or "എത്ര ദിവസം" in last_assistant_msg) and msg_lower.strip().isdigit():
+                    num_days = int(msg_lower.strip())
+
+            has_days = num_days is not None
 
             # Check for budget
-            has_budget = any(w in full_context for w in ["budget", "comfort", "luxury", "₹", "rs", "rupee", "cheap", "cost", "10000", "15000", "12000", "20000", "25000", "under"])
+            has_budget = any(w in full_context for w in [
+                "budget", "comfort", "luxury", "₹", "rs", "rupee", "cheap", "cost",
+                "10000", "15000", "12000", "20000", "25000", "under", "രൂപ", "ചെലവ്", "பட்ஜெட்", "बजट", "खर्च"
+            ])
 
             # STEP A: Destination just mentioned -> Warm reaction + 2-line description + Ask duration & group dynamic in 1 targeted question
-            dest_in_current_msg = bool(dest_data and dest_data["canonical_name"].lower() in msg_lower) or any(cd in msg_lower for cd in common_destinations)
+            dest_in_current_msg = bool(dest_data and any(a in msg_lower for a in dest_data.get("aliases", []))) or any(cd in msg_lower for cd in common_destinations)
             if dest_in_current_msg and not has_travelers and not has_days:
                 tagline = active_dest_data["tagline"] if active_dest_data else f"A breathtaking travel haven"
                 vibe = active_dest_data["vibe"] if active_dest_data else f"Rich culture, picturesque landscapes, and memorable local experiences"
 
-                return {
-                    "reply": (
-                        f"Oh, {active_dest_name}!! 🌟\n\n"
-                        f"{tagline}. {vibe}.\n\n"
-                        f"To help me craft the ideal route and pace for you: how many days are you planning to spend, and will you be traveling solo, as a couple, or with family/friends?"
-                    ),
-                    "source": "rag_consultative_engine",
-                }
+                if lang == "malayalam":
+                    return {
+                        "reply": (
+                            f"തീർച്ചയായും, {active_dest_name}! 🌟\n\n"
+                            f"മനോഹരമായ പ്രകൃതിഭംഗിയും ആധികാരികമായ പ്രാദേശിക ഭക്ഷണങ്ങളും നിറഞ്ഞ ഒരു അവിസ്മരണീയമായ അനുഭവം.\n\n"
+                            f"നിങ്ങൾക്കായി കൃത്യമായ യാത്രാപദ്ധതി തയ്യാറാക്കാൻ: എത്ര ദിവസത്തെ യാത്രയാണ് ഉദ്ദേശിക്കുന്നത്? (ഒറ്റയ്ക്കാണോ, ദമ്പതികളായോ അതോ കുടുംബം/സുഹൃത്തുക്കൾക്കൊപ്പമാണോ യാത്ര?)"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                elif lang == "manglish":
+                    return {
+                        "reply": (
+                            f"Super choice, {active_dest_name}!! 🌟\n\n"
+                            f"{tagline}. Scenic spots-um authentic food-um nalla vibes-um ulla oru place.\n\n"
+                            f"Ningalkkaayi nalla plan undakkaan: ethra days aanu plan cheyyunne? (Solo aano, couple aano, atho family/friends koode aano?)"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                elif lang == "tamil":
+                    return {
+                        "reply": (
+                            f"அற்புதமான தேர்வு, {active_dest_name}! 🌟\n\n"
+                            f"அழகிய இயற்கைக் காட்சிகள், கலாச்சாரம் மற்றும் சுவையான உணவுகள் நிறைந்த சிறந்த இடம்.\n\n"
+                            f"உங்களுக்கான சிறந்த பயணத் திட்டத்தை உருவாக்க: எத்தனை நாட்கள் திட்டமிடுகிறீர்கள்? (தனியாகவா, தம்பதியராகவா அல்லது குடும்பம்/நண்பர்களுடனா?)"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                elif lang == "hindi":
+                    return {
+                        "reply": (
+                            f"शानदार विकल्प, {active_dest_name}! 🌟\n\n"
+                            f"खूबसूरत प्राकृतिक दृश्य, समृद्ध संस्कृति और लाजवाब स्थानीय भोजन का संगम।\n\n"
+                            f"एक सटीक यात्रा योजना तैयार करने के लिए: आप कितने दिनों की यात्रा की योजना बना रहे हैं, और क्या आप अकेले, कपल के रूप में या परिवार/दोस्तों के साथ जा रहे हैं?"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                else:
+                    return {
+                        "reply": (
+                            f"Oh, {active_dest_name}!! 🌟\n\n"
+                            f"{tagline}. {vibe}.\n\n"
+                            f"To help me craft the ideal route and pace for you: how many days are you planning to spend, and will you be traveling solo, as a couple, or with family/friends?"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
 
             # STEP B: Travelers provided, but duration missing -> Acknowledge travelers + Ask days
             if has_travelers and not has_days:
@@ -1721,24 +1792,93 @@ class TourismRAGService:
                     else "A trip with friends" if has_friends
                     else f"A trip for {travelers_match.group(0) if travelers_match else 'your group'}"
                 )
-                return {
-                    "reply": (
-                        f"Wonderful! {group_phrase} to **{active_dest_name}** will be an exceptional experience.\n\n"
-                        f"How many days are you planning to spend? (Most travelers find 3 to 4 days ideal to explore the key highlights and authentic spots comfortably)."
-                    ),
-                    "source": "rag_consultative_engine",
-                }
+                if lang == "malayalam":
+                    return {
+                        "reply": (
+                            f"വളരെ സന്തോഷം! **{active_dest_name}**-ലേക്ക് യാത്ര തിരിക്കുന്നത് മികച്ച അനുഭവമായിരിക്കും.\n\n"
+                            f"എത്ര ദിവസത്തെ യാത്രയാണ് നിങ്ങൾ പ്ലാൻ ചെയ്യുന്നത്? (പ്രധാന കാഴ്ചകൾ കാണാൻ 3 മുതൽ 4 ദിവസം വരെ സാധാരണയായി ആളുകൾ തിരഞ്ഞെടുക്കാറുണ്ട്)."
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                elif lang == "manglish":
+                    return {
+                        "reply": (
+                            f"Super! {group_phrase} to **{active_dest_name}** nalla oru experience aayirikkum.\n\n"
+                            f"Ethra days aanu spend cheyyaan plan? (Main spots kandaaswadhikkan 3 to 4 days aanu ideal)."
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                elif lang == "tamil":
+                    return {
+                        "reply": (
+                            f"அற்புதம்! **{active_dest_name}** நோக்கிய பயணம் மிகச் சிறந்த அனுபவமாக இருக்கும்.\n\n"
+                            f"எத்தனை நாட்கள் செலவிட திட்டமிட்டுள்ளீர்கள்? (3 முதல் 4 நாட்கள் வரை பொதுவாக போதுமானது)."
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                elif lang == "hindi":
+                    return {
+                        "reply": (
+                            f"शानदार! **{active_dest_name}** की यात्रा आपके लिए बेहद सुखद और यादगार रहेगी।\n\n"
+                            f"आप कितने दिन बिताना चाहते हैं? (अधिकतर यात्री 3 से 4 दिन का समय उपयुक्त मानते हैं)।"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                else:
+                    return {
+                        "reply": (
+                            f"Wonderful! {group_phrase} to **{active_dest_name}** will be an exceptional experience.\n\n"
+                            f"How many days are you planning to spend? (Most travelers find 3 to 4 days ideal to explore the key highlights and authentic spots comfortably)."
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
 
             # STEP C: Duration provided, but budget missing -> Acknowledge days + Ask budget
             if has_days and not has_budget:
                 days_label = f"{num_days} days" if num_days else "Your planned duration"
-                return {
-                    "reply": (
-                        f"{days_label} is a fantastic timeframe for **{active_dest_name}**! That gives us ample time to experience the signature sights, authentic regional meals, and peaceful hidden corners.\n\n"
-                        f"What approximate budget tier or style do you have in mind? (e.g. Budget backpacker, comfortable heritage stays, or luxury in ₹)?"
-                    ),
-                    "source": "rag_consultative_engine",
-                }
+                if lang == "malayalam":
+                    ml_days = f"{num_days} ദിവസം" if num_days else "നിങ്ങൾ ഉദ്ദേശിച്ച ദിവസങ്ങൾ"
+                    return {
+                        "reply": (
+                            f"**{active_dest_name}** സന്ദർശിക്കാൻ {ml_days} മികച്ച സമയമാണ്! പ്രധാന കാഴ്ചകളും തനത് ഭക്ഷണങ്ങളും ശാന്തമായി ആസ്വദിക്കാൻ ഇത് ധാരാളമാണ്.\n\n"
+                            f"ഏതുതരത്തിലുള്ള ബജറ്റാണ് മനസ്സിലുള്ളത്? (ഉദാഹരണത്തിന്: ബജറ്റ് ഹോംസ്റ്റേ, ഹെറിറ്റേജ് റിസോർട്ട് അല്ലെങ്കിൽ ലക്ഷ്വറി സ്റ്റേ ₹-ൽ)?"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                elif lang == "manglish":
+                    return {
+                        "reply": (
+                            f"**{active_dest_name}** explore cheyyaan {days_label} super timeframe aanu! Key highlights-um authentic food-um nallonam enjoy cheyyaam.\n\n"
+                            f"Approximate ethra budget aanu mind-il ullathu? (e.g. Budget backpacker, comfortable heritage stays, or luxury in ₹)?"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                elif lang == "tamil":
+                    ta_days = f"{num_days} நாட்கள்" if num_days else "நீங்கள் திட்டமிட்ட காலம்"
+                    return {
+                        "reply": (
+                            f"**{active_dest_name}**-ஐ சுற்றிப்பார்க்க {ta_days} மிகச் சிறந்த கால அளவு! அனைத்து முக்கிய இடங்களையும் ரசிக்க இது போதுமானது.\n\n"
+                            f"எந்த வகையான பட்ஜெட்டை விரும்புகிறீர்கள்? (பட்ஜெட் ஹோம்ஸ்டே, நடுத்தர தங்குமிடம் அல்லது சொகுசு ரிசார்ட் ₹-ல்)?"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                elif lang == "hindi":
+                    hi_days = f"{num_days} दिन" if num_days else "आपकी नियोजित अवधि"
+                    return {
+                        "reply": (
+                            f"**{active_dest_name}** के लिए {hi_days} एक बेहतरीन समय है! इससे आपको प्रमुख आकर्षणों और स्थानीय व्यंजनों का आनंद लेने का पर्याप्त समय मिलेगा।\n\n"
+                            f"आप किस बजट श्रेणी को प्राथमिकता देंगे? (जैसे: बजट होमस्टे, आरामदायक हेरिटेज होटल, या लक्ज़री स्टे ₹ में)?"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
+                else:
+                    return {
+                        "reply": (
+                            f"{days_label} is a fantastic timeframe for **{active_dest_name}**! That gives us ample time to experience the signature sights, authentic regional meals, and peaceful hidden corners.\n\n"
+                            f"What approximate budget tier or style do you have in mind? (e.g. Budget backpacker, comfortable heritage stays, or luxury in ₹)?"
+                        ),
+                        "source": "rag_consultative_engine",
+                    }
 
             # STEP D: All essential details gathered OR full prompt provided -> Generate tailored complete plan
             chosen_days = num_days or 3
@@ -1777,34 +1917,144 @@ class TourismRAGService:
             )
             plan_title = f"{chosen_days}-Day Bespoke {active_dest_name} Travel Plan"
 
-            reply = (
-                f"Here is your personalized **{plan_title}**:\n\n"
-                f"🎯 **Requirement Profile**: {chosen_days} Days • {group_phrase} • Heritage & Scenic Discovery\n\n"
-                f"### 🗓️ Curated Day-by-Day Journey\n"
-                f"{itinerary_str}\n\n"
-                f"### 🏨 Handpicked Verified Stays\n"
-                f"{stays_str}\n\n"
-                f"### 🍲 Authentic Dining & Regional Specialities\n"
-                f"{foods_str}\n\n"
-                f"### 💰 Estimated Budget Guidelines (in ₹)\n"
-                f"• **Daily Average**: {budget_str}\n"
-                f"• **Transit Details**: {transit_str}\n\n"
-                f"### 💡 Tripzy's Local Insider Secret\n"
-                f"{tip_str}\n\n"
-                f"Does this pace and budget match what you had in mind, or should we adjust the accommodation style (budget vs luxury) or duration? I can also generate your complete downloadable PDF itinerary!"
-            )
+            if lang == "malayalam":
+                reply = (
+                    f"നിങ്ങൾക്കായി തയ്യാറാക്കിയ **{chosen_days} ദിവസത്തെ {active_dest_name} യാത്രാ വിവരണം**:\n\n"
+                    f"🎯 **യാത്രാ പ്രൊഫൈൽ**: {chosen_days} ദിവസം • പ്രകൃതിരമണീയ കാഴ്ച്ചകളും പൈതൃകവും\n\n"
+                    f"### 🗓️ ദിവസേനയുള്ള യാത്രാക്രമം\n"
+                    f"{itinerary_str}\n\n"
+                    f"### 🏨 മികച്ച താമസസൗകര്യങ്ങൾ\n"
+                    f"{stays_str}\n\n"
+                    f"### 🍲 തനത് വിഭവങ്ങളും ഭക്ഷണശാലകളും\n"
+                    f"{foods_str}\n\n"
+                    f"### 💰 ഏകദേശ യാത്രാ ചെലവ് (₹-ൽ)\n"
+                    f"• **പ്രതിദിന ശരാശരി**: {budget_str}\n"
+                    f"• **യാത്രാ മാർഗ്ഗങ്ങൾ**: {transit_str}\n\n"
+                    f"### 💡 ട്രിപ്‌സിയുടെ ഇൻസൈഡർ ടിപ്പ്\n"
+                    f"{tip_str}\n\n"
+                    f"ഈ യാത്രാപദ്ധതി നിങ്ങളുടെ താല്പര്യങ്ങൾക്ക് അനുയോജ്യമാണോ? താമസസ്ഥലങ്ങളിലോ ദിവസങ്ങളിലോ മാറ്റം വേണമെങ്കിൽ അറിയിക്കുക! ഇതിന്റെ സമ്പൂർണ്ണ PDF ഡൗൺലോഡ് ചെയ്യാനും ഞാൻ സഹായിക്കാം."
+                )
+            elif lang == "manglish":
+                reply = (
+                    f"Ningalkkaayi undakkiya **{chosen_days}-Day {active_dest_name} Travel Plan**:\n\n"
+                    f"🎯 **Profile**: {chosen_days} Days • {group_phrase} • Scenic & Heritage Discovery\n\n"
+                    f"### 🗓️ Day-by-Day Journey\n"
+                    f"{itinerary_str}\n\n"
+                    f"### 🏨 Verified Recommended Stays\n"
+                    f"{stays_str}\n\n"
+                    f"### 🍲 Authentic Dining & Local Food Specialities\n"
+                    f"{foods_str}\n\n"
+                    f"### 💰 Estimated Budget (in ₹)\n"
+                    f"• **Daily Average**: {budget_str}\n"
+                    f"• **Transit Details**: {transit_str}\n\n"
+                    f"### 💡 Tripzy's Local Insider Secret\n"
+                    f"{tip_str}\n\n"
+                    f"Ee pace-um budget-um mathiyo, atho stays-il/days-il enthenkilum change varuthano? PDF download cheyyanum njan help cheyyaam!"
+                )
+            elif lang == "tamil":
+                reply = (
+                    f"உங்களுக்காக வடிவமைக்கப்பட்ட **{chosen_days} நாள் {active_dest_name} பயணத் திட்டம்**:\n\n"
+                    f"🎯 **பயண விவரம்**: {chosen_days} நாட்கள் • இயற்கை மற்றும் கலாச்சார சுற்றுலா\n\n"
+                    f"### 🗓️ நாள் வாரியான பயணத் திட்டம்\n"
+                    f"{itinerary_str}\n\n"
+                    f"### 🏨 சிறந்த தங்கும் விடுதிகள்\n"
+                    f"{stays_str}\n\n"
+                    f"### 🍲 பிரசித்தி பெற்ற உள்ளூர் உணவுகள்\n"
+                    f"{foods_str}\n\n"
+                    f"### 💰 பயணச் செலவு மதிப்பீடு (₹-ல்)\n"
+                    f"• **தினசரி சராசரி**: {budget_str}\n"
+                    f"• **பயண வழிகள்**: {transit_str}\n\n"
+                    f"### 💡 உள்ளூர் வழிகாட்டுதல் (Insider Tip)\n"
+                    f"{tip_str}\n\n"
+                    f"இந்த பயணத் திட்டம் உங்களுக்குப் பிடித்திருக்கிறதா? தங்கும் விடுதிகள் அல்லது நாட்களில் ஏதேனும் மாற்றம் வேண்டுமா?"
+                )
+            elif lang == "hindi":
+                reply = (
+                    f"आपके लिए तैयार की गई **{chosen_days} दिवसीय {active_dest_name} यात्रा योजना**:\n\n"
+                    f"🎯 **यात्रा प्रोफ़ाइल**: {chosen_days} दिन • दर्शनीय स्थल और सांस्कृतिक अनुभव\n\n"
+                    f"### 🗓️ दिन-प्रतिदिन की यात्रा रूपरेखा\n"
+                    f"{itinerary_str}\n\n"
+                    f"### 🏨 सत्यापित ठहरने के स्थान (होटल/रिसॉर्ट)\n"
+                    f"{stays_str}\n\n"
+                    f"### 🍲 प्रसिद्ध स्थानीय व्यंजन एवं भोजनालय\n"
+                    f"{foods_str}\n\n"
+                    f"### 💰 अनुमानित बजट दिशा-निर्देश (₹ में)\n"
+                    f"• **दैनिक औसत**: {budget_str}\n"
+                    f"• **यातायात विवरण**: {transit_str}\n\n"
+                    f"### 💡 ट्रिपज़ी का विशेष सुझाव\n"
+                    f"{tip_str}\n\n"
+                    f"क्या यह योजना और बजट आपकी पसंद के अनुसार है, या आप दिनों या होटल श्रेणी में कोई बदलाव करना चाहते हैं?"
+                )
+            else:
+                reply = (
+                    f"Here is your personalized **{plan_title}**:\n\n"
+                    f"🎯 **Requirement Profile**: {chosen_days} Days • {group_phrase} • Heritage & Scenic Discovery\n\n"
+                    f"### 🗓️ Curated Day-by-Day Journey\n"
+                    f"{itinerary_str}\n\n"
+                    f"### 🏨 Handpicked Verified Stays\n"
+                    f"{stays_str}\n\n"
+                    f"### 🍲 Authentic Dining & Regional Specialities\n"
+                    f"{foods_str}\n\n"
+                    f"### 💰 Estimated Budget Guidelines (in ₹)\n"
+                    f"• **Daily Average**: {budget_str}\n"
+                    f"• **Transit Details**: {transit_str}\n\n"
+                    f"### 💡 Tripzy's Local Insider Secret\n"
+                    f"{tip_str}\n\n"
+                    f"Does this pace and budget match what you had in mind, or should we adjust the accommodation style (budget vs luxury) or duration? I can also generate your complete downloadable PDF itinerary!"
+                )
             return {"reply": reply, "source": "rag_knowledge_engine"}
 
         # 6. General fallback when no destination is mentioned
-        return {
-            "reply": (
-                f"{greeting_prefix}"
-                "I'm ready to craft your personalized travel plan.\n\n"
-                "Which destination do you have in mind? (e.g. Varanasi, Thenkasi, Munnar, Varkala, Coorg, Goa, or Paris)?\n\n"
-                "❓ Just drop the city or region name, and we'll take it from there!"
-            ),
-            "source": "rag_knowledge_engine",
-        }
+        if lang == "malayalam":
+            return {
+                "reply": (
+                    f"{greeting_prefix}"
+                    "നിങ്ങളുടെ അടുത്ത യാത്ര പ്ലാൻ ചെയ്യാൻ ഞാൻ തയ്യാറാണ്.\n\n"
+                    "ഏത് സ്ഥലത്തേക്കാണ് യാത്ര ചെയ്യാൻ ആഗ്രഹിക്കുന്നത്? (ഉദാഹരണത്തിന്: മുന്നാർ, തെങ്കാശി, വാരാണസി, വർക്കല, കൂർഗ്, ഗോവ, അല്ലെങ്കിൽ പാരീസ്)?\n\n"
+                    "❓ സ്ഥലത്തിന്റെ പേര് പറയൂ, നമുക്ക് മികച്ച പ്ലാൻ ഉണ്ടാക്കാം!"
+                ),
+                "source": "rag_knowledge_engine",
+            }
+        elif lang == "manglish":
+            return {
+                "reply": (
+                    f"{greeting_prefix}"
+                    "Njan ningalude travel plan cheyyaan ready aanu.\n\n"
+                    "Evidekku povaanaanu aagrahikkunnathu? (e.g. Munnar, Thenkasi, Varanasi, Varkala, Coorg, Goa, or Paris)?\n\n"
+                    "❓ Place-nte name para, namukku nalla super itinerary undakkaam!"
+                ),
+                "source": "rag_knowledge_engine",
+            }
+        elif lang == "tamil":
+            return {
+                "reply": (
+                    f"{greeting_prefix}"
+                    "உங்கள் பயணத் திட்டத்தை உருவாக்க நான் தயாராக உள்ளேன்.\n\n"
+                    "எந்த இடத்திற்குப் பயணம் செய்ய விரும்புகிறீர்கள்? (எ.கா: முன்னார், தென்காசி, வாரணாசி, வர்க்கலா, கூர்க், கோவா, அல்லது பாரிஸ்)?\n\n"
+                    "❓ இடத்தின் பெயரைச் சொல்லுங்கள், சிறந்த திட்டத்தை உருவாக்குவோம்!"
+                ),
+                "source": "rag_knowledge_engine",
+            }
+        elif lang == "hindi":
+            return {
+                "reply": (
+                    f"{greeting_prefix}"
+                    "मैं आपकी यात्रा की योजना बनाने के लिए तैयार हूँ।\n\n"
+                    "आप किस स्थान की यात्रा करना चाहते हैं? (जैसे: मुन्नार, वाराणसी, तेनकासी, वरकला, कूर्ग, गोवा, या पेरिस)?\n\n"
+                    "❓ बस गंतव्य का नाम बताएं, और हम आगे बढ़ेंगे!"
+                ),
+                "source": "rag_knowledge_engine",
+            }
+        else:
+            return {
+                "reply": (
+                    f"{greeting_prefix}"
+                    "I'm ready to craft your personalized travel plan.\n\n"
+                    "Which destination do you have in mind? (e.g. Varanasi, Thenkasi, Munnar, Varkala, Coorg, Goa, or Paris)?\n\n"
+                    "❓ Just drop the city or region name, and we'll take it from there!"
+                ),
+                "source": "rag_knowledge_engine",
+            }
 
 
 

@@ -41,6 +41,18 @@ class Settings(BaseSettings):
     OPENWEATHER_API_KEY: str = Field(default="")
     CARTO_API_KEY: str = Field(default="")
 
+    # Transportation Intelligence Providers
+    FLIGHT_PROVIDER: str = Field(default="ignav")
+    IGNAV_API_BASE_URL: str = Field(default="https://ignav.com/api")
+    IGNAV_API_KEY: str = Field(default="")
+
+    TRAIN_PROVIDER: str = Field(default="apimitra")
+    APIMITRA_BASE_URL: str = Field(default="https://api.apimitra.in")
+    APIMITRA_API_KEY: str = Field(default="")
+
+    FUEL_PROVIDER: str = Field(default="apimitra")
+    FUEL_API_BASE_URL: str = Field(default="https://api.apimitra.in")
+
     @property
     def active_openai_key(self) -> str:
         return (

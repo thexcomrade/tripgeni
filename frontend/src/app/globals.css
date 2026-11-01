@@ -1117,43 +1117,69 @@ input.borderless-input:focus {
 }
 
 .text-intelligent-cyan {
-  font-family: inherit;
-  font-weight: 800;
+  font-family: inherit !important;
+  font-weight: 700;
+  color: #00E5FF;
   background: linear-gradient(
     135deg,
-    #FFFFFF 0%,
-    #BAE6FD 18%,
-    #38BDF8 48%,
-    #00F5FF 78%,
+    #38BDF8 0%,
+    #00E5FF 40%,
+    #38BDF8 70%,
     #0284C7 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  display: inline-block;
+  display: inline;
   vertical-align: baseline;
-  filter: none !important;
-  text-shadow: none !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .text-precision-gold {
-  font-family: inherit;
-  font-weight: 800;
+  font-family: inherit !important;
+  font-weight: 700;
+  color: #FBBF24;
   background: linear-gradient(
     135deg,
-    #FFFFFF 0%,
-    #FEF08A 18%,
-    #FDE047 48%,
-    #FACC15 78%,
-    #F59E0B 100%
+    #FDE047 0%,
+    #FACC15 40%,
+    #F59E0B 75%,
+    #D97706 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  display: inline-block;
+  display: inline;
   vertical-align: baseline;
-  filter: none !important;
-  text-shadow: none !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Luminous clickable scroll cue button */
+.hero-scroll-cue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(56, 189, 248, 0.50);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.65), 0 0 18px rgba(56, 189, 248, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #FFFFFF !important;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-scroll-cue-btn:hover {
+  background: rgba(14, 165, 233, 0.20);
+  border-color: #38BDF8;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.7), 0 0 25px rgba(56, 189, 248, 0.60);
+  transform: translateY(-2px);
+  color: #38BDF8 !important;
 }

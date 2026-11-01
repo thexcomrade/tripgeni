@@ -1057,6 +1057,358 @@ export default function DashboardPage() {
         }}
       >
         {/* LIVE WEATHER SNAPSHOT */}
+        <GlassCard
+          style={{
+            padding: "26px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            gap: "16px",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "14px",
+                flexWrap: "wrap",
+                gap: "8px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <CloudSun size={20} color="#FBBF24" />
+                <h3
+                  style={{
+                    fontSize: "1.1rem",
+                    fontWeight: 700,
+                    color: "#FFFFFF",
+                  }}
+                >
+                  Live Weather Intelligence
+                </h3>
+              </div>
+              <Badge variant="amber" size="sm">
+                {weatherLoading ? "Updating..." : "Real-time"}
+              </Badge>
+            </div>
+
+            {/* LOCATION SELECTOR: ACTIVE CITY & OTHER BUTTON */}
+            <div
+              ref={cityPickerRef}
+              style={{
+                position: "relative",
+                display: "inline-block",
+                marginBottom: "16px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  flexWrap: "wrap",
+                }}
+              >
+                {/* ACTIVE CHOSEN LOCATION PILL */}
+                <button
+                  type="button"
+                  onClick={() => setIsCityPickerOpen(!isCityPickerOpen)}
+                  style={{
+                    background: "rgba(14, 165, 233, 0.22)",
+                    border: "1px solid rgba(14, 165, 233, 0.55)",
+                    borderRadius: "8px",
+                    padding: "5px 12px",
+                    color: "#38BDF8",
+                    fontSize: "0.82rem",
+                    fontWeight: 700,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    boxShadow: "0 0 14px rgba(14, 165, 233, 0.22)",
+                    cursor: "pointer",
+                  }}
+                  title="Click to change location"
+                >
+                  <MapPin size={13} color="#38BDF8" />
+                  <span>
+                    {weatherCity.toLowerCase() === "thiruvananthapuram"
+                      ? "Trivandrum"
+                      : weatherCity.charAt(0).toUpperCase() + weatherCity.slice(1)}
+                  </span>
+                </button>
+
+                {/* OTHER / CHOOSE LOCATION BUTTON */}
+                <button
+                  type="button"
+                  onClick={() => setIsCityPickerOpen(!isCityPickerOpen)}
+                  style={{
+                    background: isCityPickerOpen
+                      ? "rgba(255, 255, 255, 0.12)"
+                      : "rgba(255, 255, 255, 0.05)",
+                    border: isCityPickerOpen
+                      ? "1px solid rgba(56, 189, 248, 0.50)"
+                      : "1px solid rgba(255, 255, 255, 0.10)",
+                    borderRadius: "8px",
+                    padding: "5px 12px",
+                    color: isCityPickerOpen ? "#F8FAFC" : "#94A3B8",
+                    fontSize: "0.80rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    transition: "all 0.18s ease",
+                  }}
+                >
+                  <span>Other</span>
+                  <ChevronDown
+                    size={13}
+                    style={{
+                      transform: isCityPickerOpen ? "rotate(180deg)" : "none",
+                      transition: "transform 0.2s ease",
+                    }}
+                  />
+                </button>
+              </div>
+
+              {/* POPUP: CHOOSE OR SEARCH LOCATION */}
+              {isCityPickerOpen && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 8px)",
+                    left: 0,
+                    zIndex: 60,
+                    width: "320px",
+                    background: "rgba(15, 23, 42, 0.97)",
+                    backdropFilter: "blur(24px)",
+                    WebkitBackdropFilter: "blur(24px)",
+                    border: "1px solid rgba(56, 189, 248, 0.35)",
+                    borderRadius: "14px",
+                    boxShadow:
+                      "0 18px 48px rgba(0, 0, 0, 0.60), 0 0 20px rgba(14, 165, 233, 0.20)",
+                    padding: "16px",
+                  }}
+                >
+                  {/* Header */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.78rem",
+                        fontWeight: 700,
+                        color: "#E2E8F0",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                      }}
+                    >
+                      Choose Destination
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsCityPickerOpen(false)}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        color: "#94A3B8",
+                        cursor: "pointer",
+                        padding: "2px",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <X size={15} />
+                    </button>
+                  </div>
+
+                  {/* Search / Custom City Input */}
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (citySearchQuery.trim()) {
+                        switchCityWeather(citySearchQuery.trim());
+                      }
+                    }}
+                    style={{
+                      display: "flex",
+                      gap: "6px",
+                      marginBottom: "14px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        flex: 1,
+                        background: "rgba(255, 255, 255, 0.06)",
+                        border: "1px solid rgba(255, 255, 255, 0.12)",
+                        borderRadius: "8px",
+                        padding: "6px 10px",
+                      }}
+                    >
+                      <Search size={13} color="#94A3B8" />
+                      <input
+                        type="text"
+                        value={citySearchQuery}
+                        onChange={(e) => setCitySearchQuery(e.target.value)}
+                        placeholder="Type any city (e.g. Ooty)..."
+                        autoFocus
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          outline: "none",
+                          color: "#FFFFFF",
+                          fontSize: "0.80rem",
+                          width: "100%",
+                        }}
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={!citySearchQuery.trim()}
+                      style={{
+                        background: citySearchQuery.trim()
+                          ? "linear-gradient(135deg, #0EA5E9, #2563EB)"
+                          : "rgba(255, 255, 255, 0.08)",
+                        color: citySearchQuery.trim() ? "#FFFFFF" : "#64748B",
+                        border: "none",
+                        borderRadius: "8px",
+                        padding: "0 12px",
+                        fontSize: "0.78rem",
+                        fontWeight: 600,
+                        cursor: citySearchQuery.trim() ? "pointer" : "default",
+                      }}
+                    >
+                      Set
+                    </button>
+                  </form>
+
+                  {/* Quick Pick Destinations */}
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "0.70rem",
+                        color: "#94A3B8",
+                        marginBottom: "8px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      POPULAR DESTINATIONS
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "6px",
+                        maxHeight: "150px",
+                        overflowY: "auto",
+                      }}
+                    >
+                      {POPULAR_WEATHER_CITIES.map((c) => {
+                        const isCurrent =
+                          weatherCity.toLowerCase().trim() === c.name.toLowerCase().trim() ||
+                          (c.name.toLowerCase() === "trivandrum" &&
+                            weatherCity.toLowerCase().trim() === "thiruvananthapuram");
+                        return (
+                          <button
+                            key={c.name}
+                            type="button"
+                            onClick={() => switchCityWeather(c.name)}
+                            style={{
+                              background: isCurrent
+                                ? "rgba(14, 165, 233, 0.3)"
+                                : "rgba(255, 255, 255, 0.05)",
+                              border: isCurrent
+                                ? "1px solid rgba(14, 165, 233, 0.6)"
+                                : "1px solid rgba(255, 255, 255, 0.08)",
+                              borderRadius: "6px",
+                              padding: "4px 9px",
+                              color: isCurrent ? "#38BDF8" : "#CBD5E1",
+                              fontSize: "0.76rem",
+                              fontWeight: isCurrent ? 700 : 500,
+                              cursor: "pointer",
+                              transition: "all 0.15s ease",
+                            }}
+                          >
+                            {c.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                justifyContent: "space-between",
+                marginBottom: "14px",
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    fontSize: "2.6rem",
+                    fontWeight: 800,
+                    color: "#FFFFFF",
+                  }}
+                >
+                  {weatherData.temperature}°C
+                </span>
+                <p style={{ color: "#94A3B8", fontSize: "0.9rem", marginTop: "2px" }}>
+                  {weatherData.city} • {weatherData.condition}
+                </p>
+                <p style={{ color: "#64748B", fontSize: "0.8rem" }}>
+                  {weatherData.description}
+                </p>
+              </div>
+              <div
+                style={{
+                  textAlign: "right",
+                  fontSize: "0.85rem",
+                  color: "#CBD5E1",
+                }}
+              >
+                <p>
+                  Humidity: <strong>{weatherData.humidity}%</strong>
+                </p>
+                <p>
+                  Wind: <strong>{weatherData.wind_speed} km/h</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              background: "rgba(255, 255, 255, 0.04)",
+              padding: "12px 14px",
+              borderRadius: "12px",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+            }}
+          >
+            <p
+              style={{ color: "#38BDF8", fontSize: "0.85rem", fontWeight: 500 }}
+            >
+              💡 {weatherData.travel_recommendation ||
+                "Favorable weather conditions for travel exploration and outdoor activities."}
+            </p>
+          </div>
+        </GlassCard>
+
+        {/* SMART WORLD CLOCK & TRAVEL COMPASS (REPLACES DUPLICATE TALK WITH TRIPZY) */}
         <SmartWorldClockAndCompass />
       </section>
 

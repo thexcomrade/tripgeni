@@ -190,6 +190,22 @@ class AIService:
         )
         date_line = f"- Travel Dates: {from_date} to {to_date}" if from_date and to_date else ""
 
+        if is_day_trip:
+            stays_budget_desc = "₹0 (Day Trip — No Hotel)"
+            accommodations_rule = "Since this is a DAY TRIP, set 'recommended_hotels' to an empty array [] — no overnight stay."
+        else:
+            acc_cost_val = cost.get('accommodation_cost', 0)
+            stays_budget_desc = f"Total ₹{acc_cost_val:,.0f} (~₹{acc_per_night:,.0f} / room / night for {nights} nights)"
+            pref_acc = preferred_accommodation or "Standard Hotel / Resort"
+            t_style = travel_style or "Leisure"
+            accommodations_rule = (
+                f"In 'recommended_hotels', provide 5 to 6 REAL, authentically existing hotels, boutique resorts, guesthouses, or heritage homestays located strictly in {destination}.\n"
+                f"- Match the user's accommodation preference ('{pref_acc}'), budget tier (~₹{acc_per_night:,.0f}/night), and travel group ({travelers_count} traveler(s), style '{t_style}').\n"
+                f"- Include diverse options: 1 ultra-scenic luxury/boutique stay, 2 mid-range high-value comfort stays, 1 authentic heritage homestay/eco-villa, and 1-2 budget/backpacker top-rated choices.\n"
+                f"- Every hotel MUST be a real, verified place in {destination} with authentic Google star rating (★ 4.2 to 4.9) and estimated rate.\n"
+                f"- Format each item as: 'Hotel Name (★ 4.X Google, ~₹X,XXX/night) — specific highlight, verified neighborhood & top amenities'"
+            )
+
         multi_city_instructions = ""
         if is_multi_city:
             multi_city_instructions = f'''
@@ -235,18 +251,14 @@ DESTINATION & TRAVEL DETAILS:
 REALISTIC EXPENSE ARCHITECTURE (ALL FIGURES IN REAL MARKET INR):
 - Total Allocated Budget: ₹{budget:,.0f} for all {travelers_count} traveler(s) over {duration_days} days.
 - Daily Total Allowance: ~₹{cost['cost_per_day']:,.0f} / day (~₹{cost['cost_per_person_day']:,.0f} / person / day).
-- Stays & Lodging Budget: {"₹0 (Day Trip — No Hotel)" if is_day_trip else f"Total ₹{cost['accommodation_cost']:,.0f} (~₹{acc_per_night:,.0f} / room / night for {nights} nights)"}.
+- Stays & Lodging Budget: {stays_budget_desc}.
 - Food & Dining Budget: Total ₹{cost['food_cost']:,.0f} (~₹{food_per_person_day:,.0f} / person / day, ~₹{food_per_meal:,.0f} per main meal / person).
 - Transit & Sightseeing: Total ₹{cost['transportation_cost']:,.0f} (~₹{transit_per_day:,.0f} / day).
 - Activities, Passes & Contingency: Total ₹{cost['miscellaneous_cost']:,.0f} (~₹{activities_per_day:,.0f} / day).
 
 STRICT REAL MONEY EXPENSE & ACCURACY RULES:
 1. GEOGRAPHICALLY ACCURATE LOCAL ATTRACTIONS: In 'attractions', provide genuine, iconic attractions that are located STRICTLY within {destination}. If destination is Varkala, provide real Varkala spots (e.g. Varkala Cliff, Papanasam Beach, Janardhana Swami Temple, Kappil Beach & Backwaters, Sivagiri Mutt). Strictly list attractions located in the requested destination — NEVER hallucinate or substitute unrelated cities.
-2. REALISTIC RECOMMENDED ACCOMMODATIONS (MINIMUM 5 TO 6 OPTIONS): {"Since this is a DAY TRIP, set 'recommended_hotels' to an empty array [] — no overnight stay." if is_day_trip else f"""In 'recommended_hotels', provide 5 to 6 REAL, authentically existing hotels, boutique resorts, guesthouses, or heritage homestays located strictly in {destination}.
-- Match the user's accommodation preference ('{preferred_accommodation or "Standard Hotel / Resort"}'), budget tier (~₹{acc_per_night:,.0f}/night), and travel group ({travelers_count} traveler(s), style '{travel_style or "Leisure"}').
-- Include diverse options: 1 ultra-scenic luxury/boutique stay, 2 mid-range high-value comfort stays, 1 authentic heritage homestay/eco-villa, and 1-2 budget/backpacker top-rated choices.
-- Every hotel MUST be a real, verified place in {destination} with authentic Google star rating (★ 4.2 to 4.9) and estimated rate.
-- Format each item as: 'Hotel Name (★ 4.X Google, ~₹X,XXX/night) — specific highlight, verified neighborhood & top amenities'"""}.
+2. REALISTIC RECOMMENDED ACCOMMODATIONS (MINIMUM 5 TO 6 OPTIONS): {accommodations_rule}
 3. REALISTIC REGIONAL DINING & EATERIES (MINIMUM 5 TO 6 OPTIONS): In 'recommended_restaurants', provide 5 to 6 REAL, authentically existing dining spots in {destination} spanning legendary local institutions, famous cafes, authentic family kitchens/messes, and popular street food corners.
 - Match budget tier (~₹{food_per_meal:,.0f}/person per meal).
 - Include specific signature dishes they are famous for.
@@ -388,6 +400,7 @@ Return JSON.
                         ],
                         response_format={"type": "json_object"},
                         temperature=0.7,
+                        timeout=30,
                     )
                     if response.choices and response.choices[0].message.content:
                         logger.info("Successfully generated itinerary via OpenAI ChatGPT (%s)", getattr(settings, "OPENAI_MODEL", "gpt-4o"))
@@ -1829,6 +1842,7 @@ Your primary responsibility is not merely to answer the literal wording of a que
                         messages=chat_messages,
                         temperature=0.72,
                         max_tokens=1500,
+                        timeout=20,
                     )
                     if response and response.choices and response.choices[0].message.content:
                         reply_text = response.choices[0].message.content.strip()
@@ -1836,7 +1850,7 @@ Your primary responsibility is not merely to answer the literal wording of a que
                             reply_text = f"{greeting_prefix}\n\n{reply_text}"
                         return {"reply": reply_text, "source": f"openai_{o_model}"}
                 except Exception as err:
-                    logger.warning("OpenAI chat generation attempt with %s failed: %s", o_model, err)
+                    logger.debug("OpenAI chat generation attempt with %s failed: %s", o_model, err)
                     continue
 
         # 5. Priority 2: Gemini Generation Fallback (if Gemini client is configured)

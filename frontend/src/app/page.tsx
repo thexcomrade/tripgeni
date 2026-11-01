@@ -281,7 +281,7 @@ export default function HomePage() {
         style={{
           position: "relative",
           width: "100%",
-          minHeight: "min(92vh, 860px)",
+          minHeight: "min(90vh, 820px)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -298,7 +298,7 @@ export default function HomePage() {
           className="cinematic-bg-video"
         >
           <source
-            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260803_192301_9231ed6b-c55c-4a48-909c-4ebe11cf2e11.mp4"
+            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260406_094145_4a271a6c-3869-4f1c-8aa7-aeb0cb227994.mp4"
             type="video/mp4"
           />
         </video>
@@ -320,7 +320,7 @@ export default function HomePage() {
             alignItems: "center",
             margin: "0 auto",
             textAlign: "center",
-            padding: "clamp(90px, 14vh, 140px) clamp(16px, 3.5vw, 40px) clamp(36px, 6vh, 60px) clamp(16px, 3.5vw, 40px)",
+            padding: "clamp(75px, 10vh, 110px) clamp(16px, 3.5vw, 40px) clamp(24px, 4vh, 40px) clamp(16px, 3.5vw, 40px)",
           }}
         >
           {/* AMBIENT GLOW BACKDROP */}
@@ -354,49 +354,30 @@ export default function HomePage() {
           </div>
 
           <h1
-  className="animate-blur-fade-up hero-main-title"
-  style={{
-    animationDelay: "300ms",
-    fontFamily: "'Playfair Display', Georgia, serif",
-    fontSize: "clamp(3.2rem, 6vw, 5.5rem)",
-    fontWeight: 700,
-    lineHeight: 1.05,
-    letterSpacing: "0.02em",
-    maxWidth: "1300px",
-    margin: "0 auto 22px auto",
-    textAlign: "center",
-    color: "#FFFFFF",
-    textShadow: "none",
-    WebkitFontSmoothing: "antialiased",
-    MozOsxFontSmoothing: "grayscale",
-    fontKerning: "normal",
-    fontVariantLigatures: "none",
-  }}
->
-  Plan Extraordinary Journeys with
-  <br />
-  <span
-    className="text-intelligent-cyan"
-    style={{
-      color: "#00CFFF",
-      fontWeight: 700,
-      display: "inline-block",
-      letterSpacing: "0.025em",
-    }}
-  >
-    Intelli<span style={{ display: "inline-block", transform: "scaleX(1.12)", transformOrigin: "center", margin: "0 0.5px" }}>g</span>ent
-  </span>{" "}
-  <span
-    className="text-precision-gold"
-    style={{
-      color: "#FFC928",
-      fontWeight: 700,
-      display: "inline-block",
-    }}
-  >
-    Precision
-  </span>
-</h1>
+            className="animate-blur-fade-up hero-main-title"
+            style={{
+              animationDelay: "300ms",
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: "clamp(2.5rem, 5.2vw, 4.8rem)",
+              fontWeight: 700,
+              lineHeight: 1.08,
+              letterSpacing: "0.015em",
+              maxWidth: "1240px",
+              margin: "0 auto 16px auto",
+              textAlign: "center",
+              color: "#FFFFFF",
+              textShadow: "0 2px 14px rgba(0, 0, 0, 0.4)",
+              WebkitFontSmoothing: "antialiased",
+              MozOsxFontSmoothing: "grayscale",
+              fontKerning: "normal",
+              fontVariantLigatures: "none",
+            }}
+          >
+            Plan Extraordinary Journeys with
+            <br />
+            <span className="text-intelligent-cyan">Intelligent</span>{" "}
+            <span className="text-precision-gold">Precision</span>
+          </h1>
 
           <p
             className="animate-blur-fade-up hero-subtitle-bright"
@@ -492,30 +473,39 @@ export default function HomePage() {
             </span>
           </div>
 
-          {/* SCROLL EXPLORE CUE */}
+          {/* SCROLL EXPLORE CUE (Luminous, high-contrast, smoothly scrolls down) */}
           <div
             className="animate-blur-fade-up hero-scroll-cue"
             style={{
               animationDelay: "900ms",
-              marginTop: "clamp(24px, 4vh, 44px)",
+              marginTop: "clamp(18px, 3vh, 32px)",
               display: "flex",
-              flexDirection: "column",
+              justifyContent: "center",
               alignItems: "center",
-              gap: "6px",
-              color: "#94a3b8",
-              fontSize: "0.82rem",
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
             }}
           >
-            <span>Explore Destinations & Intelligence</span>
-            <ChevronDown size={18} color="#38BDF8" />
+            <a
+              href="#explore-sections"
+              className="hero-scroll-cue-btn"
+              title="Click to explore curated destinations and intelligence"
+              onClick={(e) => {
+                e.preventDefault();
+                const target = document.getElementById("explore-sections");
+                if (target) {
+                  target.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+            >
+              <span>Explore Destinations &amp; Intelligence</span>
+              <ChevronDown size={17} color="#38BDF8" style={{ animation: "scrollCueFloat 2s ease-in-out infinite" }} />
+            </a>
           </div>
         </section>
       </div>
 
       {/* MAIN CONTENT WRAPPER FOR SECTIONS BELOW HERO */}
       <div
+        id="explore-sections"
         style={{
           position: "relative",
           zIndex: 10,
@@ -523,6 +513,7 @@ export default function HomePage() {
           maxWidth: "1360px",
           margin: "0 auto",
           padding: "clamp(20px, 4vw, 48px) clamp(16px, 3.5vw, 40px)",
+          scrollMarginTop: "80px",
         }}
       >
 

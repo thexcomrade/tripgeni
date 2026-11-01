@@ -61,20 +61,94 @@ const generateMsgId = () => {
   return `msg-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 };
 
-const renderFormattedContent = (content: string) => {
+// Rich markdown renderer: headers, bold, italic, bullets, line breaks
+const renderFormattedContent = (content: string): React.ReactNode => {
   if (!content) return null;
-  const parts = content.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
-      const inner = part.slice(2, -2);
-      return (
-        <strong key={i} style={{ color: "#FFFFFF", fontWeight: 700 }}>
-          {inner}
-        </strong>
-      );
+
+  const lines = content.split("\n");
+  const elements: React.ReactNode[] = [];
+
+  const inlineFormat = (text: string, baseKey: string): React.ReactNode => {
+    const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+    return parts.map((part, i) => {
+      const k = `${baseKey}-${i}`;
+      if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+        return <strong key={k} style={{ color: "#FFFFFF", fontWeight: 700 }}>{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith("*") && part.endsWith("*") && part.length > 2 && !part.startsWith("**")) {
+        return <em key={k} style={{ color: "#CBD5E1", fontStyle: "italic" }}>{part.slice(1, -1)}</em>;
+      }
+      if (part.startsWith("`") && part.endsWith("`") && part.length > 2) {
+        return <code key={k} style={{ background: "rgba(56,189,248,0.12)", color: "#38BDF8", padding: "1px 5px", borderRadius: "4px", fontSize: "0.88em" }}>{part.slice(1, -1)}</code>;
+      }
+      return part;
+    });
+  };
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      elements.push(<br key={`br-${i}`} />);
+      i++;
+      continue;
     }
-    return part;
-  });
+
+    if (trimmed.startsWith("### ")) {
+      elements.push(
+        <div key={`h3-${i}`} style={{ fontWeight: 800, fontSize: "0.98rem", color: "#38BDF8", marginTop: "14px", marginBottom: "4px" }}>
+          {inlineFormat(trimmed.slice(4), `h3-${i}`)}
+        </div>
+      );
+      i++;
+      continue;
+    }
+
+    if (trimmed.startsWith("## ")) {
+      elements.push(
+        <div key={`h2-${i}`} style={{ fontWeight: 800, fontSize: "1.05rem", color: "#FFFFFF", marginTop: "16px", marginBottom: "6px" }}>
+          {inlineFormat(trimmed.slice(3), `h2-${i}`)}
+        </div>
+      );
+      i++;
+      continue;
+    }
+
+    const isBullet = /^[-*\u2022]\s/.test(trimmed) || /^\d+\.\s/.test(trimmed);
+    if (isBullet) {
+      const listItems: React.ReactNode[] = [];
+      while (i < lines.length) {
+        const lt = lines[i].trim();
+        if (!lt) break;
+        const isItem = /^[-*\u2022]\s/.test(lt) || /^\d+\.\s/.test(lt);
+        if (!isItem && !/^\s{2}/.test(lines[i])) break;
+        const cleaned = lt.replace(/^[-*\u2022]\s/, "").replace(/^\d+\.\s/, "");
+        listItems.push(
+          <li key={`li-${i}`} style={{ color: "#CBD5E1", marginBottom: "3px", lineHeight: 1.5 }}>
+            {inlineFormat(cleaned, `li-${i}`)}
+          </li>
+        );
+        i++;
+      }
+      elements.push(
+        <ul key={`ul-${elements.length}`} style={{ paddingLeft: "18px", margin: "4px 0 6px 0", listStyleType: "disc" }}>
+          {listItems}
+        </ul>
+      );
+      continue;
+    }
+
+    elements.push(
+      <span key={`p-${i}`} style={{ display: "block", marginBottom: "2px", color: "#CBD5E1", lineHeight: 1.6 }}>
+        {inlineFormat(trimmed, `p-${i}`)}
+      </span>
+    );
+    i++;
+  }
+
+  return <>{elements}</>;
 };
 
 export default function AIChatPage() {
@@ -399,33 +473,42 @@ export default function AIChatPage() {
 
     utterance.lang = targetLang;
 
-    const voices = window.speechSynthesis.getVoices();
+    // Wait for voices to be loaded (required on some browsers)
+    const getVoices = (): SpeechSynthesisVoice[] => {
+      const v = window.speechSynthesis.getVoices();
+      return v.length ? v : [];
+    };
+    const voices = getVoices();
+
+    // Male voice name patterns
+    const MALE_NAMES = ["male", "david", "george", "guy", "mark", "prabhat", "ravi", "ryan", "thomas", "james", "daniel", "alex", "fred", "tom", "natural"];
+
+    const isMaleName = (v: SpeechSynthesisVoice) =>
+      MALE_NAMES.some(n => v.name.toLowerCase().includes(n));
+
     let matchingVoice: SpeechSynthesisVoice | undefined;
 
     if (isMalayalam) {
-      matchingVoice = voices.find((v) => v.lang.startsWith("ml") || v.lang.includes("ml-IN") || v.name.toLowerCase().includes("malayalam"));
+      // Try male malayalam voice first, fallback to any malayalam
+      matchingVoice =
+        voices.find((v) => (v.lang.startsWith("ml") || v.name.toLowerCase().includes("malayalam")) && isMaleName(v)) ||
+        voices.find((v) => v.lang.startsWith("ml") || v.lang.includes("ml-IN") || v.name.toLowerCase().includes("malayalam"));
     } else if (isTamil) {
-      matchingVoice = voices.find((v) => v.lang.startsWith("ta") || v.lang.includes("ta-IN") || v.name.toLowerCase().includes("tamil"));
+      matchingVoice =
+        voices.find((v) => (v.lang.startsWith("ta") || v.name.toLowerCase().includes("tamil")) && isMaleName(v)) ||
+        voices.find((v) => v.lang.startsWith("ta") || v.lang.includes("ta-IN") || v.name.toLowerCase().includes("tamil"));
     } else if (isHindi) {
-      matchingVoice = voices.find((v) => v.lang.startsWith("hi") || v.lang.includes("hi-IN") || v.name.toLowerCase().includes("hindi"));
+      matchingVoice =
+        voices.find((v) => (v.lang.startsWith("hi") || v.name.toLowerCase().includes("hindi")) && isMaleName(v)) ||
+        voices.find((v) => v.lang.startsWith("hi") || v.lang.includes("hi-IN") || v.name.toLowerCase().includes("hindi"));
     }
 
+    // English / Manglish: prefer male en-IN, then male en, then any en-IN
     if (!matchingVoice) {
       matchingVoice =
+        voices.find((v) => (v.lang.startsWith("en-IN") || v.lang.includes("en_IN")) && isMaleName(v)) ||
+        voices.find((v) => v.lang.startsWith("en") && isMaleName(v)) ||
         voices.find((v) => v.lang.startsWith("en-IN") || v.lang.includes("en_IN")) ||
-        voices.find(
-          (v) =>
-            v.lang.startsWith("en") &&
-            (v.name.toLowerCase().includes("male") ||
-              v.name.toLowerCase().includes("david") ||
-              v.name.toLowerCase().includes("george") ||
-              v.name.toLowerCase().includes("guy") ||
-              v.name.toLowerCase().includes("mark") ||
-              v.name.toLowerCase().includes("prabhat") ||
-              v.name.toLowerCase().includes("ravi") ||
-              v.name.toLowerCase().includes("natural") ||
-              v.name.toLowerCase().includes("ryan")),
-        ) ||
         voices.find((v) => v.lang.startsWith("en"));
     }
 
@@ -843,9 +926,12 @@ export default function AIChatPage() {
         content: m.content,
       }));
 
+      const abortCtrl = new AbortController();
+      const fetchTimeout = setTimeout(() => abortCtrl.abort(), 25000);
       const res = await fetch(`${apiBase}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: abortCtrl.signal,
         body: JSON.stringify({
           message: textToSend,
           history: historyPayload,
@@ -1771,8 +1857,7 @@ export default function AIChatPage() {
             <span
               style={{ fontSize: "0.85rem", color: "#F8FAFC", fontWeight: 600 }}
             >
-              Listening to your voice in English... Speak your question or
-              destination
+              {`Listening in ${speechLang === "ml-IN" ? "Malayalam" : speechLang === "ta-IN" ? "Tamil" : speechLang === "hi-IN" ? "Hindi" : "English / Manglish"}... Speak your question or destination`}
             </span>
           </div>
           <button
@@ -1951,11 +2036,7 @@ export default function AIChatPage() {
         <button
           type="button"
           onClick={toggleListening}
-          title={
-            isListening
-              ? "Stop listening"
-              : "Voice Command: Speak your destination or question in English"
-          }
+          title={isListening ? "Stop listening" : `Voice Command: Speak in ${speechLang === "ml-IN" ? "Malayalam" : speechLang === "ta-IN" ? "Tamil" : speechLang === "hi-IN" ? "Hindi" : "English / Manglish"}`}
           style={{
             background: isListening
               ? "rgba(239, 68, 68, 0.25)"
@@ -2009,7 +2090,7 @@ export default function AIChatPage() {
         </Button>
       </form>
 
-      <style jsx>{`
+      <style>{`
         @keyframes bounce {
           0%,
           80%,

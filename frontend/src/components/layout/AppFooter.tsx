@@ -157,12 +157,8 @@ export default function AppFooter() {
               { label: "Home", href: "/" },
               { label: "Planner", href: "/planner" },
               { label: "Explore", href: "/explore" },
+              { label: "AI Chat", href: "/ai-chat", highlight: true },
               { label: "Dashboard", href: "/dashboard" },
-              { label: "History", href: "/trip/history" },
-              { label: "Favorites", href: "/favorites" },
-              { label: "Analytics", href: "/analytics" },
-              { label: "Profile", href: "/profile" },
-              { label: "AI ChatBot", href: "/ai-chat", highlight: true },
             ].map((item) => (
               <Link
                 key={item.label}

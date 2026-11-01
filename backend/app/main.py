@@ -9,6 +9,7 @@ from app.core.config import settings
 from app.database.db import create_database
 from app.api.auth import router as auth_router
 from app.api.trip import router as trip_router
+from app.api.transport import router as transport_router
 from app.services.ai_service import get_ai_service
 from app.services.weather_service import WeatherService
 from app.services.focus_points_service import get_focus_points_service
@@ -59,6 +60,7 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(trip_router)
+app.include_router(transport_router)
 
 
 class ChatHistoryItem(BaseModel):
