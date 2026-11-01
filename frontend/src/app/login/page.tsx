@@ -31,13 +31,13 @@ export default function LoginPage() {
     event.preventDefault();
     setError("");
 
-    if (!email || !email.includes("@")) {
-      setError("Please enter a valid email address.");
+    if (!email.trim()) {
+      setError("Please enter your email address or username.");
       return;
     }
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long.");
+    if (!password) {
+      setError("Please enter your password.");
       return;
     }
 
@@ -246,7 +246,6 @@ export default function LoginPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"

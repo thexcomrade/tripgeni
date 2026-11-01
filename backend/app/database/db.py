@@ -66,6 +66,24 @@ def get_db() -> Generator[Session, None, None]:
 def create_database() -> None:
     Base.metadata.create_all(bind=engine)
 
+    # Safe auto-migration for newly added SQLite columns
+    if str(engine.url).startswith("sqlite"):
+        try:
+            with engine.begin() as conn:
+                res = conn.exec_driver_sql("PRAGMA table_info(users)")
+                existing = {row[1] for row in res.fetchall()}
+                user_columns = {
+                    "username": "VARCHAR(100)",
+                    "date_of_birth": "VARCHAR(50)",
+                    "base_location": "VARCHAR(150)",
+                    "travel_preferences": "TEXT",
+                }
+                for col, col_type in user_columns.items():
+                    if col not in existing:
+                        conn.exec_driver_sql(f"ALTER TABLE users ADD COLUMN {col} {col_type}")
+        except Exception as e:
+            print(f"Warning: SQLite auto-migration skipped: {e}")
+
 
 def drop_database() -> None:
     Base.metadata.drop_all(bind=engine)

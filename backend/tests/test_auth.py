@@ -69,3 +69,29 @@ def test_get_profile(client, test_user):
 def test_get_profile_unauthorized(client):
     response = client.get("/api/auth/profile")
     assert response.status_code == 401
+
+def test_login_short_password_returns_401_not_422(client, test_user):
+    """Ensure passwords shorter than 8 chars return 401 Unauthorized, never 422 Unprocessable Entity."""
+    response = client.post(
+        "/api/auth/login",
+        json={
+            "email": test_user.email,
+            "password": "123",
+        },
+    )
+    assert response.status_code == 401
+    assert "invalid email or password" in response.json()["detail"].lower()
+
+
+def test_login_email_case_and_whitespace_insensitive(client, test_user):
+    """Ensure email with uppercase and whitespace logs in successfully without 422."""
+    response = client.post(
+        "/api/auth/login",
+        json={
+            "email": f"  {test_user.email.upper()}  ",
+            "password": "Password123!",
+        },
+    )
+    assert response.status_code == 200
+    assert "access_token" in response.json()
+

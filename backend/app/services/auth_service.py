@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.user import User
@@ -54,8 +55,24 @@ class AuthService:
         return user
 
     def authenticate_user(self, payload: LoginRequest) -> User:
+        clean_identifier = (payload.email or "").strip().lower()
+        if not clean_identifier or not payload.password:
+            raise ValueError("Invalid email or password")
 
-        user = self.get_user_by_email(payload.email)
+        # Case-insensitive query by email
+        user = (
+            self.db.query(User)
+            .filter(func.lower(User.email) == clean_identifier)
+            .first()
+        )
+
+        # Fallback query by username
+        if not user:
+            user = (
+                self.db.query(User)
+                .filter(func.lower(User.username) == clean_identifier)
+                .first()
+            )
 
         if not user:
             raise ValueError("Invalid email or password")

@@ -15,9 +15,9 @@ class RegisterRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str = Field(..., min_length=1, max_length=255, description="Email address or username")
 
-    password: str = Field(min_length=8, max_length=128)
+    password: str = Field(..., min_length=1, max_length=128, description="Account password")
 
 
 class TokenResponse(BaseModel):
