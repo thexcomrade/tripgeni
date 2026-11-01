@@ -345,10 +345,23 @@ export default function HomePage() {
             style={{
               animationDelay: "150ms",
               display: "inline-flex",
-              marginBottom: "24px",
+              marginTop: "clamp(36px, 6vh, 62px)",
+              marginBottom: "20px",
             }}
           >
-            <Badge variant="ai" size="md" icon={<Sparkles size={14} />}>
+            <Badge
+              variant="ai"
+              size="md"
+              icon={<Sparkles size={14} color="#00E5FF" />}
+              style={{
+                color: "#E0F2FE",
+                borderColor: "rgba(0, 229, 255, 0.45)",
+                background: "rgba(14, 165, 233, 0.22)",
+                boxShadow: "0 0 18px rgba(0, 229, 255, 0.25)",
+                fontWeight: 650,
+                letterSpacing: "0.03em",
+              }}
+            >
               Next-Gen Travel AI
             </Badge>
           </div>
@@ -486,7 +499,7 @@ export default function HomePage() {
           >
             <a
               href="#explore-sections"
-              className="hero-scroll-cue-btn"
+              className="hero-scroll-cue-text"
               title="Click to explore curated destinations and intelligence"
               onClick={(e) => {
                 e.preventDefault();
@@ -496,8 +509,8 @@ export default function HomePage() {
                 }
               }}
             >
-              <span>Explore Destinations &amp; Intelligence</span>
-              <ChevronDown size={17} color="#00E5FF" style={{ animation: "scrollCueFloat 2s ease-in-out infinite" }} />
+              <span>EXPLORE DESTINATIONS &amp; INTELLIGENCE</span>
+              <ChevronDown size={16} color="#00E5FF" style={{ animation: "scrollCueFloat 2s ease-in-out infinite" }} />
             </a>
           </div>
         </section>

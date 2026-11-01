@@ -1202,3 +1202,41 @@ input.borderless-input:focus {
 .hero-scroll-cue-btn:hover span {
   color: #FFFFFF !important;
 }
+
+/* Minimal luminous scroll cue text (Clean typography without button container) */
+.hero-scroll-cue-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 6px 12px;
+  color: #00E5FF !important;
+  font-size: 0.84rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 0 14px rgba(0, 229, 255, 0.70), 0 2px 8px rgba(0, 0, 0, 0.95);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.hero-scroll-cue-text span {
+  color: #00E5FF !important;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  transition: all 0.25s ease;
+}
+
+.hero-scroll-cue-text:hover {
+  transform: translateY(3px);
+  color: #FFFFFF !important;
+  text-shadow: 0 0 22px rgba(0, 229, 255, 0.95), 0 0 10px #00E5FF;
+}
+
+.hero-scroll-cue-text:hover span {
+  color: #FFFFFF !important;
+}
