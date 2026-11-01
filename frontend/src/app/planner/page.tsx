@@ -481,9 +481,48 @@ function PlannerContent() {
   const [destination, setDestination] = useState("");
   const [isMultiCity, setIsMultiCity] = useState(false);
   const [multiStops, setMultiStops] = useState<string[]>(["", ""]);
-  // Date-based duration (From/To calendar)
+  // Date-based duration (From/To calendar + dynamic duration calculation)
+  const [selectedDurationDays, setSelectedDurationDays] = useState<number>(3);
+  const [isManualDateRange, setIsManualDateRange] = useState<boolean>(false);
+  const [budgetViewMode, setBudgetViewMode] = useState<"total" | "per_person">("total");
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
+
+  const computeEndDate = (startDate: string, days: number): string => {
+    if (!startDate) return "";
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + Math.max(1, days) - 1);
+    return d.toISOString().split("T")[0];
+  };
+
+  const handleFromDateChange = (newFrom: string) => {
+    setFromDate(newFrom);
+    if (!isManualDateRange && newFrom) {
+      setToDate(computeEndDate(newFrom, selectedDurationDays));
+    } else if (toDate && newFrom > toDate) {
+      setToDate(newFrom);
+    }
+  };
+
+  const handleDurationChange = (days: number) => {
+    const validDays = Math.max(1, Math.min(60, days));
+    setSelectedDurationDays(validDays);
+    if (fromDate) {
+      setToDate(computeEndDate(fromDate, validDays));
+    }
+  };
+
+  // Auto-initialize fromDate and toDate if not set
+  useEffect(() => {
+    if (!fromDate) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const fromStr = tomorrow.toISOString().split("T")[0];
+      setFromDate(fromStr);
+      setToDate(computeEndDate(fromStr, 3));
+    }
+  }, []);
+
   const durationDays = useMemo(() => {
     if (fromDate && toDate) {
       const from = new Date(fromDate);
@@ -491,8 +530,8 @@ function PlannerContent() {
       const diffMs = to.getTime() - from.getTime();
       return Math.max(1, Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1);
     }
-    return 3;
-  }, [fromDate, toDate]);
+    return selectedDurationDays || 3;
+  }, [fromDate, toDate, selectedDurationDays]);
 
   const [budget, setBudget] = useState(15000);
   const [hasUserCustomizedBudget, setHasUserCustomizedBudget] = useState(false);
@@ -640,17 +679,68 @@ function PlannerContent() {
     }
   }, [transitPricing.distanceKm, transitPricing.train.available, transitPricing.flight.available, transportationMode]);
 
-  // Phase 1 Budget Calculation: Auto-incorporate transit fare and duration/travelers
+  // Calibrated Realistic Travel Budget Tiers for Indian Destinations (Accounting for shared hotel rooms & authentic meal costs)
+  const realisticBudget = useMemo(() => {
+    const days = Math.max(1, durationDays);
+    const travelers = Math.max(1, travelersCount);
+    const rooms = Math.max(1, Math.ceil(travelers / 2)); // Couples/friends share rooms
+    const nights = Math.max(1, days - 1);
+
+    // Smart Saver (Hostels / Value Homestays)
+    const saverStay = nights * rooms * 1100;
+    const saverMeals = days * travelers * 450;
+    const saverSightseeing = days * travelers * 150;
+    const saverTotal = roundToCleanZeros(saverStay + saverMeals + saverSightseeing + calculatedTransitCost);
+
+    // Curated Comfort (3-Star Boutique Resorts / Comfortable Hotels - Most Popular)
+    const comfortStay = nights * rooms * 2200;
+    const comfortMeals = days * travelers * 700;
+    const comfortSightseeing = days * travelers * 300;
+    const comfortTotal = roundToCleanZeros(comfortStay + comfortMeals + comfortSightseeing + calculatedTransitCost);
+
+    // Elite Bespoke (5-Star Heritage Villas / Luxury Palaces)
+    const luxuryStay = nights * rooms * 5500;
+    const luxuryMeals = days * travelers * 1600;
+    const luxurySightseeing = days * travelers * 750;
+    const luxuryTotal = roundToCleanZeros(luxuryStay + luxuryMeals + luxurySightseeing + calculatedTransitCost);
+
+    return {
+      saver: {
+        total: Math.max(2500, saverTotal),
+        stay: saverStay,
+        meals: saverMeals,
+        sightseeing: saverSightseeing,
+        perGuestDay: Math.round(saverTotal / (days * travelers)),
+      },
+      comfort: {
+        total: Math.max(4500, comfortTotal),
+        stay: comfortStay,
+        meals: comfortMeals,
+        sightseeing: comfortSightseeing,
+        perGuestDay: Math.round(comfortTotal / (days * travelers)),
+      },
+      luxury: {
+        total: Math.max(9000, luxuryTotal),
+        stay: luxuryStay,
+        meals: luxuryMeals,
+        sightseeing: luxurySightseeing,
+        perGuestDay: Math.round(luxuryTotal / (days * travelers)),
+      },
+      rooms,
+      nights,
+      days,
+      travelers,
+    };
+  }, [durationDays, travelersCount, calculatedTransitCost]);
+
+  // Phase 1 Budget Calculation: Sensible default baseline using Curated Comfort
   useEffect(() => {
     if (!hasUserCustomizedBudget) {
-      // Baseline: standard comfort stay & meals (₹2,500/person/day) + transit cost
-      const baselineStayAndMeals = durationDays * 2500 * travelersCount;
-      const initialTotal = roundToCleanZeros(baselineStayAndMeals + calculatedTransitCost);
-      if (initialTotal > 0) {
-        setBudget(initialTotal);
+      if (realisticBudget.comfort.total > 0) {
+        setBudget(realisticBudget.comfort.total);
       }
     }
-  }, [origin, destination, transportationMode, travelersCount, durationDays, calculatedTransitCost, hasUserCustomizedBudget]);
+  }, [origin, destination, transportationMode, travelersCount, durationDays, calculatedTransitCost, hasUserCustomizedBudget, realisticBudget]);
 
   // Dynamically calibrate Activity & Interest Focus Points based on Google Travel Ideas & Dataset
   useEffect(() => {
@@ -2214,114 +2304,277 @@ function PlannerContent() {
                   gap: "24px",
                 }}
               >
-                {/* TRIP DATES */}
+                {/* TRIP DATES (Dynamic calculation + manual override toggle) */}
                 <div>
                   <div
                     style={{
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      marginBottom: "10px",
+                      marginBottom: "12px",
+                      flexWrap: "wrap",
+                      gap: "8px",
                     }}
                   >
-                    <label
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <label style={{ fontSize: "0.90rem", fontWeight: 700, color: "#E2E8F0" }}>
+                        Trip Duration & Dates
+                      </label>
+                      <span
+                        style={{
+                          fontSize: "0.74rem",
+                          fontWeight: 700,
+                          color: "#38BDF8",
+                          background: "rgba(56, 189, 248, 0.12)",
+                          border: "1px solid rgba(56, 189, 248, 0.30)",
+                          borderRadius: "999px",
+                          padding: "2px 10px",
+                        }}
+                      >
+                        {durationDays} Day{durationDays > 1 ? "s" : ""}
+                      </span>
+                    </div>
+
+                    {/* Manual Custom Range Toggle */}
+                    <button
+                      type="button"
+                      onClick={() => setIsManualDateRange((prev) => !prev)}
                       style={{
-                        fontSize: "0.90rem",
+                        background: isManualDateRange ? "rgba(56, 189, 248, 0.20)" : "rgba(255, 255, 255, 0.05)",
+                        border: isManualDateRange ? "1px solid #38BDF8" : "1px solid rgba(255, 255, 255, 0.12)",
+                        color: isManualDateRange ? "#38BDF8" : "#94A3B8",
+                        padding: "4px 12px",
+                        borderRadius: "8px",
+                        fontSize: "0.76rem",
                         fontWeight: 600,
-                        color: "#E2E8F0",
+                        cursor: "pointer",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        transition: "all 0.2s ease",
                       }}
                     >
-                      Trip Dates
-                    </label>
-                    {fromDate && toDate && (
-                      <span style={{ fontSize: "0.82rem", color: "#38BDF8", fontWeight: 700 }}>
-                        {durationDays} Day{durationDays > 1 ? "s" : ""} Selected
+                      <Calendar size={13} />
+                      {isManualDateRange ? "✓ Manual Range Mode" : "📅 Custom Date Range"}
+                    </button>
+                  </div>
+
+                  {/* QUICK DURATION CHIPS (Driven by 1-click pills) */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "14px" }}>
+                    {[2, 3, 4, 5, 6, 7].map((days) => {
+                      const isSel = durationDays === days;
+                      return (
+                        <button
+                          key={days}
+                          type="button"
+                          onClick={() => handleDurationChange(days)}
+                          style={{
+                            padding: "6px 14px",
+                            borderRadius: "10px",
+                            fontSize: "0.82rem",
+                            fontWeight: isSel ? 700 : 500,
+                            cursor: "pointer",
+                            background: isSel
+                              ? "linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(56, 189, 248, 0.15) 100%)"
+                              : "rgba(255, 255, 255, 0.04)",
+                            border: isSel ? "1px solid #38BDF8" : "1px solid rgba(255, 255, 255, 0.10)",
+                            color: isSel ? "#38BDF8" : "#CBD5E1",
+                            boxShadow: isSel ? "0 0 12px rgba(56, 189, 248, 0.25)" : "none",
+                            transition: "all 0.18s ease",
+                          }}
+                        >
+                          {days} Days
+                        </button>
+                      );
+                    })}
+
+                    {/* Stepper for custom day counts */}
+                    <div
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        background: "rgba(255, 255, 255, 0.04)",
+                        border: "1px solid rgba(255, 255, 255, 0.10)",
+                        borderRadius: "10px",
+                        padding: "3px 8px",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleDurationChange(durationDays - 1)}
+                        style={{ background: "transparent", border: "none", color: "#94A3B8", cursor: "pointer", fontSize: "0.9rem", padding: "0 4px" }}
+                        title="Decrease day"
+                      >
+                        -
+                      </button>
+                      <span style={{ fontSize: "0.80rem", color: "#FFFFFF", fontWeight: 700, minWidth: "32px", textAlign: "center" }}>
+                        {durationDays}d
                       </span>
-                    )}
-                  </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "12px",
-                    }}
-                  >
-                    <div>
-                      <label
-                        style={{
-                          display: "block",
-                          fontSize: "0.76rem",
-                          fontWeight: 500,
-                          color: "#64748B",
-                          marginBottom: "6px",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                        }}
+                      <button
+                        type="button"
+                        onClick={() => handleDurationChange(durationDays + 1)}
+                        style={{ background: "transparent", border: "none", color: "#94A3B8", cursor: "pointer", fontSize: "0.9rem", padding: "0 4px" }}
+                        title="Increase day"
                       >
-                        From
-                      </label>
-                      <input
-                        type="date"
-                        value={fromDate}
-                        min={new Date().toISOString().split("T")[0]}
-                        onChange={(e) => {
-                          setFromDate(e.target.value);
-                          if (toDate && e.target.value > toDate) {
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* DATE INPUTS: Auto-updating vs Manual Range */}
+                  {!isManualDateRange ? (
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto 1fr",
+                        gap: "12px",
+                        alignItems: "center",
+                        background: "rgba(15, 23, 42, 0.5)",
+                        padding: "12px 16px",
+                        borderRadius: "12px",
+                        border: "1px solid rgba(255, 255, 255, 0.08)",
+                      }}
+                    >
+                      <div>
+                        <label
+                          style={{
+                            display: "block",
+                            fontSize: "0.74rem",
+                            fontWeight: 600,
+                            color: "#94A3B8",
+                            marginBottom: "6px",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em",
+                          }}
+                        >
+                          Start Journey
+                        </label>
+                        <input
+                          type="date"
+                          value={fromDate}
+                          min={new Date().toISOString().split("T")[0]}
+                          onChange={(e) => handleFromDateChange(e.target.value)}
+                          style={{
+                            width: "100%",
+                            padding: "8px 12px",
+                            borderRadius: "8px",
+                            background: "rgba(255, 255, 255, 0.06)",
+                            border: "1px solid rgba(56, 189, 248, 0.35)",
+                            color: "#FFFFFF",
+                            fontSize: "0.90rem",
+                            fontWeight: 600,
+                            outline: "none",
+                            cursor: "pointer",
+                            colorScheme: "dark",
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ color: "#38BDF8", fontSize: "1.1rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <span>→</span>
+                        <span style={{ fontSize: "0.68rem", color: "#94A3B8" }}>{durationDays}d</span>
+                      </div>
+
+                      <div>
+                        <label
+                          style={{
+                            display: "block",
+                            fontSize: "0.74rem",
+                            fontWeight: 600,
+                            color: "#94A3B8",
+                            marginBottom: "6px",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em",
+                          }}
+                        >
+                          Return Date (Auto-Synced)
+                        </label>
+                        <div
+                          style={{
+                            padding: "8px 12px",
+                            borderRadius: "8px",
+                            background: "rgba(56, 189, 248, 0.08)",
+                            border: "1px solid rgba(56, 189, 248, 0.25)",
+                            color: "#38BDF8",
+                            fontSize: "0.90rem",
+                            fontWeight: 700,
+                          }}
+                        >
+                          {toDate ? new Date(toDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Select Start Date"}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Manual Range Mode */
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "12px",
+                      }}
+                    >
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 600, color: "#94A3B8", marginBottom: "6px", textTransform: "uppercase" }}>
+                          From Date
+                        </label>
+                        <input
+                          type="date"
+                          value={fromDate}
+                          min={new Date().toISOString().split("T")[0]}
+                          onChange={(e) => handleFromDateChange(e.target.value)}
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            borderRadius: "10px",
+                            background: "rgba(255, 255, 255, 0.06)",
+                            border: "1px solid rgba(255, 255, 255, 0.14)",
+                            color: fromDate ? "#FFFFFF" : "#64748B",
+                            fontSize: "0.92rem",
+                            fontWeight: 500,
+                            outline: "none",
+                            cursor: "pointer",
+                            colorScheme: "dark",
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 600, color: "#94A3B8", marginBottom: "6px", textTransform: "uppercase" }}>
+                          To Date (Manual)
+                        </label>
+                        <input
+                          type="date"
+                          value={toDate}
+                          min={fromDate || new Date().toISOString().split("T")[0]}
+                          onChange={(e) => {
                             setToDate(e.target.value);
-                          }
-                        }}
-                        style={{
-                          width: "100%",
-                          padding: "10px 12px",
-                          borderRadius: "10px",
-                          background: "rgba(255,255,255,0.06)",
-                          border: "1px solid rgba(255,255,255,0.14)",
-                          color: fromDate ? "#FFFFFF" : "#64748B",
-                          fontSize: "0.92rem",
-                          fontWeight: 500,
-                          outline: "none",
-                          cursor: "pointer",
-                          colorScheme: "dark",
-                        }}
-                      />
+                            if (fromDate && e.target.value) {
+                              const from = new Date(fromDate);
+                              const to = new Date(e.target.value);
+                              const diff = Math.max(1, Math.round((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+                              setSelectedDurationDays(diff);
+                            }
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            borderRadius: "10px",
+                            background: "rgba(255, 255, 255, 0.06)",
+                            border: "1px solid rgba(56, 189, 248, 0.40)",
+                            color: toDate ? "#FFFFFF" : "#64748B",
+                            fontSize: "0.92rem",
+                            fontWeight: 500,
+                            outline: "none",
+                            cursor: "pointer",
+                            colorScheme: "dark",
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label
-                        style={{
-                          display: "block",
-                          fontSize: "0.76rem",
-                          fontWeight: 500,
-                          color: "#64748B",
-                          marginBottom: "6px",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                        }}
-                      >
-                        To
-                      </label>
-                      <input
-                        type="date"
-                        value={toDate}
-                        min={fromDate || new Date().toISOString().split("T")[0]}
-                        onChange={(e) => setToDate(e.target.value)}
-                        style={{
-                          width: "100%",
-                          padding: "10px 12px",
-                          borderRadius: "10px",
-                          background: "rgba(255,255,255,0.06)",
-                          border: "1px solid rgba(255,255,255,0.14)",
-                          color: toDate ? "#FFFFFF" : "#64748B",
-                          fontSize: "0.92rem",
-                          fontWeight: 500,
-                          outline: "none",
-                          cursor: "pointer",
-                          colorScheme: "dark",
-                        }}
-                      />
-                    </div>
-                  </div>
+                  )}
+
                   {fromDate && toDate && (
-                    <div style={{ marginTop: "8px" }}>
+                    <div style={{ marginTop: "10px" }}>
                       <p style={{ margin: "0 0 6px 0", fontSize: "0.78rem", color: "#64748B" }}>
                         {new Date(fromDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                         {" to "}
@@ -2345,7 +2598,7 @@ function PlannerContent() {
                   )}
                 </div>
 
-                {/* TRAVELERS COUNT */}
+                {/* TRAVELERS COUNT (Max 4-5 buttons + Custom) */}
                 <div>
                   <div
                     style={{
@@ -2355,17 +2608,16 @@ function PlannerContent() {
                       marginBottom: "10px",
                     }}
                   >
-                    <label
-                      style={{
-                        fontSize: "0.90rem",
-                        fontWeight: 600,
-                        color: "#E2E8F0",
-                      }}
-                    >
+                    <label style={{ fontSize: "0.90rem", fontWeight: 700, color: "#E2E8F0" }}>
                       Travelers Count
                     </label>
                     <span style={{ fontSize: "0.82rem", color: "#38BDF8", fontWeight: 700 }}>
                       {travelersCount} Traveler{travelersCount > 1 ? "s" : ""}
+                      {travelersCount > 1 && (
+                        <span style={{ color: "#94A3B8", fontWeight: 500, marginLeft: "6px" }}>
+                          (~{Math.ceil(travelersCount / 2)} Room{Math.ceil(travelersCount / 2) > 1 ? "s" : ""})
+                        </span>
+                      )}
                     </span>
                   </div>
 
@@ -2373,28 +2625,32 @@ function PlannerContent() {
                     style={{
                       display: "flex",
                       flexWrap: "wrap",
-                      gap: "8px",
+                      gap: "10px",
                       alignItems: "center",
                     }}
                   >
                     {[
-                      { label: "Solo (1)", count: 1 },
-                      { label: "Couple (2)", count: 2 },
-                      { label: "Friends (4)", count: 4 },
-                      { label: "Squad (6)", count: 6 },
-                      { label: "Group (15)", count: 15 },
-                      { label: "🎓 College (50)", count: 50 },
-                      { label: "🚌 Mega Tour (100+)", count: 100 },
+                      { label: "1 (Solo)", count: 1 },
+                      { label: "2 (Couple)", count: 2 },
+                      { label: "3 (Group)", count: 3 },
+                      { label: "4 (Family)", count: 4 },
+                      { label: "5+ / Custom", count: 5 },
                     ].map((preset) => {
-                      const isSelected = travelersCount === preset.count;
+                      const isSelected = preset.count === 5 ? travelersCount >= 5 : travelersCount === preset.count;
                       return (
                         <button
                           key={preset.count}
                           type="button"
-                          onClick={() => setTravelersCount(preset.count)}
+                          onClick={() => {
+                            if (preset.count === 5 && travelersCount < 5) {
+                              setTravelersCount(5);
+                            } else if (preset.count !== 5) {
+                              setTravelersCount(preset.count);
+                            }
+                          }}
                           style={{
-                            fontSize: "0.82rem",
-                            padding: "8px 16px",
+                            fontSize: "0.84rem",
+                            padding: "8px 18px",
                             borderRadius: "10px",
                             border: isSelected
                               ? "1px solid #38BDF8"
@@ -2414,90 +2670,64 @@ function PlannerContent() {
                       );
                     })}
 
-                    {/* Sleek Custom Counter */}
+                    {/* Clean Custom Stepper/Input */}
                     <div
                       style={{
                         display: "inline-flex",
                         alignItems: "center",
                         gap: "6px",
-                        background: "rgba(255, 255, 255, 0.04)",
-                        border: "1px solid rgba(255, 255, 255, 0.12)",
+                        background: travelersCount >= 5 ? "rgba(56, 189, 248, 0.12)" : "rgba(255, 255, 255, 0.04)",
+                        border: travelersCount >= 5 ? "1px solid #38BDF8" : "1px solid rgba(255, 255, 255, 0.12)",
                         borderRadius: "10px",
-                        padding: "3px 8px",
+                        padding: "4px 10px",
                       }}
                     >
-                      <span style={{ fontSize: "0.74rem", color: "#94A3B8", fontWeight: 600 }}>Custom:</span>
+                      <span style={{ fontSize: "0.76rem", color: travelersCount >= 5 ? "#38BDF8" : "#94A3B8", fontWeight: 700 }}>
+                        Custom:
+                      </span>
                       <input
                         type="number"
                         min="1"
-                        max="500"
-                        placeholder="1"
+                        max="250"
                         value={travelersCount === 0 ? "" : travelersCount}
                         onFocus={(e) => e.target.select()}
                         onChange={(e) => {
-                          const str = e.target.value;
-                          if (!str) {
-                            setTravelersCount(0);
-                            return;
-                          }
-                          const val = parseInt(str);
+                          const val = parseInt(e.target.value);
                           if (!isNaN(val)) {
-                            setTravelersCount(Math.max(1, Math.min(500, val)));
+                            setTravelersCount(Math.max(1, Math.min(250, val)));
                           }
                         }}
-                        onBlur={() => {
-                          if (!travelersCount || travelersCount < 1) {
-                            setTravelersCount(1);
-                          }
-                        }}
-                        className="borderless-input"
                         style={{
-                          width: "56px",
+                          width: "50px",
                           padding: "2px 4px",
-                          borderRadius: "0",
+                          borderRadius: "4px",
                           background: "transparent",
                           border: "none",
                           color: "#38BDF8",
-                          fontSize: "0.85rem",
-                          fontWeight: 700,
+                          fontSize: "0.90rem",
+                          fontWeight: 800,
                           textAlign: "center",
                           outline: "none",
-                          boxShadow: "none",
                         }}
-                        title="Custom traveler count"
                       />
                     </div>
                   </div>
-
-                  {travelersCount >= 30 && (
-                    <div
-                      style={{
-                        marginTop: "10px",
-                        padding: "8px 12px",
-                        borderRadius: "8px",
-                        background: "rgba(14, 165, 233, 0.1)",
-                        border: "1px solid rgba(14, 165, 233, 0.25)",
-                        fontSize: "0.78rem",
-                        color: "#38BDF8",
-                      }}
-                    >
-                      🎓 <b>Large Group / College Trip Mode:</b> Accommodations & transport will auto-scale for bulk coach fleets and group stays.
-                    </div>
-                  )}
                 </div>
               </div>
 
-              {/* TOTAL ESTIMATED BUDGET (₹) - PROFESSIONAL FINANCIAL DASHBOARD */}
+              {/* TOTAL ESTIMATED BUDGET (₹) - ARCHITECTURAL REDESIGN (Fintech-grade glassmorphic intelligence) */}
               <div
                 style={{
-                  background: "linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.50) 100%)",
-                  border: "1px solid rgba(255, 255, 255, 0.10)",
+                  background: "linear-gradient(135deg, rgba(15, 23, 42, 0.90) 0%, rgba(30, 41, 59, 0.55) 100%)",
+                  border: "1px solid rgba(56, 189, 248, 0.25)",
                   borderRadius: "20px",
-                  padding: "22px 24px",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.30)",
+                  padding: "24px 26px",
+                  boxShadow: "0 12px 36px rgba(0, 0, 0, 0.40), 0 0 24px rgba(14, 165, 233, 0.08)",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
-                {/* 1. TOP HEADER ROW: TITLE, METRICS & INTERACTIVE INPUT */}
+                {/* 1. TOP HEADER ROW: TITLE, VIEW TOGGLE & NUMERIC HERO */}
                 <div
                   style={{
                     display: "flex",
@@ -2511,7 +2741,7 @@ function PlannerContent() {
                   }}
                 >
                   <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                       <span
                         style={{
                           fontSize: "0.68rem",
@@ -2520,52 +2750,84 @@ function PlannerContent() {
                           textTransform: "uppercase",
                           color: "#38BDF8",
                           background: "rgba(56, 189, 248, 0.12)",
-                          border: "1px solid rgba(56, 189, 248, 0.25)",
+                          border: "1px solid rgba(56, 189, 248, 0.30)",
                           borderRadius: "6px",
                           padding: "2px 8px",
                         }}
                       >
-                        DYNAMIC ALLOCATION
+                        FINANCIAL INTELLIGENCE
                       </span>
-                      <span style={{ fontSize: "0.76rem", color: "#64748B" }}>
-                        {durationDays} Days · {travelersCount} Traveler{travelersCount > 1 ? "s" : ""}
+                      <span style={{ fontSize: "0.76rem", color: "#94A3B8" }}>
+                        {durationDays} Days • {travelersCount} Traveler{travelersCount > 1 ? "s" : ""} • {Math.ceil(travelersCount / 2)} Room{Math.ceil(travelersCount / 2) > 1 ? "s" : ""}
                       </span>
                     </div>
 
                     <h4
                       style={{
-                        fontSize: "1.15rem",
+                        fontSize: "1.25rem",
                         fontWeight: 800,
                         color: "#FFFFFF",
-                        margin: "0 0 6px 0",
+                        margin: "0 0 8px 0",
                         letterSpacing: "-0.01em",
                       }}
                     >
                       Total Estimated Budget (₹)
                     </h4>
 
-                    {/* METRIC PILLS */}
+                    {/* DUAL VIEW MODE SWITCHER */}
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                      <span
+                      <div
                         style={{
-                          fontSize: "0.78rem",
-                          fontWeight: 600,
-                          color: "#94A3B8",
-                          background: "rgba(255, 255, 255, 0.04)",
-                          padding: "3px 10px",
+                          display: "inline-flex",
+                          background: "rgba(255, 255, 255, 0.05)",
+                          border: "1px solid rgba(255, 255, 255, 0.10)",
                           borderRadius: "999px",
-                          border: "1px solid rgba(255, 255, 255, 0.06)",
+                          padding: "3px",
                         }}
                       >
-                        ~₹{Math.round(budget / Math.max(1, durationDays)).toLocaleString("en-IN")} / day total
-                      </span>
+                        <button
+                          type="button"
+                          onClick={() => setBudgetViewMode("total")}
+                          style={{
+                            padding: "4px 12px",
+                            borderRadius: "999px",
+                            fontSize: "0.74rem",
+                            fontWeight: budgetViewMode === "total" ? 700 : 500,
+                            background: budgetViewMode === "total" ? "rgba(56, 189, 248, 0.25)" : "transparent",
+                            color: budgetViewMode === "total" ? "#38BDF8" : "#94A3B8",
+                            border: budgetViewMode === "total" ? "1px solid rgba(56, 189, 248, 0.4)" : "none",
+                            cursor: "pointer",
+                            transition: "all 0.18s ease",
+                          }}
+                        >
+                          Total Trip
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBudgetViewMode("per_person")}
+                          style={{
+                            padding: "4px 12px",
+                            borderRadius: "999px",
+                            fontSize: "0.74rem",
+                            fontWeight: budgetViewMode === "per_person" ? 700 : 500,
+                            background: budgetViewMode === "per_person" ? "rgba(52, 211, 153, 0.25)" : "transparent",
+                            color: budgetViewMode === "per_person" ? "#34D399" : "#94A3B8",
+                            border: budgetViewMode === "per_person" ? "1px solid rgba(52, 211, 153, 0.4)" : "none",
+                            cursor: "pointer",
+                            transition: "all 0.18s ease",
+                          }}
+                        >
+                          Per Guest / Day
+                        </button>
+                      </div>
+
                       <span
                         style={{
-                          fontSize: "0.78rem",
+                          fontSize: "0.76rem",
                           fontWeight: 600,
                           color: "#34D399",
                           background: "rgba(52, 211, 153, 0.08)",
-                          padding: "3px 10px",
+                          padding: "4px 12px",
                           borderRadius: "999px",
                           border: "1px solid rgba(52, 211, 153, 0.20)",
                         }}
@@ -2575,64 +2837,137 @@ function PlannerContent() {
                     </div>
                   </div>
 
-                  {/* RIGHT: CLEAN GLOWING NUMERIC INPUT */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      background: "rgba(15, 23, 42, 0.7)",
-                      border: "1px solid rgba(56, 189, 248, 0.45)",
-                      boxShadow: "0 0 16px rgba(56, 189, 248, 0.15)",
-                      borderRadius: "12px",
-                      padding: "6px 16px",
-                    }}
-                  >
-                    <span style={{ color: "#38BDF8", fontWeight: 800, fontSize: "1.2rem", marginRight: "6px" }}>₹</span>
-                    <input
-                      type="number"
-                      min="1000"
-                      max="5000000"
-                      step="500"
-                      value={budget === 0 ? "" : budget}
-                      onFocus={(e) => e.target.select()}
-                      onChange={(e) => {
-                        const str = e.target.value;
-                        if (!str) {
-                          setBudget(0);
-                          return;
-                        }
-                        setHasUserCustomizedBudget(true);
-                        const val = parseInt(str);
-                        if (!isNaN(val)) {
-                          setBudget(Math.max(0, val));
-                        }
-                      }}
-                      onBlur={() => {
-                        if (!budget || budget < 1000) {
-                          setBudget(1000);
-                        }
-                      }}
-                      className="borderless-input"
+                  {/* RIGHT: CLEAN GLOWING NUMERIC INPUT & STEPPERS */}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "6px" }}>
+                    <div
                       style={{
-                        width: "130px",
-                        textAlign: "right",
-                        fontSize: "1.25rem",
-                        fontWeight: 800,
-                        color: "#38BDF8",
-                        background: "transparent",
-                        border: "none",
-                        borderRadius: "0",
-                        outline: "none",
-                        boxShadow: "none",
-                        padding: "6px 0",
-                        letterSpacing: "-0.01em",
+                        display: "flex",
+                        alignItems: "center",
+                        background: "rgba(15, 23, 42, 0.85)",
+                        border: "1px solid rgba(56, 189, 248, 0.50)",
+                        boxShadow: "0 0 20px rgba(56, 189, 248, 0.20)",
+                        borderRadius: "14px",
+                        padding: "6px 16px",
                       }}
-                    />
+                    >
+                      <span style={{ color: "#38BDF8", fontWeight: 800, fontSize: "1.3rem", marginRight: "6px" }}>₹</span>
+                      <input
+                        type="number"
+                        min="1000"
+                        max="2000000"
+                        step="500"
+                        value={budget === 0 ? "" : budget}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => {
+                          const str = e.target.value;
+                          if (!str) {
+                            setBudget(0);
+                            return;
+                          }
+                          setHasUserCustomizedBudget(true);
+                          const val = parseInt(str);
+                          if (!isNaN(val)) {
+                            setBudget(Math.max(0, val));
+                          }
+                        }}
+                        onBlur={() => {
+                          if (!budget || budget < 1000) {
+                            setBudget(1000);
+                          }
+                        }}
+                        className="borderless-input"
+                        style={{
+                          width: "140px",
+                          textAlign: "right",
+                          fontSize: "1.35rem",
+                          fontWeight: 900,
+                          color: "#38BDF8",
+                          background: "transparent",
+                          border: "none",
+                          borderRadius: "0",
+                          outline: "none",
+                          letterSpacing: "-0.01em",
+                        }}
+                      />
+                    </div>
+
+                    <div style={{ display: "flex", gap: "6px" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setHasUserCustomizedBudget(true);
+                          setBudget((prev) => Math.max(1000, prev - 1000));
+                        }}
+                        style={{
+                          fontSize: "0.72rem",
+                          padding: "2px 8px",
+                          borderRadius: "6px",
+                          background: "rgba(255, 255, 255, 0.05)",
+                          border: "1px solid rgba(255, 255, 255, 0.10)",
+                          color: "#94A3B8",
+                          cursor: "pointer",
+                        }}
+                      >
+                        -₹1k
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setHasUserCustomizedBudget(true);
+                          setBudget((prev) => prev + 1000);
+                        }}
+                        style={{
+                          fontSize: "0.72rem",
+                          padding: "2px 8px",
+                          borderRadius: "6px",
+                          background: "rgba(255, 255, 255, 0.05)",
+                          border: "1px solid rgba(255, 255, 255, 0.10)",
+                          color: "#38BDF8",
+                          cursor: "pointer",
+                        }}
+                      >
+                        +₹1k
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                {/* 2. THREE PROFESSIONAL TIER ARCHITECTURE CARDS */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "14px", marginBottom: "18px" }}>
+                {/* DYNAMIC INTERACTIVE BUDGET SLIDER */}
+                <div style={{ marginBottom: "22px", background: "rgba(0,0,0,0.25)", padding: "14px 18px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "0.74rem", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                      🎚️ Interactive Dynamic Allocation Slider
+                    </span>
+                    <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#38BDF8" }}>
+                      ₹{budget.toLocaleString("en-IN")} total
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={Math.max(2000, Math.round(realisticBudget.saver.total * 0.85))}
+                    max={Math.max(15000, Math.round(realisticBudget.luxury.total * 1.35))}
+                    step={250}
+                    value={budget}
+                    onChange={(e) => {
+                      setHasUserCustomizedBudget(true);
+                      setBudget(parseInt(e.target.value));
+                    }}
+                    style={{
+                      width: "100%",
+                      accentColor: "#38BDF8",
+                      cursor: "pointer",
+                      height: "6px",
+                    }}
+                  />
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px", fontSize: "0.70rem", color: "#64748B" }}>
+                    <span>Saver: ~₹{realisticBudget.saver.total.toLocaleString("en-IN")}</span>
+                    <span style={{ color: "#38BDF8", fontWeight: 700 }}>Comfort: ~₹{realisticBudget.comfort.total.toLocaleString("en-IN")}</span>
+                    <span>Luxury: ~₹{realisticBudget.luxury.total.toLocaleString("en-IN")}</span>
+                  </div>
+                </div>
+
+                {/* 2. THREE REALISTIC TIER ARCHITECTURE CARDS */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "14px", marginBottom: "20px" }}>
                   {[
                     {
                       id: "budget",
@@ -2640,9 +2975,12 @@ function PlannerContent() {
                       subtitle: "Budget Backpacker",
                       badge: "SMART VALUE",
                       badgeColor: "#10B981",
-                      perDayPerson: 1500,
-                      features: ["Boutique Hostels & Homestays", "Sleeper / 2S & Local Transport", "Authentic Local Dining & Cafes"],
-                      gradient: "linear-gradient(180deg, rgba(16, 185, 129, 0.10) 0%, rgba(15, 23, 42, 0.85) 100%)",
+                      calculatedTotal: realisticBudget.saver.total,
+                      perGuestDay: realisticBudget.saver.perGuestDay,
+                      stayDesc: "~₹1,100/room/night • Hostels & Homestays",
+                      foodDesc: "~₹450/day • Local Thalis & Street Food",
+                      transitDesc: "Sleeper / 2S Trains & Local Autos",
+                      gradient: "linear-gradient(180deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.85) 100%)",
                       accent: "#10B981",
                       svgIcon: (
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -2658,9 +2996,12 @@ function PlannerContent() {
                       subtitle: "Balanced Explorer",
                       badge: "MOST POPULAR",
                       badgeColor: "#38BDF8",
-                      perDayPerson: 3500,
-                      features: ["3-4★ Premium Stays & Resorts", "AC Cabs / 3-Tier AC Trains", "Curated Multi-Cuisine Dining"],
-                      gradient: "linear-gradient(180deg, rgba(56, 189, 248, 0.14) 0%, rgba(15, 23, 42, 0.85) 100%)",
+                      calculatedTotal: realisticBudget.comfort.total,
+                      perGuestDay: realisticBudget.comfort.perGuestDay,
+                      stayDesc: "~₹2,200/room/night • 3★ Boutique Resorts",
+                      foodDesc: "~₹700/day • Authentic Dining & Cafes",
+                      transitDesc: "AC Express / 3-Tier AC & Cabs",
+                      gradient: "linear-gradient(180deg, rgba(56, 189, 248, 0.16) 0%, rgba(15, 23, 42, 0.85) 100%)",
                       accent: "#38BDF8",
                       svgIcon: (
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -2674,9 +3015,12 @@ function PlannerContent() {
                       subtitle: "Signature Luxury",
                       badge: "VIP EXPERIENCE",
                       badgeColor: "#F59E0B",
-                      perDayPerson: 8000,
-                      features: ["5★ Heritage Villas & Resorts", "Private Chauffeur SUV / Flight", "Fine Dining & Curated Tastings"],
-                      gradient: "linear-gradient(180deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0.85) 100%)",
+                      calculatedTotal: realisticBudget.luxury.total,
+                      perGuestDay: realisticBudget.luxury.perGuestDay,
+                      stayDesc: "~₹5,500/room/night • 5★ Heritage Haveli / Villas",
+                      foodDesc: "~₹1,600/day • Fine Dining & Tastings",
+                      transitDesc: "Private Chauffeur SUV / Flight",
+                      gradient: "linear-gradient(180deg, rgba(245, 158, 11, 0.14) 0%, rgba(15, 23, 42, 0.85) 100%)",
                       accent: "#F59E0B",
                       svgIcon: (
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -2685,16 +3029,14 @@ function PlannerContent() {
                       ),
                     },
                   ].map((tier) => {
-                    const dailyStayAndActivities = tier.perDayPerson * durationDays * travelersCount;
-                    const calculatedTotal = roundToCleanZeros(dailyStayAndActivities + calculatedTransitCost);
-                    const isSelected = Math.abs(budget - calculatedTotal) < 2500;
+                    const isSelected = Math.abs(budget - tier.calculatedTotal) < 2000;
 
                     return (
                       <div
                         key={tier.id}
                         onClick={() => {
                           setHasUserCustomizedBudget(true);
-                          setBudget(calculatedTotal);
+                          setBudget(tier.calculatedTotal);
                         }}
                         role="button"
                         tabIndex={0}
@@ -2765,71 +3107,100 @@ function PlannerContent() {
                         </div>
 
                         {/* PRICE HERO */}
-                        <div style={{ marginTop: "4px" }}>
+                        <div style={{ marginTop: "4px", marginBottom: "12px" }}>
                           <div style={{ fontSize: "1.45rem", fontWeight: 900, color: isSelected ? tier.accent : "#FFFFFF", letterSpacing: "-0.02em" }}>
-                            ₹{calculatedTotal.toLocaleString("en-IN")}
+                            ₹{tier.calculatedTotal.toLocaleString("en-IN")}
                           </div>
-                          <div style={{ fontSize: "0.72rem", color: "#64748B" }}>
-                            ~₹{tier.perDayPerson.toLocaleString("en-IN")} / guest / day base
+                          <div style={{ fontSize: "0.72rem", color: "#94A3B8", marginTop: "2px" }}>
+                            ~₹{tier.perGuestDay.toLocaleString("en-IN")} / guest / day
                           </div>
+                        </div>
+
+                        {/* TIER SPECS */}
+                        <div style={{ fontSize: "0.72rem", color: "#CBD5E1", display: "flex", flexDirection: "column", gap: "4px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "8px" }}>
+                          <div>🏨 {tier.stayDesc}</div>
+                          <div>🍲 {tier.foodDesc}</div>
                         </div>
                       </div>
                     );
                   })}
                 </div>
 
-                {/* 3. DYNAMIC VEHICLE & TRANSIT BUDGET BREAKDOWN BAR */}
+                {/* 3. FOUR TRANSPARENT COST ALLOCATION PILLARS */}
                 <div
                   style={{
-                    background: "rgba(0, 0, 0, 0.35)",
+                    background: "rgba(0, 0, 0, 0.40)",
                     border: "1px solid rgba(255, 255, 255, 0.08)",
                     borderRadius: "14px",
-                    padding: "14px 18px",
+                    padding: "16px 18px",
                   }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <div>
-                        <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>
-                          Transit Integration: {transportationMode}
-                        </span>
-                        <span style={{ fontSize: "0.74rem", color: "#64748B", marginLeft: "8px" }}>
-                          ({origin || "Starting City"} ➔ {destination || "Destination"})
-                        </span>
-                      </div>
+                      <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>
+                        Live Expense Itemization Breakdown
+                      </span>
+                      <span style={{ fontSize: "0.74rem", color: "#94A3B8" }}>
+                        ({origin || "Starting City"} ➔ {destination || "Destination"})
+                      </span>
                     </div>
 
-                    <div style={{ fontSize: "0.90rem", fontWeight: 800, color: "#34D399" }}>
-                      ~₹{calculatedTransitCost.toLocaleString("en-IN")}{" "}
+                    <div style={{ fontSize: "0.86rem", fontWeight: 800, color: "#34D399" }}>
+                      ~₹{budget.toLocaleString("en-IN")}{" "}
                       <span style={{ fontSize: "0.72rem", color: "#94A3B8", fontWeight: 500 }}>
-                        ({Math.round((calculatedTransitCost / Math.max(1, budget)) * 100)}% of total budget)
+                        (100% Allocated)
                       </span>
                     </div>
                   </div>
 
-                  {/* SEGMENTED PROGRESS VISUAL */}
-                  <div style={{ height: "8px", width: "100%", background: "rgba(255, 255, 255, 0.08)", borderRadius: "999px", overflow: "hidden", display: "flex" }}>
-                    <div
-                      style={{
-                        width: `${Math.min(100, Math.max(8, Math.round((calculatedTransitCost / Math.max(1, budget)) * 100)))}%`,
-                        background: "linear-gradient(90deg, #38BDF8 0%, #0284C7 100%)",
-                        borderRadius: "999px",
-                      }}
-                      title={`Transit Tickets: ~₹${calculatedTransitCost.toLocaleString("en-IN")}`}
-                    />
-                    <div
-                      style={{
-                        flex: 1,
-                        background: "linear-gradient(90deg, #10B981 0%, #059669 100%)",
-                        borderRadius: "999px",
-                      }}
-                      title={`Stay & Daily Logistics: ~₹${Math.max(0, budget - calculatedTransitCost).toLocaleString("en-IN")}`}
-                    />
+                  {/* 4 PILLARS GRID */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "8px", marginBottom: "12px" }}>
+                    <div style={{ background: "rgba(255,255,255,0.04)", padding: "10px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                      <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em" }}>🏨 Accommodations</div>
+                      <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "#FFFFFF", marginTop: "2px" }}>
+                        ~₹{roundToCleanZeros(Math.max(0, budget - calculatedTransitCost) * 0.50).toLocaleString("en-IN")}
+                      </div>
+                      <div style={{ fontSize: "0.66rem", color: "#64748B" }}>{realisticBudget.nights}n • {realisticBudget.rooms} room(s)</div>
+                    </div>
+
+                    <div style={{ background: "rgba(255,255,255,0.04)", padding: "10px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                      <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em" }}>🍽️ Food & Dining</div>
+                      <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "#38BDF8", marginTop: "2px" }}>
+                        ~₹{roundToCleanZeros(Math.max(0, budget - calculatedTransitCost) * 0.32).toLocaleString("en-IN")}
+                      </div>
+                      <div style={{ fontSize: "0.66rem", color: "#64748B" }}>Regional trails & meals</div>
+                    </div>
+
+                    <div style={{ background: "rgba(255,255,255,0.04)", padding: "10px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.06)" }}>
+                      <div style={{ fontSize: "0.68rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em" }}>🎟️ Sightseeing</div>
+                      <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "#F59E0B", marginTop: "2px" }}>
+                        ~₹{roundToCleanZeros(Math.max(0, budget - calculatedTransitCost) * 0.18).toLocaleString("en-IN")}
+                      </div>
+                      <div style={{ fontSize: "0.66rem", color: "#64748B" }}>Entry, guides & safari</div>
+                    </div>
+
+                    <div style={{ background: "rgba(56,189,248,0.08)", padding: "10px", borderRadius: "10px", border: "1px solid rgba(56,189,248,0.25)" }}>
+                      <div style={{ fontSize: "0.68rem", color: "#38BDF8", textTransform: "uppercase", letterSpacing: "0.05em" }}>🚆 Transit ({transportationMode})</div>
+                      <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "#38BDF8", marginTop: "2px" }}>
+                        ~₹{calculatedTransitCost.toLocaleString("en-IN")}
+                      </div>
+                      <div style={{ fontSize: "0.66rem", color: "#64748B" }}>Live fare data</div>
+                    </div>
                   </div>
 
-                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px", fontSize: "0.68rem", color: "#94A3B8" }}>
-                    <span>🔵 Travel Tickets: ~₹{calculatedTransitCost.toLocaleString("en-IN")}</span>
-                    <span>🟢 Stay, Meals & Daily Itinerary: ~₹{Math.max(0, budget - calculatedTransitCost).toLocaleString("en-IN")}</span>
+                  {/* MULTI-SEGMENT PROGRESS BAR */}
+                  <div style={{ height: "7px", width: "100%", background: "rgba(255, 255, 255, 0.08)", borderRadius: "999px", overflow: "hidden", display: "flex" }}>
+                    <div style={{ width: "45%", background: "#FFFFFF", borderRadius: "999px" }} title="Stays (45%)" />
+                    <div style={{ width: "28%", background: "#38BDF8", borderRadius: "999px" }} title="Food (28%)" />
+                    <div style={{ width: "15%", background: "#F59E0B", borderRadius: "999px" }} title="Activities (15%)" />
+                    <div style={{ flex: 1, background: "#10B981", borderRadius: "999px" }} title="Transit Tickets" />
+                  </div>
+
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px", fontSize: "0.66rem", color: "#94A3B8" }}>
+                    <span>⚪ Stays (~45%)</span>
+                    <span>🔵 Meals (~28%)</span>
+                    <span>🟡 Activities (~15%)</span>
+                    <span>🟢 Transit (~{Math.round((calculatedTransitCost / Math.max(1, budget)) * 100)}%)</span>
                   </div>
                 </div>
               </div>

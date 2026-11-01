@@ -840,6 +840,60 @@ export default function AIChatPage() {
       }
     }
 
+    // 1b. Indic & Multilingual Destination Map (Malayalam, Tamil, Hindi)
+    const indicDestMap: Record<string, string> = {
+      "വാരണാസി": "Varanasi",
+      "വാരാണസി": "Varanasi",
+      "കാശി": "Varanasi",
+      "കാശീ": "Varanasi",
+      "ബനാറസ്": "Varanasi",
+      "തെങ്കാശി": "Thenkasi",
+      "കുറ്റാലം": "Thenkasi",
+      "മൂന്നാർ": "Munnar",
+      "മുന്നാർ": "Munnar",
+      "വർക്കല": "Varkala",
+      "വയനാട്": "Wayanad",
+      "ഊട്ടി": "Ooty",
+      "കൂർഗ്": "Coorg",
+      "കുടക്": "Coorg",
+      "ഗോവ": "Goa",
+      "ഡൽഹി": "Delhi",
+      "ദില്ലി": "Delhi",
+      "ആഗ്ര": "Agra",
+      "ജയ്പൂർ": "Jaipur",
+      "മണാലി": "Manali",
+      "പാരീസ്": "Paris",
+      "ടോക്കിയോ": "Tokyo",
+      "ബാലി": "Bali",
+      "ദുബായ്": "Dubai",
+      "ലക്ഷദ്വീപ്": "Lakshadweep",
+      "வாரணாசி": "Varanasi",
+      "காசி": "Varanasi",
+      "தென்காசி": "Thenkasi",
+      "முன்னார்": "Munnar",
+      "வர்க்கலா": "Varkala",
+      "ஊட்டி": "Ooty",
+      "கூர்க்": "Coorg",
+      "டெல்லி": "Delhi",
+      "वाराणसी": "Varanasi",
+      "काशी": "Varanasi",
+      "बनारस": "Varanasi",
+      "मुन्नार": "Munnar",
+      "तेनकासी": "Thenkasi",
+      "वरकला": "Varkala",
+      "कूर्ग": "Coorg",
+      "मनाली": "Manali",
+      "जयपुर": "Jaipur",
+      "दिल्ली": "Delhi",
+    };
+
+    const textLower = text.toLowerCase();
+    for (const [nativeKey, mappedDest] of Object.entries(indicDestMap)) {
+      if (text.includes(nativeKey) || textLower.includes(nativeKey.toLowerCase())) {
+        return mappedDest;
+      }
+    }
+
     // 2. Comprehensive keyword dictionary
     const keywords = [
       "Kashmir",
@@ -1103,8 +1157,13 @@ export default function AIChatPage() {
         !hasTravelers &&
         !hasBudget
       ) {
-        // STEP 1: Destination mentioned -> "Oh, Varanasi!!" + 2-line description + Ask travelers count ONLY!
-        if (
+        const isMalayalamInput = /[\u0D00-\u0D7F]/.test(textToSend);
+        if (isMalayalamInput) {
+          aiReply =
+            `തീർച്ചയായും, ${activeDest}! 🌟\n\n` +
+            `മനോഹരമായ കാഴ്ചകളും ആധികാരികമായ പ്രാദേശിക സംസ്കാരവും ഭക്ഷണങ്ങളും നിറഞ്ഞ ഒരു അവിസ്മരണീയമായ യാത്രാനുഭവം.\n\n` +
+            `നിങ്ങൾക്കായി കൃത്യമായ യാത്രാപദ്ധതി തയ്യാറാക്കാൻ: എത്ര ദിവസത്തെ യാത്രയാണ് ഉദ്ദേശിക്കുന്നത്? (ഒറ്റയ്ക്കാണോ, ദമ്പതികളായോ അതോ കുടുംബം/സുഹൃത്തുക്കൾക്കൊപ്പമാണോ യാത്ര?)`;
+        } else if (
           activeDest.toLowerCase().includes("varanasi") ||
           activeDest.toLowerCase().includes("kashi") ||
           activeDest.toLowerCase().includes("banaras")

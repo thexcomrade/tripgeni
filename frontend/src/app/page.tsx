@@ -281,7 +281,7 @@ export default function HomePage() {
         style={{
           position: "relative",
           width: "100%",
-          minHeight: "min(90vh, 820px)",
+          minHeight: "min(88vh, 760px)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -320,7 +320,7 @@ export default function HomePage() {
             alignItems: "center",
             margin: "0 auto",
             textAlign: "center",
-            padding: "clamp(75px, 10vh, 110px) clamp(16px, 3.5vw, 40px) clamp(24px, 4vh, 40px) clamp(16px, 3.5vw, 40px)",
+            padding: "clamp(60px, 8vh, 90px) clamp(16px, 3.5vw, 40px) clamp(20px, 3vh, 32px) clamp(16px, 3.5vw, 40px)",
           }}
         >
           {/* AMBIENT GLOW BACKDROP */}
@@ -497,7 +497,7 @@ export default function HomePage() {
               }}
             >
               <span>Explore Destinations &amp; Intelligence</span>
-              <ChevronDown size={17} color="#38BDF8" style={{ animation: "scrollCueFloat 2s ease-in-out infinite" }} />
+              <ChevronDown size={17} color="#00E5FF" style={{ animation: "scrollCueFloat 2s ease-in-out infinite" }} />
             </a>
           </div>
         </section>

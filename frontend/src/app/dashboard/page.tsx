@@ -206,33 +206,113 @@ function getCityWeatherProfile(city: string) {
   };
 }
 
-// Smart World Clock & Travel Compass Component
+// Smart World Clock & Travel Compass Component (Mobile Hardware Sensor & Telemetry Integration)
 function SmartWorldClockAndCompass() {
   const [activeTab, setActiveTab] = useState<"clock" | "compass">("clock");
   const [time, setTime] = useState<Date>(new Date());
   const [selectedCityIdx, setSelectedCityIdx] = useState(0);
   const [compassHeading, setCompassHeading] = useState(42);
+  const [isPhone, setIsPhone] = useState(false);
+  const [isHardwareActive, setIsHardwareActive] = useState(false);
+  const [needsIosPermission, setNeedsIosPermission] = useState(false);
+  const [gpsData, setGpsData] = useState<{
+    lat: number | null;
+    lng: number | null;
+    accuracy: number | null;
+    speed: number | null;
+  }>({ lat: null, lng: null, accuracy: null, speed: null });
 
+  // Clock ticker
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
+  // Detect mobile phone / device
   useEffect(() => {
+    if (typeof window === "undefined" || typeof navigator === "undefined") return;
+    const ua = navigator.userAgent || "";
+    const isMobileUa = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    const detectedPhone = isMobileUa || (hasTouch && window.innerWidth < 1024);
+    setIsPhone(detectedPhone);
+
+    // Check if iOS requires permission
+    if (
+      typeof DeviceOrientationEvent !== "undefined" &&
+      typeof (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission === "function"
+    ) {
+      setNeedsIosPermission(true);
+    }
+  }, []);
+
+  // Hardware Orientation Listener
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const handleOrientation = (e: DeviceOrientationEvent) => {
-      if (e.alpha !== null && e.alpha !== undefined) {
-        setCompassHeading(Math.round(e.alpha));
+      // iOS webkitCompassHeading provides true north
+      const webkitHeading = (e as unknown as { webkitCompassHeading?: number }).webkitCompassHeading;
+      if (typeof webkitHeading === "number" && !isNaN(webkitHeading)) {
+        setCompassHeading(Math.round(webkitHeading));
+        setIsHardwareActive(true);
+      } else if (e.alpha !== null && e.alpha !== undefined) {
+        // Android absolute heading or standard alpha
+        const heading = Math.round(360 - e.alpha) % 360;
+        setCompassHeading(heading);
+        setIsHardwareActive(true);
       }
     };
-    if (typeof window !== "undefined" && window.DeviceOrientationEvent) {
+
+    if (window.DeviceOrientationEvent && !needsIosPermission) {
+      window.addEventListener("deviceorientationabsolute" as unknown as "deviceorientation", handleOrientation);
       window.addEventListener("deviceorientation", handleOrientation);
     }
+
     return () => {
-      if (typeof window !== "undefined") {
-        window.removeEventListener("deviceorientation", handleOrientation);
-      }
+      window.removeEventListener("deviceorientationabsolute" as unknown as "deviceorientation", handleOrientation);
+      window.removeEventListener("deviceorientation", handleOrientation);
     };
-  }, []);
+  }, [needsIosPermission]);
+
+  // GPS Telemetry
+  useEffect(() => {
+    if (typeof window === "undefined" || !navigator.geolocation || activeTab !== "compass") return;
+
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        setGpsData({
+          lat: parseFloat(pos.coords.latitude.toFixed(4)),
+          lng: parseFloat(pos.coords.longitude.toFixed(4)),
+          accuracy: pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null,
+          speed: pos.coords.speed ? Math.round(pos.coords.speed * 3.6) : null, // km/h
+        });
+      },
+      (err) => console.debug("GPS Compass telemetry note:", err.message),
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }, [activeTab]);
+
+  const requestIosCompass = async () => {
+    if (
+      typeof DeviceOrientationEvent !== "undefined" &&
+      typeof (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission === "function"
+    ) {
+      try {
+        const perm = await (DeviceOrientationEvent as unknown as { requestPermission: () => Promise<string> }).requestPermission();
+        if (perm === "granted") {
+          setNeedsIosPermission(false);
+          setIsHardwareActive(true);
+        }
+      } catch (e) {
+        console.warn("Compass permission request error:", e);
+      }
+    }
+  };
 
   const worldCities = [
     { name: "Dubai", country: "UAE", tz: "Asia/Dubai" },
@@ -278,6 +358,30 @@ function SmartWorldClockAndCompass() {
     return directions[index];
   };
 
+  const getHeadingAnalysis = (deg: number) => {
+    const cardinal = getCardinal(deg);
+    switch (cardinal) {
+      case "N":
+        return "Northbound Vector: Aligning with Nilgiri heights, Deccan plateau & Himalayan ranges.";
+      case "NE":
+        return "North-East Bearing: Wayanad corridors, Bangalore plateau, & Eastern Ghats.";
+      case "E":
+        return "Eastward Corridor: Across Western Ghats passes towards Tamil Nadu & Bay of Bengal.";
+      case "SE":
+        return "South-East Bearing: Towards Thenkasi & Courtallam foothills.";
+      case "S":
+        return "Southward Coastal Vector: Heading towards Varkala clifftops, Kovalam & Indian Ocean.";
+      case "SW":
+        return "South-West Bearing: Coastal backwaters, Arabian Sea horizons & sunset trails.";
+      case "W":
+        return "Direct Westward Horizon: Open Arabian Sea maritime routes.";
+      case "NW":
+        return "North-West Vector: Towards Konkan coast, Goa beaches, & Mumbai.";
+      default:
+        return "Tracking real-time travel bearing.";
+    }
+  };
+
   const currentHour = time.getHours();
   const isDay = currentHour >= 6 && currentHour < 18;
   const selectedCity = worldCities[selectedCityIdx];
@@ -285,20 +389,51 @@ function SmartWorldClockAndCompass() {
   const cityIsDay = cityHour >= 6 && cityHour < 18;
 
   return (
-    <GlassCard style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "16px", minHeight: "360px" }}>
+    <GlassCard style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "16px", minHeight: "380px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           {activeTab === "clock" ? <Clock size={20} color="#38BDF8" /> : <Compass size={20} color="#14B8A6" />}
           <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#FFFFFF" }}>
             {activeTab === "clock" ? "Smart World Clock" : "Travel Compass"}
           </h3>
+          {activeTab === "compass" && (
+            <span
+              style={{
+                fontSize: "0.68rem",
+                fontWeight: 700,
+                color: isHardwareActive ? "#34D399" : isPhone ? "#38BDF8" : "#94A3B8",
+                background: isHardwareActive ? "rgba(52, 211, 153, 0.15)" : "rgba(255, 255, 255, 0.06)",
+                border: isHardwareActive ? "1px solid rgba(52, 211, 153, 0.35)" : "1px solid rgba(255, 255, 255, 0.10)",
+                borderRadius: "999px",
+                padding: "2px 8px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "5px",
+              }}
+            >
+              <span
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  borderRadius: "50%",
+                  background: isHardwareActive ? "#34D399" : isPhone ? "#38BDF8" : "#94A3B8",
+                  boxShadow: isHardwareActive ? "0 0 8px #34D399" : "none",
+                }}
+              />
+              {isHardwareActive
+                ? "Phone Gyro Active"
+                : isPhone
+                ? "Mobile Phone Detected"
+                : "Desktop Simulator"}
+            </span>
+          )}
         </div>
         <div style={{ display: "flex", background: "rgba(255, 255, 255, 0.06)", borderRadius: "999px", padding: "3px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
           <button
             type="button"
             onClick={() => setActiveTab("clock")}
             style={{
-              padding: "5px 12px",
+              padding: "5px 14px",
               borderRadius: "999px",
               fontSize: "0.78rem",
               fontWeight: 600,
@@ -315,7 +450,7 @@ function SmartWorldClockAndCompass() {
             type="button"
             onClick={() => setActiveTab("compass")}
             style={{
-              padding: "5px 12px",
+              padding: "5px 14px",
               borderRadius: "999px",
               fontSize: "0.78rem",
               fontWeight: 600,
@@ -399,55 +534,123 @@ function SmartWorldClockAndCompass() {
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px", flex: 1, padding: "8px 0" }}>
+          {/* iOS Sensor Permission Banner */}
+          {needsIosPermission && (
+            <button
+              type="button"
+              onClick={requestIosCompass}
+              style={{
+                background: "linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(20, 184, 166, 0.25) 100%)",
+                border: "1px solid #38BDF8",
+                borderRadius: "10px",
+                padding: "8px 16px",
+                color: "#FFFFFF",
+                fontSize: "0.80rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                boxShadow: "0 0 16px rgba(56, 189, 248, 0.3)",
+              }}
+            >
+              📱 Tap to Activate iPhone Compass Gyroscope
+            </button>
+          )}
+
+          {/* COMPASS DIAL */}
           <div
             style={{
               position: "relative",
-              width: "170px",
-              height: "170px",
+              width: "180px",
+              height: "180px",
               borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, rgba(3, 7, 18, 0.8) 70%)",
-              border: "2px solid rgba(56, 189, 248, 0.35)",
-              boxShadow: "0 0 25px rgba(14, 165, 233, 0.2)",
+              background: "radial-gradient(circle, rgba(14, 165, 233, 0.16) 0%, rgba(3, 7, 18, 0.88) 70%)",
+              border: "2px solid rgba(56, 189, 248, 0.45)",
+              boxShadow: "0 0 30px rgba(14, 165, 233, 0.25), inset 0 0 20px rgba(0,0,0,0.8)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              cursor: "pointer",
+              cursor: isHardwareActive ? "default" : "pointer",
               userSelect: "none",
             }}
-            onClick={() => setCompassHeading((prev) => (prev + 45) % 360)}
-            title="Click to rotate bearing"
+            onClick={() => {
+              if (!isHardwareActive) {
+                setCompassHeading((prev) => (prev + 45) % 360);
+              }
+            }}
+            title={isHardwareActive ? "Live mobile gyroscope tracking active" : "Click to rotate bearing in simulation mode"}
           >
-            <span style={{ position: "absolute", top: "6px", fontSize: "0.75rem", fontWeight: 800, color: "#EF4444" }}>N</span>
-            <span style={{ position: "absolute", right: "8px", fontSize: "0.75rem", fontWeight: 800, color: "#94A3B8" }}>E</span>
-            <span style={{ position: "absolute", bottom: "6px", fontSize: "0.75rem", fontWeight: 800, color: "#94A3B8" }}>S</span>
-            <span style={{ position: "absolute", left: "8px", fontSize: "0.75rem", fontWeight: 800, color: "#94A3B8" }}>W</span>
+            {/* CARDINAL LABELS */}
+            <span style={{ position: "absolute", top: "8px", fontSize: "0.80rem", fontWeight: 900, color: "#EF4444" }}>N</span>
+            <span style={{ position: "absolute", right: "10px", fontSize: "0.76rem", fontWeight: 800, color: "#94A3B8" }}>E</span>
+            <span style={{ position: "absolute", bottom: "8px", fontSize: "0.76rem", fontWeight: 800, color: "#94A3B8" }}>S</span>
+            <span style={{ position: "absolute", left: "10px", fontSize: "0.76rem", fontWeight: 800, color: "#94A3B8" }}>W</span>
 
+            {/* INTER-CARDINALS */}
+            <span style={{ position: "absolute", top: "24px", right: "26px", fontSize: "0.62rem", fontWeight: 700, color: "#64748B" }}>NE</span>
+            <span style={{ position: "absolute", bottom: "24px", right: "26px", fontSize: "0.62rem", fontWeight: 700, color: "#64748B" }}>SE</span>
+            <span style={{ position: "absolute", bottom: "24px", left: "26px", fontSize: "0.62rem", fontWeight: 700, color: "#64748B" }}>SW</span>
+            <span style={{ position: "absolute", top: "24px", left: "26px", fontSize: "0.62rem", fontWeight: 700, color: "#64748B" }}>NW</span>
+
+            {/* MAGNETIC NEEDLE */}
             <div
               style={{
                 position: "absolute",
                 width: "4px",
-                height: "120px",
+                height: "126px",
                 transform: `rotate(${compassHeading}deg)`,
-                transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+                transition: isHardwareActive ? "transform 0.15s ease-out" : "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "space-between",
               }}
             >
-              <div style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderBottom: "45px solid #EF4444" }} />
-              <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#FFFFFF", border: "2px solid #0EA5E9", zIndex: 2 }} />
-              <div style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderTop: "45px solid #38BDF8" }} />
+              <div style={{ width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderBottom: "48px solid #EF4444", filter: "drop-shadow(0 0 6px rgba(239, 68, 68, 0.6))" }} />
+              <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: "#FFFFFF", border: "2px solid #0EA5E9", zIndex: 2, boxShadow: "0 0 8px rgba(14, 165, 233, 0.8)" }} />
+              <div style={{ width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderTop: "48px solid #38BDF8" }} />
             </div>
           </div>
 
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "1.3rem", fontWeight: 800, color: "#FFFFFF", letterSpacing: "0.5px" }}>
+          {/* HEADING & CARDINAL TELEMETRY */}
+          <div style={{ textAlign: "center", maxWidth: "340px" }}>
+            <div style={{ fontSize: "1.45rem", fontWeight: 900, color: "#FFFFFF", letterSpacing: "0.5px" }}>
               {String(compassHeading).padStart(3, "0")}° {getCardinal(compassHeading)}
             </div>
-            <div style={{ fontSize: "0.78rem", color: "#38BDF8", marginTop: "2px" }}>
-              Tap dial to rotate • Live cardinal bearing
+
+            {/* AUTOMATIC EXPLORATION ANALYZER NOTE */}
+            <div style={{ fontSize: "0.76rem", color: "#38BDF8", marginTop: "4px", fontWeight: 500, lineHeight: 1.4 }}>
+              {getHeadingAnalysis(compassHeading)}
             </div>
+
+            {/* LIVE GPS HUD (Active Telemetry) */}
+            {gpsData.lat && gpsData.lng && (
+              <div
+                style={{
+                  marginTop: "8px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "4px 12px",
+                  borderRadius: "999px",
+                  background: "rgba(14, 165, 233, 0.08)",
+                  border: "1px solid rgba(56, 189, 248, 0.25)",
+                  fontSize: "0.72rem",
+                  color: "#CBD5E1",
+                }}
+              >
+                <span>📍 GPS: {gpsData.lat}° N, {gpsData.lng}° E</span>
+                {gpsData.accuracy && <span>• ±{gpsData.accuracy}m</span>}
+                {gpsData.speed !== null && gpsData.speed > 0 && <span>• 🚗 {gpsData.speed} km/h</span>}
+              </div>
+            )}
+
+            {!isHardwareActive && (
+              <div style={{ fontSize: "0.70rem", color: "#64748B", marginTop: "6px" }}>
+                {isPhone ? "Rotate your phone to track heading" : "Click dial to rotate bearing • Open on mobile phone for live hardware gyro tracking"}
+              </div>
+            )}
           </div>
         </div>
       )}

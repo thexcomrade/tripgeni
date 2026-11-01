@@ -160,7 +160,7 @@ DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     },
     "varkala": {
         "canonical_name": "Varkala",
-        "aliases": ["varkala", "papanasam", "north cliff", "south cliff", "kappil"],
+        "aliases": ["varkala", "papanasam", "north cliff", "south cliff", "kappil", "വർക്കല", "വർക്കല ബീച്ച്", "പാപനാശം", "வர்க்கலா", "वरकला"],
         "region": "Thiruvananthapuram District, Kerala",
         "tagline": "The Bohemian Red Cliffs of the Arabian Sea",
         "vibe": "Dramatic laterite cliffs overlooking turquoise sea, cliff cafes, surfing, yoga, and holy springs",
@@ -209,7 +209,7 @@ DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     },
     "wayanad": {
         "canonical_name": "Wayanad",
-        "aliases": ["wayanad", "sulthan bathery", "kalpetta", "mananthavady", "vythiri", "meppadi"],
+        "aliases": ["wayanad", "sulthan bathery", "kalpetta", "mananthavady", "vythiri", "meppadi", "വയനാട്", "വയനാട", "കൽപ്പറ്റ", "സുൽത്താൻ ബത്തേരി", "വയநாடு", "वायनाड"],
         "region": "Wayanad District, Kerala",
         "tagline": "The Land of Paddy Fields, Waterfalls & Forest Caves",
         "vibe": "Misty rainforests, bamboo groves, tea & spice plantations, prehistoric caves, and wildlife corridors",
@@ -258,7 +258,7 @@ DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     },
     "ooty": {
         "canonical_name": "Ooty & Coonoor",
-        "aliases": ["ooty", "udhagamandalam", "coonoor", "kotagiri", "nilgiris"],
+        "aliases": ["ooty", "udhagamandalam", "coonoor", "kotagiri", "nilgiris", "ഊട്ടി", "കൂനൂർ", "ஊட்டி", "குன்னூர்", "ऊटी", "कुन्नूर"],
         "region": "Nilgiris District, Tamil Nadu",
         "tagline": "Queen of Hill Stations",
         "vibe": "Heritage toy train, botanical gardens, colonial heritage, pine forests, and homemade chocolates",
@@ -302,7 +302,7 @@ DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     },
     "coorg": {
         "canonical_name": "Coorg (Kodagu)",
-        "aliases": ["coorg", "kodagu", "madikeri", "kushalnagar", "virajpet"],
+        "aliases": ["coorg", "kodagu", "madikeri", "kushalnagar", "virajpet", "കൂർഗ്", "കുടക", "മടിക്കേരി", "கூர்க்", "कूर्ग", "मदिकेरी"],
         "region": "Karnataka (Western Ghats)",
         "tagline": "The Scotland of India & Coffee Capital",
         "vibe": "Coffee and cardamom estates, Tibetan monasteries, Abbey Falls, and authentic Kodava cuisine",
@@ -346,7 +346,7 @@ DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     },
     "goa": {
         "canonical_name": "Goa",
-        "aliases": ["goa", "panaji", "north goa", "south goa", "anjuna", "palolem", "baga"],
+        "aliases": ["goa", "panaji", "north goa", "south goa", "anjuna", "palolem", "baga", "ഗോവ", "പനാജി", "അഞ്ജുന", "കോவா", "गोवा", "पणजी"],
         "region": "Goa (Konkan Coast)",
         "tagline": "Sun, Sand, Portuguese Heritage & Susegad",
         "vibe": "Golden beaches, beach shacks, Portuguese villas in Fontainhas, watersports, and vibrant nightlife",
@@ -390,7 +390,7 @@ DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     },
     "delhi": {
         "canonical_name": "Delhi",
-        "aliases": ["delhi", "new delhi", "old delhi", "ncr"],
+        "aliases": ["delhi", "new delhi", "old delhi", "ncr", "ഡൽഹി", "ദില്ലി", "ഡെൽഹി", "டெல்லி", "दिल्ली", "नई दिल्ली"],
         "region": "National Capital Territory of India",
         "tagline": "The City of Empires, Heritage & Legendary Street Food",
         "vibe": "Mughal monuments, colonial boulevards, bustling bazaars, and world-class metro connectivity",
@@ -434,7 +434,7 @@ DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     },
     "paris": {
         "canonical_name": "Paris",
-        "aliases": ["paris", "france"],
+        "aliases": ["paris", "france", "പാരീസ്", "പാരീസ", "பாரிஸ்", "पेरिस"],
         "region": "Île-de-France, France",
         "tagline": "The City of Light, Art & Timeless Elegance",
         "vibe": "Haussmannian boulevards, world-class museums, Seine river cruises, sidewalk bistros, and iconic landmarks",
@@ -482,7 +482,7 @@ DESTINATION_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
     },
     "varanasi": {
         "canonical_name": "Varanasi (Kashi / Banaras)",
-        "aliases": ["varanasi", "kashi", "benaras", "benares", "banaras", "assi ghat", "dashashwamedh"],
+        "aliases": ["varanasi", "kashi", "benaras", "benares", "banaras", "assi ghat", "dashashwamedh", "വാരണാസി", "വാരാണസി", "കാശി", "കാശീ", "ബനാറസ്", "ബെനാറസ്", "ദശാശ്വമേധ", "வாரணாசி", "காசி", "பனாரஸ்", "वाराणसी", "काशी", "बनारस", "अस्सी घाट"],
         "region": "Uttar Pradesh, India (Sacred Ganges Riverfront)",
         "tagline": "The Eternal Spiritual Heart of India & City of Light",
         "vibe": "Sacred river ghats, hypnotic evening Ganga Aartis, dawn rowboat rides, ancient mystical galis, and timeless living heritage",
@@ -1475,6 +1475,13 @@ class TourismRAGService:
 
         full_context = f"{history_text} {msg_lower}"
         lang = detect_language(user_message)
+        if lang == "english" and history and isinstance(history, list):
+            for h in reversed(history):
+                if h.get("role") == "user":
+                    prev_lang = detect_language(str(h.get("content", "")))
+                    if prev_lang != "english":
+                        lang = prev_lang
+                        break
 
         # 1. Greeting check
         malayalam_greetings = ["sugano", "sugamano", "sukhamano", "sukham", "sugam", "kollam", "macha", "machane", "entha", "enthe"]
@@ -1525,6 +1532,13 @@ class TourismRAGService:
         if route_pair and is_transit_query:
             rdata = self.get_route_transit_data(route_pair[0], route_pair[1])
             lang = detect_language(user_message)
+        if lang == "english" and history and isinstance(history, list):
+            for h in reversed(history):
+                if h.get("role") == "user":
+                    prev_lang = detect_language(str(h.get("content", "")))
+                    if prev_lang != "english":
+                        lang = prev_lang
+                        break
 
             if lang == "manglish":
                 reply = (
@@ -1608,7 +1622,32 @@ class TourismRAGService:
             "paris", "tokyo", "bali", "dubai", "ladakh", "delhi"
         ]
 
+        multilingual_dest_map = {
+            "വാരണാസി": "varanasi", "വാരാണസി": "varanasi", "കാശി": "varanasi", "ബനാറസ്": "varanasi",
+            "തെങ്കാശി": "thenkasi", "കുറ്റാലം": "thenkasi",
+            "മൂന്നാർ": "munnar", "മുന്നാർ": "munnar",
+            "വർക്കല": "varkala", "പാപനാശം": "varkala",
+            "വയനാട്": "wayanad", "ഊട്ടി": "ooty", "കൂർഗ്": "coorg", "കുടക്": "coorg",
+            "ഗോവ": "goa", "ഡൽഹി": "delhi", "ദില്ലി": "delhi", "ആഗ്ര": "agra",
+            "ജയ്പൂർ": "jaipur", "മണാലി": "manali", "പാരീസ്": "paris", "ടോക്കിയോ": "tokyo",
+            "ബാലി": "bali", "ദുബായ്": "dubai", "ലക്ഷദ്വീപ്": "lakshadweep",
+            # Tamil
+            "வாரணாசி": "varanasi", "காசி": "varanasi", "தென்காசி": "thenkasi", "குற்றாலம்": "thenkasi",
+            "முன்னார்": "munnar", "வர்க்கலா": "varkala", "ஊட்டி": "ooty", "கூர்க்": "coorg", "டெல்லி": "delhi",
+            # Hindi
+            "वाराणसी": "varanasi", "काशी": "varanasi", "बनारस": "varanasi", "तेनकासी": "thenkasi",
+            "मुन्नार": "munnar", "वरकला": "varkala", "कूर्ग": "coorg", "मनाली": "manali", "जयपुर": "jaipur", "दिल्ली": "delhi"
+        }
+
         if not dest_data:
+            for native_name, target_key in multilingual_dest_map.items():
+                if native_name in msg_lower:
+                    dest_data = self.kb.get(target_key)
+                    if not dest_data:
+                        generic_dest_name = target_key.title()
+                    break
+
+        if not dest_data and not generic_dest_name:
             for cd in common_destinations:
                 if cd in msg_lower:
                     generic_dest_name = cd.title()
