@@ -360,11 +360,22 @@ class AuthService {
         return new Error("The travel server is waking up from idle sleep (Render cold start). Please wait a few seconds and try again.");
       }
 
-      const message =
-        axiosError.response?.data?.detail ||
-        axiosError.response?.data?.message ||
-        axiosError.message ||
-        "Request failed";
+      let message = axiosError.response?.data?.message;
+      const detail = axiosError.response?.data?.detail;
+
+      if (Array.isArray(detail)) {
+        message = detail
+          .map((item: any) => {
+            const field = item.loc ? item.loc[item.loc.length - 1] : "";
+            const msg = item.msg || item.message || "Invalid input";
+            return field ? `${field}: ${msg}` : msg;
+          })
+          .join(". ");
+      } else if (typeof detail === "string") {
+        message = detail;
+      } else if (!message) {
+        message = axiosError.message || "Request failed";
+      }
 
       return new Error(message);
     }
