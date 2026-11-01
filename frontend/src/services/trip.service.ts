@@ -1,6 +1,7 @@
 import { generateRichDayPlans, ensureTripItinerary } from "../utils/itineraryHelper";
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { getApiBaseUrl } from "../utils/apiConfig";
+import { checkClientRateLimit, triggerRateLimitAlert } from "../utils/rateLimiter";
 
 // ---------------------------------------------------------------------------
 // Client-side PDF generation fallback

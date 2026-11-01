@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { getApiBaseUrl } from "../utils/apiConfig";
+import { checkClientRateLimit, triggerRateLimitAlert } from "../utils/rateLimiter";
 
 export interface RegisterRequest {
   full_name: string;
@@ -69,9 +70,36 @@ class AuthService {
 
       return config;
     });
+
+    this.api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 429) {
+          const retryAfter =
+            error.response.data?.retry_after ||
+            parseInt(error.response.headers?.["retry-after"] || "12", 10);
+          const message =
+            error.response.data?.message ||
+            error.response.data?.detail ||
+            "Login rate limit exceeded. Please try again after sometime.";
+
+          triggerRateLimitAlert({
+            category: "auth",
+            retryAfter,
+            message,
+            endpoint: error.config?.url,
+          });
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
   async register(payload: RegisterRequest): Promise<RegisterResponse> {
+    const guard = checkClientRateLimit("auth", "/api/auth/register");
+    if (!guard.allowed) {
+      throw new Error("Too many registration attempts. Please try again after sometime.");
+    }
     try {
       const response = await this.api.post<RegisterResponse>(
         "/api/auth/register",
@@ -136,6 +164,10 @@ class AuthService {
   }
 
   async login(payload: LoginRequest): Promise<LoginResponse> {
+    const guard = checkClientRateLimit("auth", "/api/auth/login");
+    if (!guard.allowed) {
+      throw new Error("Too many login attempts. Please try again after sometime.");
+    }
     try {
       const response = await this.api.post<LoginResponse>(
         "/api/auth/login",

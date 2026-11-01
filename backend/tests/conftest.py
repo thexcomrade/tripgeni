@@ -48,6 +48,7 @@ def client(db_session):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
+    app.state.disable_rate_limiting = True
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()

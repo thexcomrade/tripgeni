@@ -1,8 +1,14 @@
 from contextlib import asynccontextmanager
 from typing import List, Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from app.core.rate_limiter import (
+    RateLimitMiddleware,
+    rate_limiter_manager,
+    get_client_identifier,
+    BUCKET_CONFIGS,
+)
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -47,6 +53,8 @@ app = FastAPI(
 
 cors_origins = settings.cors_origins_list
 is_wildcard = "*" in cors_origins or settings.CORS_ORIGINS.strip() == "*"
+
+app.add_middleware(RateLimitMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -101,6 +109,35 @@ async def get_weather(city: str = "Thiruvananthapuram") -> dict:
 async def get_destination_focus_points(destination: str = "") -> dict:
     svc = get_focus_points_service()
     return svc.get_focus_points(destination)
+
+
+@app.get("/api/ratelimit/status", summary="Get client token bucket quota status")
+async def get_rate_limit_status(request: Request) -> dict:
+    client_id = get_client_identifier(request)
+    status_dict = {}
+    for cat_name, config in BUCKET_CONFIGS.items():
+        bucket = rate_limiter_manager.get_bucket(client_id, cat_name)
+        status_dict[cat_name] = {
+            "capacity": config.capacity,
+            "remaining": round(bucket.get_remaining(), 2),
+            "refill_rate_per_sec": config.refill_rate,
+            "description": config.description,
+        }
+    return {
+        "client_ip": client_id,
+        "buckets": status_dict,
+    }
+
+
+@app.post("/api/ratelimit/reset", summary="Reset client token bucket quota")
+async def reset_rate_limit_status(request: Request, category: Optional[str] = None) -> dict:
+    client_id = get_client_identifier(request)
+    if category:
+        rate_limiter_manager.reset_bucket(client_id, category)
+    else:
+        for cat in BUCKET_CONFIGS.keys():
+            rate_limiter_manager.reset_bucket(client_id, cat)
+    return {"message": "Rate limit buckets reset successfully", "client_ip": client_id}
 
 
 @app.get("/")

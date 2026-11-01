@@ -4,6 +4,7 @@ import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import AppNavbar from "../components/layout/AppNavbar";
 import AppFooter from "../components/layout/AppFooter";
+import RateLimitAlertModal from "../components/ui/RateLimitAlertModal";
 
 export const viewport: Viewport = {
   themeColor: "#030712",
@@ -46,6 +47,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <RateLimitAlertModal />
         <Toaster
           position="top-right"
           toastOptions={{
