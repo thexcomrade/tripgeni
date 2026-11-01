@@ -13,7 +13,6 @@ import {
   Sun,
   Moon,
   RotateCcw,
-  ArrowUpDown,
   ChevronDown,
   ChevronUp,
   Check,
@@ -40,7 +39,6 @@ export default function SmartWorldClockAndCompass() {
   const [isManageMode, setIsManageMode] = useState<boolean>(false);
   const [isAddPanelOpen, setIsAddPanelOpen] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [comparisonSliderHour, setComparisonSliderHour] = useState<number | null>(null);
 
   // Compass States
   const [compassHeading, setCompassHeading] = useState<number>(42);
@@ -252,14 +250,6 @@ export default function SmartWorldClockAndCompass() {
         return "Tracking real-time travel bearing.";
     }
   };
-
-  // Simulated Time for Comparison Strip
-  const comparisonReferenceDate = useMemo(() => {
-    if (comparisonSliderHour === null) return currentTime;
-    const sim = new Date(currentTime);
-    sim.setHours(comparisonSliderHour, 0, 0, 0);
-    return sim;
-  }, [comparisonSliderHour, currentTime]);
 
   return (
     <section
@@ -1026,160 +1016,6 @@ export default function SmartWorldClockAndCompass() {
                   })}
                 </div>
               )}
-            </div>
-
-            {/* TIME ZONE COMPARISON BAR (MATCHES REFERENCE media_1793514197789_a9d75044.png) */}
-            <div
-              style={{
-                background: "rgba(15, 23, 42, 0.8)",
-                border: "1px solid rgba(56, 189, 248, 0.22)",
-                borderRadius: "16px",
-                padding: "14px 18px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-                boxShadow: "0 8px 24px rgba(0, 0, 0, 0.3)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  flexWrap: "wrap",
-                  gap: "10px",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <ArrowUpDown size={15} color="#00E5FF" />
-                  <span
-                    style={{
-                      fontSize: "0.85rem",
-                      fontWeight: 700,
-                      color: "#FFFFFF",
-                      letterSpacing: "0.02em",
-                    }}
-                  >
-                    Time Zone Comparison
-                  </span>
-                  {comparisonSliderHour !== null && (
-                    <span
-                      style={{
-                        fontSize: "0.72rem",
-                        color: "#FBBF24",
-                        background: "rgba(245, 158, 11, 0.15)",
-                        padding: "1px 8px",
-                        borderRadius: "999px",
-                        border: "1px solid rgba(245, 158, 11, 0.3)",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Simulated: {String(comparisonSliderHour).padStart(2, "0")}:00
-                    </span>
-                  )}
-                </div>
-
-                {comparisonSliderHour !== null ? (
-                  <button
-                    type="button"
-                    onClick={() => setComparisonSliderHour(null)}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      background: "rgba(0, 229, 255, 0.15)",
-                      border: "1px solid rgba(0, 229, 255, 0.4)",
-                      borderRadius: "6px",
-                      padding: "2px 8px",
-                      color: "#00E5FF",
-                      fontSize: "0.72rem",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                    }}
-                  >
-                    <RotateCcw size={11} />
-                    <span>Now</span>
-                  </button>
-                ) : (
-                  <span style={{ fontSize: "0.70rem", color: "#64748B" }}>
-                    Synchronized across saved destinations
-                  </span>
-                )}
-              </div>
-
-              {/* HORIZONTAL SYNCHRONIZED COMPARISON TILES */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "16px",
-                  overflowX: "auto",
-                  paddingBottom: "4px",
-                }}
-              >
-                {savedClocks.map((c) => {
-                  const compDetails = getClockTimeDetails(c.iana, comparisonReferenceDate, comparisonReferenceDate);
-                  return (
-                    <div
-                      key={"comp_" + c.id}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        minWidth: "75px",
-                        borderRight: "1px solid rgba(255, 255, 255, 0.08)",
-                        paddingRight: "16px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: "0.74rem",
-                          color: "#94A3B8",
-                          fontWeight: 600,
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {c.city}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: "0.92rem",
-                          fontWeight: 800,
-                          color: "#00E5FF",
-                          fontFamily: "ui-monospace, monospace",
-                          whiteSpace: "nowrap",
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {compDetails.hours}:{compDetails.minutes} {compDetails.ampm}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* INTERACTIVE 24-HOUR TIMELINE SCRUBBER */}
-              <div style={{ marginTop: "2px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", color: "#64748B", marginBottom: "4px" }}>
-                  <span>00:00</span>
-                  <span>06:00 (Dawn)</span>
-                  <span>12:00 (Noon)</span>
-                  <span>18:00 (Dusk)</span>
-                  <span>23:00</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="23"
-                  value={comparisonSliderHour !== null ? comparisonSliderHour : currentTime.getHours()}
-                  onChange={(e) => setComparisonSliderHour(parseInt(e.target.value, 10))}
-                  style={{
-                    width: "100%",
-                    accentColor: "#00E5FF",
-                    cursor: "pointer",
-                  }}
-                  title="Scrub hours to check synchronized times across all cities"
-                />
-              </div>
             </div>
           </div>
 
