@@ -388,7 +388,7 @@ function ResetPasswordForm() {
             color: "#64748B",
           }}
         >
-          If you didn't request this password reset, you can safely ignore this
+          If you didn&apos;t request this password reset, you can safely ignore this
           page and your existing password will remain unchanged.
         </div>
       </section>

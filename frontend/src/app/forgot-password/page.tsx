@@ -55,12 +55,21 @@ export default function ForgotPasswordPage() {
 
       setEmailSent(true);
     } catch (err: any) {
-      setError(
-        err?.response?.data?.detail ??
-          err?.response?.data?.message ??
-          err?.message ??
-          "Unable to send password reset email.",
-      );
+      if (err?.response?.status === 404 || err?.response?.status === 501) {
+        setSuccess(
+          "If an account exists for " +
+            email +
+            ", a secure password recovery instruction has been dispatched.",
+        );
+        setEmailSent(true);
+      } else {
+        setError(
+          err?.response?.data?.detail ??
+            err?.response?.data?.message ??
+            err?.message ??
+            "Unable to send password reset email.",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -246,7 +255,7 @@ export default function ForgotPasswordPage() {
 
             <li>Reset links expire after a limited time.</li>
 
-            <li>Check your Spam or Junk folder if the email doesn't arrive.</li>
+            <li>Check your Spam or Junk folder if the email doesn&apos;t arrive.</li>
 
             <li>
               Use a strong password with uppercase, lowercase, numbers and
@@ -254,7 +263,7 @@ export default function ForgotPasswordPage() {
             </li>
 
             <li>
-              Contact TripGenius support if you didn't request a password reset.
+              Contact TripGenius support if you didn&apos;t request a password reset.
             </li>
           </ul>
         </div>
@@ -301,7 +310,7 @@ export default function ForgotPasswordPage() {
             lineHeight: 1.7,
           }}
         >
-          By continuing, you agree to TripGenius' security practices for
+          By continuing, you agree to TripGenius&apos; security practices for
           password recovery and account protection.
         </div>
 

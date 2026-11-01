@@ -118,8 +118,7 @@ export default function RegisterPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "20px",
-        zoom: "80%",
+        padding: "clamp(32px, 6vh, 64px) 16px",
       }}
     >
       <GlassCard

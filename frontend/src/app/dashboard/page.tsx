@@ -433,6 +433,34 @@ export default function DashboardPage() {
     }
   };
 
+  const handleOpenSavedTrip = (savedTrip: SavedTripSummary) => {
+    try {
+      const raw =
+        localStorage.getItem("saved_trips") ||
+        localStorage.getItem("tripgenius_saved_trips") ||
+        "[]";
+      let fullRecord: any = savedTrip;
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) {
+        const found = list.find(
+          (t: any) =>
+            t.id === savedTrip.id ||
+            (t.destination === savedTrip.destination &&
+              t.duration_days === savedTrip.duration_days)
+        );
+        if (found) fullRecord = found;
+      }
+      localStorage.setItem("latest_trip", JSON.stringify(fullRecord));
+      localStorage.setItem(
+        "tripgenius_generated_trip",
+        JSON.stringify(fullRecord)
+      );
+    } catch {
+      // fallback
+    }
+    router.push("/trip/generated");
+  };
+
   const curatedDestinations = [
     {
       name: "Munnar",
@@ -1184,7 +1212,7 @@ export default function DashboardPage() {
               <GlassCard
                 key={trip.id || idx}
                 interactive
-                onClick={() => router.push("/trip/generated")}
+                onClick={() => handleOpenSavedTrip(trip)}
                 style={{ padding: "22px" }}
               >
                 <div

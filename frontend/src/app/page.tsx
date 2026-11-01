@@ -29,6 +29,31 @@ import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
 import { GlassCard, SectionHeader } from "../components/ui/Card";
 import FloatingMascot from "../components/mascot/FloatingMascot";
+import { Center } from "@react-three/drei";
+
+const INITIAL_TESTIMONIALS = [
+  {
+    name: "Arjun Nair",
+    location: "Bangalore",
+    role: "Adventure Traveler",
+    text: "TripGenius built an authentic 4-day Western Ghats itinerary with exact budget allocation and carbon estimates in seconds. The restaurant recommendations were unbelievable.",
+    rating: 5,
+  },
+  {
+    name: "Sivya Babu",
+    location: "Trivandrum",
+    role: "Nurse",
+    text: "The sustainability metrics, real Google-rated stays, and weather-aware packing suggestions make this genuinely innovative. It feels like an intelligent concierge, not a generic booking tool.",
+    rating: 5,
+  },
+  {
+    name: "Rahul Krishna",
+    location: "Chennai",
+    role: "Family Vacationer",
+    text: "Customized for our family of four with elderly parents. The day-by-day morning/afternoon/evening pace was spot on. Absolute 10/10.",
+    rating: 5,
+  },
+];
 
 export default function HomePage() {
   const router = useRouter();
@@ -167,31 +192,7 @@ export default function HomePage() {
     },
   ];
 
-  const initialTestimonials = [
-    {
-      name: "Arjun Nair",
-      location: "Bangalore",
-      role: "Adventure Traveler",
-      text: "TripGenius built an authentic 4-day Western Ghats itinerary with exact budget allocation and carbon estimates in seconds. The restaurant recommendations were unbelievable.",
-      rating: 5,
-    },
-    {
-      name: "Sivya Babu",
-      location: "Trivandrum",
-      role: "Nurse",
-      text: "The sustainability metrics, real Google-rated stays, and weather-aware packing suggestions make this genuinely innovative. It feels like an intelligent concierge, not a generic booking tool.",
-      rating: 5,
-    },
-    {
-      name: "Rahul Krishna",
-      location: "Chennai",
-      role: "Family Vacationer",
-      text: "Customized for our family of four with elderly parents. The day-by-day morning/afternoon/evening pace was spot on. Absolute 10/10.",
-      rating: 5,
-    },
-  ];
-
-  const [reviewsList, setReviewsList] = useState(initialTestimonials);
+  const [reviewsList, setReviewsList] = useState(INITIAL_TESTIMONIALS);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewName, setReviewName] = useState("");
   const [reviewProfession, setReviewProfession] = useState("Family Vacationer");
@@ -206,7 +207,7 @@ export default function HomePage() {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setReviewsList([...parsed, ...initialTestimonials]);
+          setReviewsList([...parsed, ...INITIAL_TESTIMONIALS]);
         }
       } catch {
         // ignore
@@ -510,7 +511,6 @@ export default function HomePage() {
               }}
             >
               <span>EXPLORE DESTINATIONS &amp; INTELLIGENCE</span>
-              <ChevronDown size={16} color="#00E5FF" style={{ animation: "scrollCueFloat 2s ease-in-out infinite" }} />
             </a>
           </div>
         </section>

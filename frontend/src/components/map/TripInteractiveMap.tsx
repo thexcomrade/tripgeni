@@ -506,6 +506,7 @@ export default function TripInteractiveMap({
     return () => {
       active = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayPlans, destination]);
 
   const coords = useMemo(() => {
@@ -724,7 +725,7 @@ export default function TripInteractiveMap({
         stops,
       };
     });
-  }, [coords, dayPlans, destination, durationDays, travelStyle]);
+  }, [coords, dayPlans, destination, durationDays, travelStyle, resolvedCoordsMap]);
 
   const activeDayData = tripDays[selectedDay] || tripDays[0];
 

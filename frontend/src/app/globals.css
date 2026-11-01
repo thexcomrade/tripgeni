@@ -1240,3 +1240,33 @@ input.borderless-input:focus {
 .hero-scroll-cue-text:hover span {
   color: #FFFFFF !important;
 }
+
+/* ============================================================
+   ACCESSIBILITY & FOCUS VISIBILITY (WCAG 2.1 AA / AAA Compliance)
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid #00E5FF !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.5) !important;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #00E5FF !important;
+  outline-offset: 2px !important;
+}
+
+/* Reduced Motion Preference for Motion-Sensitive Users */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

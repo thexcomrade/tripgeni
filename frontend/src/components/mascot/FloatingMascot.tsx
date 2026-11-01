@@ -526,7 +526,7 @@ export default function FloatingMascot() {
                 <h3>Hey there! 🤖</h3>
 
                 <p>
-                  I'm <strong>TRIPZY</strong>, your personal AI travel
+                  I&apos;m <strong>TRIPZY</strong>, your personal AI travel
                   companion. Ask me about destinations, budgets, stays, or
                   hidden spots!
                 </p>

@@ -521,7 +521,7 @@ function PlannerContent() {
       setFromDate(fromStr);
       setToDate(computeEndDate(fromStr, 3));
     }
-  }, []);
+  }, [fromDate]);
 
   const durationDays = useMemo(() => {
     if (fromDate && toDate) {

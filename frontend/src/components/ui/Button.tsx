@@ -70,6 +70,8 @@ export default function Button({
   return (
     <button
       disabled={disabled || isLoading}
+      aria-disabled={disabled || isLoading}
+      aria-busy={isLoading}
       style={{
         display: "inline-flex",
         alignItems: "center",
