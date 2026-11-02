@@ -34,6 +34,7 @@ from app.schemas.trip_schema import (
 )
 from app.services.pdf_service import get_pdf_generator, compute_pdf_filename
 from app.services.budget_learning_service import get_budget_rl_service
+from app.services.evaluation_service import get_evaluation_service, TripEvaluationResult
 
 
 class RecordExpenseRequest(BaseModel):
@@ -436,6 +437,47 @@ def delete_all_trips(
 
 
 # =====================================================
+# RAG & Itinerary Evaluation Metrics
+# =====================================================
+
+
+class ItineraryEvaluationRequest(BaseModel):
+    itinerary_data: dict[str, Any]
+    user_constraints: dict[str, Any] | None = None
+
+
+@router.post(
+    "/evaluate",
+    response_model=TripEvaluationResult,
+    summary="Evaluate itinerary quality and RAG faithfulness",
+)
+def evaluate_itinerary_endpoint(payload: ItineraryEvaluationRequest):
+    """
+    Computes formal quantitative evaluation metrics for a generated trip plan:
+    - Faithfulness & Groundedness against regional RAG facts
+    - Budget Adherence variance
+    - Pacing & Temporal schedule feasibility
+    - Context & Interest relevance
+    - Overall Trip Quality Index (TQI)
+    """
+    eval_svc = get_evaluation_service()
+    return eval_svc.evaluate_itinerary(payload.itinerary_data, payload.user_constraints)
+
+
+@router.get(
+    "/evaluation-benchmark",
+    summary="Run RAG pipeline benchmark evaluation suite",
+)
+def get_rag_evaluation_benchmark():
+    """
+    Executes benchmark evaluations across standard destinations to measure
+    mean RAG faithfulness, budget adherence, and schedule feasibility rates.
+    """
+    eval_svc = get_evaluation_service()
+    return eval_svc.run_benchmark_suite()
+
+
+# =====================================================
 # Get Trip  (parameterized — must be AFTER specific paths)
 # =====================================================
 
@@ -710,3 +752,6 @@ def get_destination_learning_insights(
     """
     rl_service = get_budget_rl_service()
     return rl_service.get_destination_insights(db, destination)
+
+
+

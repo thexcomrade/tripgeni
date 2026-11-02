@@ -633,6 +633,8 @@ class AITripGenerationResponse(BaseModel):
 
     gemini_response: dict[str, Any] | None = None
 
+    evaluation_metrics: dict[str, Any] | None = None
+
     generation_mode: str | None = None
 
     error: str | None = None

@@ -1629,6 +1629,23 @@ Return JSON.
                 base_response["gemini_response"] = parsed_ai_response
                 base_response["generation_mode"] = "ai_synthesized"
 
+            try:
+                from app.services.evaluation_service import get_evaluation_service
+                eval_svc = get_evaluation_service()
+                eval_res = eval_svc.evaluate_itinerary(
+                    base_response,
+                    user_constraints={
+                        "budget": budget,
+                        "duration_days": duration_days,
+                        "interests": interests,
+                        "travelers_count": travelers_count,
+                        "travel_style": travel_style,
+                    },
+                )
+                base_response["evaluation_metrics"] = eval_res.model_dump()
+            except Exception as e:
+                logger.debug("Evaluation metrics calculation skipped: %s", e)
+
             return self.format_trip_response(base_response)
 
         except Exception as error:
@@ -1650,6 +1667,24 @@ Return JSON.
             fallback["error"] = None
             fallback["generation_mode"] = "offline"
             fallback["origin"] = origin
+
+            try:
+                from app.services.evaluation_service import get_evaluation_service
+                eval_svc = get_evaluation_service()
+                eval_res = eval_svc.evaluate_itinerary(
+                    fallback,
+                    user_constraints={
+                        "budget": budget,
+                        "duration_days": duration_days,
+                        "interests": interests,
+                        "travelers_count": travelers_count,
+                        "travel_style": travel_style,
+                    },
+                )
+                fallback["evaluation_metrics"] = eval_res.model_dump()
+            except Exception as e:
+                logger.debug("Fallback evaluation metrics calculation skipped: %s", e)
+
             return fallback
 
     def generate_chat_response(
